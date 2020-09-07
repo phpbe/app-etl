@@ -1,0 +1,21 @@
+{
+    "name": "be/app-etl",
+    "type": "library",
+    "license": "MIT",
+    "description": "ETL",
+    "authors": [
+        {
+            "name": "liu12",
+            "email": "i@liu12.com",
+            "homepage": "http://www.liu12.com/"
+        }
+    ],
+    "require": {
+        "be/mf": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Be\\App\\Etl\\": "src/"
+        }
+    }
+}
