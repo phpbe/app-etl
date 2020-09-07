@@ -423,7 +423,6 @@ class Ds extends Controller
                             'name' => 'db_host',
                             'label' => '主机名',
                             'required' => true,
-                            'unique' => true,
                         ],
                         [
                             'name' => 'db_port',
