@@ -6,9 +6,9 @@ be/app-etl 是一款基于BE框架实现的简单实用的的ETL工具，
 
 
 #### 如何安装
-1 安装 be/mf 管理框架
+1 新建 be/mf 项目
 
-    composer create be/mf-new
+    composer create-project be/mf-new
 2 安装 be/app-etl
 
     composer require be/app-etl
