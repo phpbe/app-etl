@@ -1,6 +1,6 @@
 <be-body>
 
-    <div id="app">
+    <div id="app" v-cloak>
         <el-steps :active="formData.step" finish-status="success" simple>
             <el-step title="配置数据源" icon="el-icon-fa fa-database"></el-step>
             <el-step title="字段映射" icon="el-icon-fa fa-random"></el-step>
@@ -9,7 +9,7 @@
 
         <div style="height: 20px;"></div>
 
-        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-show="formData.step == '0'">
+        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-if="formData.step == '0'">
 
             <el-form-item label="分类" prop="category_id"
                           :rules="[{required: true, message: '请选择分类', trigger: 'change' }]">
@@ -174,7 +174,7 @@
         </el-form>
 
 
-        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-show="formData.step == '2'">
+        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-if="formData.step == '2'">
             <el-form-item label="断点类型" prop="breakpoint_type"
                           :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
                 <el-select v-model="formData.breakpoint_type" placeholder="请选择断点类型">
@@ -221,6 +221,16 @@
                             :value="k">
                     </el-option>
                 </el-select>
+            </el-form-item>
+
+            <el-form-item label="断点向前编移量" prop="breakpoint_offset" v-if="formData.breakpoint_type=='1'">
+                <el-input-number v-model="formData.breakpoint_offset" :step="1"></el-input-number>
+                <div style="color:#999;">
+                    此偏移量会将断点范围向前扩充指定的秒数，<br />
+                    例如：断点为: 2020-09-10 00:00:00，断点递增量：一天, 断点向前编移量 86400 秒。<br />
+                    计划任务2010-09-11执行时，断点范围为: 2020-09-09 00:00:00 (2020-09-10向前偏移86400秒) <= T < 2020-09-11 00:00:00，即拉取了两天的数据<br />
+                    计划任务2010-09-12执行时，断点范围为: 2020-09-10 00:00:00 (2020-09-11向前偏移86400秒) <= T < 2020-09-12 00:00:00。
+                </div>
             </el-form-item>
 
             <el-form-item label="执行计划" prop="schedule">
@@ -473,11 +483,6 @@
                     }
                 },
                 save: function () {
-                    if (this.formData.step == 1) {
-                        console.log(this.fieldMapping);
-                        return;
-                    }
-
                     if (this.formData.step == 1 && this.formData.field_mapping_type == '1' && !this.fieldMappingInput) {
                         var isAllMapping = true;
                         var fieldMapping = [];

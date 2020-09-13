@@ -69,6 +69,11 @@ class Task extends \Be\System\Service
             if ($extract->breakpoint_type == '1') { // 按断点同步
                 $breakpointStart = $extract->breakpoint;
                 $tBreakpointStart = strtotime($breakpointStart);
+                if ($extract->breakpoint_offset > 0) {
+                    $tBreakpointStart -= $extract->breakpoint_offset;
+                    $breakpointStart = date('Y-m-d H:i:s', $tBreakpointStart);
+                }
+
                 if ($tBreakpointStart > $timestamp) {
                     throw new ServiceException('断点设置已超过当前时间，程序中止！');
                 }

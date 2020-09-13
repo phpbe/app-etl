@@ -340,15 +340,23 @@ class Extract extends Controller
                         ],
                         [
                             'name' => 'field_mapping',
-                            'label' => '映射数据',
-                            'driver' => DetailItemCode::class,
-                            'language' => 'php',
+                            'label' => '字段映射',
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.field_mapping_type == \'1\'',
+                                ]
+                            ]
                         ],
                         [
                             'name' => 'field_mapping_code',
-                            'label' => '映射数据',
+                            'label' => '代码处理',
                             'driver' => DetailItemCode::class,
                             'language' => 'php',
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.field_mapping_type == \'2\'',
+                                ]
+                            ]
                         ],
                         [
                             'name' => 'breakpoint_type',
@@ -358,15 +366,39 @@ class Extract extends Controller
                         [
                             'name' => 'breakpoint_field',
                             'label' => '断点字段',
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                ]
+                            ],
                         ],
                         [
                             'name' => 'breakpoint',
                             'label' => '断点',
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                ]
+                            ],
                         ],
                         [
                             'name' => 'breakpoint_step',
                             'label' => '断点递增',
                             'keyValues' => $breakpointStepKeyValues,
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                ]
+                            ],
+                        ],
+                        [
+                            'name' => 'breakpoint_offset',
+                            'label' => '断点向前编移量',
+                            'ui' => [
+                                'form-item' => [
+                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                ]
+                            ],
                         ],
                         [
                             'name' => 'schedule',
@@ -406,12 +438,13 @@ class Extract extends Controller
                 if (isset($formData['id']) && $formData['id']) {
                     $tuple->load($formData['id']);
                 } else {
-                    $tuple->field_mapping_type = 0;
+                    $tuple->field_mapping_type = '0';
                     $tuple->field_mapping = '';
-                    $tuple->breakpoint_type = 0;
+                    $tuple->breakpoint_type = '0';
                     $tuple->breakpoint_field = '';
                     $tuple->breakpoint = '';
                     $tuple->breakpoint_step = '';
+                    $tuple->breakpoint_offset = '0';
                     $tuple->schedule = '';
                     $tuple->is_enable = '1';
                     $tuple->is_delete = '0';
@@ -440,10 +473,12 @@ class Extract extends Controller
                         $tuple->breakpoint_field = '';
                         $tuple->breakpoint = '';
                         $tuple->breakpoint_step = '';
+                        $tuple->breakpoint_offset = '0';
                     } else {
                         $tuple->breakpoint_field = $formData['breakpoint_field'];
                         $tuple->breakpoint = $formData['breakpoint'];
                         $tuple->breakpoint_step = $formData['breakpoint_step'];
+                        $tuple->breakpoint_offset = $formData['breakpoint_offset'];
                     }
                     $tuple->schedule = $formData['schedule'];
                 }
@@ -471,7 +506,6 @@ class Extract extends Controller
                 Response::set('dsKeyValues', (object)$dsKeyValues);
 
                 $tuple = Be::newTuple('etl_extract');
-
                 $postData = Request::post('data', '', '');
                 if ($postData) {
                     $postData = json_decode($postData, true);
@@ -480,20 +514,10 @@ class Extract extends Controller
                     }
                 }
 
+                $tuple->field_mapping_type = (string)$tuple->field_mapping_type;
+                $tuple->breakpoint_type = (string)$tuple->breakpoint_type;
+
                 Response::set('extract', $tuple);
-
-                $srcTableFields = [];
-                $serviceDs = Be::getService('Etl.Ds');
-                if ($tuple->src_ds_id > 0 && $tuple->src_table) {
-                    $srcTableFields = $serviceDs->getTableFields($tuple->src_ds_id, $tuple->src_table);
-                }
-                Response::set('srcTableFields', $srcTableFields);
-
-                $dstTableFields = [];
-                if ($tuple->dst_ds_id > 0 && $tuple->dst_table) {
-                    $dstTableFields = $serviceDs->getTableFields($tuple->dst_ds_id, $tuple->dst_table);
-                }
-                Response::set('dstTableFields', $dstTableFields);
 
                 $fieldMappingTypeKeyValues = Be::getService('Etl.Extract')->getFieldMappingTypeKeyValues();
                 Response::set('fieldMappingTypeKeyValues', (object)$fieldMappingTypeKeyValues);
