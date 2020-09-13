@@ -24,7 +24,7 @@ class Ds extends \Be\System\Service
 
     public function getTableFields($dsId, $tableName) {
         $db = $this->getDb($dsId);
-        return $db->getTableFields($tableName);
+        return array_values($db->getTableFields($tableName));
     }
 
     /**

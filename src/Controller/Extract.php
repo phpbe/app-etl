@@ -345,6 +345,12 @@ class Extract extends Controller
                             'language' => 'php',
                         ],
                         [
+                            'name' => 'field_mapping_code',
+                            'label' => '映射数据',
+                            'driver' => DetailItemCode::class,
+                            'language' => 'php',
+                        ],
+                        [
                             'name' => 'breakpoint_type',
                             'label' => '断点类型',
                             'keyValues' => $breakpointTypeKeyValues,
@@ -421,8 +427,14 @@ class Extract extends Controller
                     $tuple->dst_table = $formData['dst_table'];
                 } elseif  ($formData['step'] == '1') {
                     $tuple->field_mapping_type = $formData['field_mapping_type'];
-                    $tuple->field_mapping = $formData['field_mapping'];
-                } elseif ($formData['step'] == '2') {
+                    $tuple->field_mapping = '';
+                    $tuple->field_mapping_code = '';
+                    if ($tuple->field_mapping_type == '1') {
+                        $tuple->field_mapping = $formData['field_mapping'];
+                    } elseif ($tuple->field_mapping_type == '2') {
+                        $tuple->field_mapping_code = $formData['field_mapping_code'];
+                    }
+                   } elseif ($formData['step'] == '2') {
                     $tuple->breakpoint_type = $formData['breakpoint_type'];
                     if ($tuple->breakpoint_type == '0') {
                         $tuple->breakpoint_field = '';

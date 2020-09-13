@@ -134,7 +134,7 @@ class Task extends \Be\System\Service
                     }
                     break;
                 case '2':
-                    $fieldMappingFn = eval('return function($row){' . $extract->field_mapping . '};');
+                    $fieldMappingFn = eval('return function($row){' . $extract->field_mapping_code . '};');
                     break;
                 default:
                     throw new ServiceException('字段映射类型(' . $extract->field_mapping_type . ')无法识别！');

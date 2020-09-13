@@ -9,7 +9,7 @@
 
         <div style="height: 20px;"></div>
 
-        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-if="formData.step == '0'">
+        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-show="formData.step == '0'">
 
             <el-form-item label="分类" prop="category_id"
                           :rules="[{required: true, message: '请选择分类', trigger: 'change' }]">
@@ -96,44 +96,76 @@
         </el-form>
 
 
-        <el-form ref="formRef-1" :model="formData" label-width="120px" size="mini" v-if="formData.step == '1'">
-            <el-row :gutter="24">
-                <el-col :span="4" style="text-align: center;">
-                    <div v-for="item in srcTableFields" style="padding: 2px;">
-                        <el-tag type="info">{{item.name}}</el-tag>
-                    </div>
-                </el-col>
+        <el-form ref="formRef-1" :model="formData" label-width="120px" size="mini" v-show="formData.step == '1'">
 
-                <el-col :span="16">
+            <el-form-item label="字段映射类型" prop="field_mapping_type"
+                          :rules="[{required: true, message: '字段映射类型', trigger: 'change' }]">
+                <el-select v-model="formData.field_mapping_type" placeholder="字段映射类型">
+                    <el-option
+                            v-for="(v, k) in fieldMappingTypeKeyValues"
+                            :key="k"
+                            :label="v"
+                            :value="k">
+                    </el-option>
+                </el-select>
+            </el-form-item>
 
-                    <el-form-item label="字段映射类型" prop="field_mapping_type"
-                                  :rules="[{required: true, message: '字段映射类型', trigger: 'change' }]">
-                        <el-select v-model="formData.field_mapping_type" placeholder="字段映射类型">
+            <el-form-item label="字段映射"
+                          prop="field_mapping"
+                          :rules="[{required: formData.field_mapping_type == '1', message: '请输入字段映射', trigger: 'blur' }]"
+                          v-show="formData.field_mapping_type == '1'">
+
+                <div v-loading="dstTableFieldsLoading" v-show="!fieldMappingInput">
+                    <div v-for="dstField in dstTableFields" style="padding: 1px 0;">
+                        <el-select v-model="fieldMapping[dstField.name]" @change="forceUpdate" placeholder="请选择输入表的字段" v-loading="srcTablesLoading">
                             <el-option
-                                    v-for="(v, k) in fieldMappingTypeKeyValues"
-                                    :key="k"
-                                    :label="v"
-                                    :value="k">
+                                    v-for="srcfield in srcTableFields"
+                                    :key="srcfield.name"
+                                    :label="srcfield.name"
+                                    :value="srcfield.name">
                             </el-option>
                         </el-select>
-                    </el-form-item>
 
+                        <i class="el-icon-right"></i>
+
+                        <el-tag size="small" style="width:200px; text-align:center;">{{dstField.name}}</el-tag>
+                    </div>
+                </div>
+
+                <div v-show="fieldMappingInput">
                     <el-input
                             type="textarea"
-                            :autosize="{ minRows: 6, maxRows: 20}"
-                            :placeholder="formData.field_mapping_type == '1' ? '字段映射' : '代码处理'"
-                            v-model="formData.field_mapping"
-                            v-if="formData.field_mapping_type != '0'">
+                            :autosize="{minRows: 6, maxRows: 20}"
+                            placeholder="字段映射"
+                            v-model="formData.field_mapping">
                     </el-input>
+                </div>
 
-                </el-col>
+                <div style="color:#999;">
+                    <el-switch
+                            v-model="fieldMappingInput"
+                            inactive-color="#13ce66"
+                            active-text="手工输入字段映射"
+                            inactive-text="选择字段映射">
+                    </el-switch>
+                </div>
 
-                <el-col :span="4" style="text-align: center;">
-                    <div v-for="item in dstTableFields" style="padding: 2px;">
-                        <el-tag type="info">{{item.name}}</el-tag>
-                    </div>
-                </el-col>
-            </el-row>
+                <div style="color:#999;">如果没有权限获取到表结构，可手工输入字段映射。</div>
+                <div style="color:#999;" v-show="fieldMappingInput">手工输入时，源字段与目标字段用英文冒号(:)分隔，字段间用英文逗号(,)分隔，例：A1:B1,A2:B2</div>
+
+            </el-form-item>
+
+            <el-form-item label="代码处理"
+                          prop="field_mapping_code"
+                          :rules="[{required: formData.field_mapping_type == '2', message: '请输入代码', trigger: 'blur' }]"
+                          v-show="formData.field_mapping_type == '2'">
+
+                <div style="color:#999;">function ($row) {</div>
+                <textarea ref="codeRef" v-model="formData.field_mapping_code"></textarea>
+                <div style="color:#999;">}</div>
+                <div style="color:#999;">$row：将传入输入数据源指定表的一行数据，数组格式，包含所有字段，</div>
+                <div style="color:#999;">return 需返回要写入目的的数据，</div>
+            </el-form-item>
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
@@ -142,8 +174,9 @@
         </el-form>
 
 
-        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-if="formData.step == '2'">
-            <el-form-item label="断点类型" prop="breakpoint_type" :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
+        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-show="formData.step == '2'">
+            <el-form-item label="断点类型" prop="breakpoint_type"
+                          :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
                 <el-select v-model="formData.breakpoint_type" placeholder="请选择断点类型">
                     <el-option
                             v-for="(v, k) in breakpointTypeKeyValues"
@@ -154,26 +187,32 @@
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="断点字段" prop="breakpoint_field" :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点字段', trigger: 'change' }]" v-if="formData.breakpoint_type=='1'">
+            <el-form-item label="断点字段" prop="breakpoint_field"
+                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点字段', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type=='1'">
                 <el-select v-model="formData.breakpoint_field" placeholder="请选择断点字段">
                     <el-option v-for="item in srcTableFields"
-                       :key="item.name"
-                       :label="item.name"
-                       :value="item.name">
+                               :key="item.name"
+                               :label="item.name"
+                               :value="item.name">
                     </el-option>
                 </el-select>
             </el-form-item>
 
-            <el-form-item label="断点" prop="breakpoint" :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点日期时间', trigger: 'change' }]" v-if="formData.breakpoint_type=='1'">
+            <el-form-item label="断点" prop="breakpoint"
+                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点日期时间', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type=='1'">
                 <el-date-picker
                         v-model="formData.breakpoint"
                         type="datetime"
                         placeholder="请选择断点日期时间"
-                        value-format ="yyyy-MM-dd HH:mm:ss">
+                        value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
             </el-form-item>
 
-            <el-form-item label="断点递增量" prop="breakpoint_step" :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点递增量', trigger: 'change' }]" v-if="formData.breakpoint_type=='1'">
+            <el-form-item label="断点递增量" prop="breakpoint_step"
+                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点递增量', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type=='1'">
                 <el-select v-model="formData.breakpoint_step" placeholder="请选择断点递增量">
                     <el-option
                             v-for="(v, k) in breakpointStepKeyValues"
@@ -196,6 +235,44 @@
         </el-form>
 
     </div>
+
+    <?php
+    $baseUrl = \Be\System\Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
+
+    $js = [
+        'lib/codemirror.js',
+        'mode/clike/clike.js',
+        'mode/php/php.js',
+        'addon/edit/matchbrackets.js',
+    ];
+
+    $css = [
+        'lib/codemirror.css',
+    ];
+
+    $option = [
+        'theme' => 'default',
+        'mode' => 'text/x-php',
+        'lineNumbers' => true,
+        'lineWrapping' => true,
+        'matchBrackets' => true,
+    ];
+
+    if (count($js) > 0) {
+        $js = array_unique($js);
+        foreach ($js as $x) {
+            echo '<script src="' . $baseUrl . $x . '"></script>';
+        }
+    }
+
+    if (count($css) > 0) {
+        $css = array_unique($css);
+        foreach ($css as $x) {
+            echo '<link rel="stylesheet" type="text/css" href="' . $baseUrl . $x . '" />';
+        }
+    }
+    ?>
+
 
     <script>
         <?php
@@ -221,6 +298,7 @@
                 formData: <?php echo json_encode($formData); ?>,
                 categoryKeyValues: <?php echo json_encode($this->categoryKeyValues); ?>,
                 dsKeyValues: <?php echo json_encode($this->dsKeyValues); ?>,
+
                 srcTablesLoading: false,
                 dstTablesLoading: false,
                 srcTables: [],
@@ -228,13 +306,22 @@
                 dsTables: {},
 
                 fieldMappingTypeKeyValues: <?php echo json_encode($this->fieldMappingTypeKeyValues); ?>,
-                srcTableFields: <?php echo json_encode($this->srcTableFields); ?>,
-                dstTableFields: <?php echo json_encode($this->dstTableFields); ?>,
+
+                srcTableFieldsLoading: false,
+                dstTableFieldsLoading: false,
+                srcTableFields: [],
+                dstTableFields: [],
+                tableFields: [],
+
+                fieldMappingInput: false,
+                fieldMapping: {},
 
                 breakpointTypeKeyValues: <?php echo json_encode($this->breakpointTypeKeyValues); ?>,
                 breakpointStepKeyValues: <?php echo json_encode($this->breakpointStepKeyValues); ?>,
 
-                loading: false
+                loading: false,
+
+                codeMirror: false
             },
             methods: {
                 srcDsChange: function () {
@@ -243,26 +330,12 @@
                     } else {
                         this.srcTablesLoading = true;
                         var _this = this;
-                        _this.$http.post("<?php echo beUrl('Etl.Ds.getTableNames'); ?>", {
-                            dsId: _this.formData.src_ds_id
-                        }).then(function (response) {
+                        this.loadTables(this.formData.src_ds_id, function () {
                             _this.srcTablesLoading = false;
-                            if (response.status == 200) {
-                                var responseData = response.data;
-                                if (responseData.success) {
-                                    _this.dsTables[_this.formData.src_ds_id] = responseData.data.tables;
-                                    _this.srcTables = _this.dsTables[_this.formData.src_ds_id];
-                                } else {
-                                    _this.formData.src_ds_id = "";
-                                    if (responseData.message) {
-                                        _this.$message.error(responseData.message);
-                                    }
-                                }
-                            }
-                        }).catch(function (error) {
+                            _this.srcTables = _this.dsTables[_this.formData.src_ds_id];
+                        }, function () {
+                            _this.srcTablesLoading = false;
                             _this.formData.src_ds_id = "";
-                            _this.srcTablesLoading = false;
-                            _this.$message.error(error);
                         });
                     }
                 },
@@ -272,30 +345,158 @@
                     } else {
                         this.dstTablesLoading = true;
                         var _this = this;
-                        _this.$http.post("<?php echo beUrl('Etl.Ds.getTableNames'); ?>", {
-                            dsId: _this.formData.dst_ds_id
-                        }).then(function (response) {
+                        this.loadTables(this.formData.dst_ds_id, function () {
                             _this.dstTablesLoading = false;
-                            if (response.status == 200) {
-                                var responseData = response.data;
-                                if (responseData.success) {
-                                    _this.dsTables[_this.formData.dst_ds_id] = responseData.data.tables;
-                                    _this.dstTables = _this.dsTables[_this.formData.dst_ds_id];
-                                } else {
-                                    _this.formData.dst_ds_id = "";
-                                    if (responseData.message) {
-                                        _this.$message.error(responseData.message);
-                                    }
-                                }
-                            }
-                        }).catch(function (error) {
+                            _this.dstTables = _this.dsTables[_this.formData.dst_ds_id];
+                        }, function () {
+                            _this.dstTablesLoading = false;
                             _this.formData.dst_ds_id = "";
-                            _this.dstTablesLoading = false;
-                            _this.$message.error(error);
                         });
                     }
                 },
+                loadTables: function (dsId, fnSuccess, fnFail) {
+                    var _this = this;
+                    _this.$http.post("<?php echo beUrl('Etl.Ds.getTableNames'); ?>", {
+                        dsId: dsId
+                    }).then(function (response) {
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                _this.dsTables[dsId] = responseData.data.tables;
+                                fnSuccess();
+                            } else {
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                                fnFail();
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.$message.error(error);
+                        fnFail();
+                    });
+                },
+                loadSrcTableFields: function () {
+                    if (this.tableFields[this.formData.src_ds_id] !== undefined &&
+                        this.tableFields[this.formData.src_ds_id][this.formData.src_table] !== undefined) {
+                        this.srcTableFields = this.tableFields[this.formData.src_ds_id][this.formData.src_table];
+                    } else {
+                        this.srcTableFieldsLoading = true;
+                        var _this = this;
+                        this.loadTableFields(this.formData.src_ds_id, this.formData.src_table, function () {
+                            _this.srcTableFieldsLoading = false;
+                            _this.srcTableFields = _this.tableFields[_this.formData.src_ds_id][_this.formData.src_table];
+                            _this.updateFieldMapping();
+
+                            // 生成 CODE
+                            if (_this.formData.field_mapping_code == "") {
+                                var code = "$return = [];\n";
+                                for (var x in _this.fieldMapping) {
+                                    if (_this.fieldMapping[x] == "") {
+                                        code += "$return['" + x + "'] = '';\n";
+                                    } else {
+                                        code += "$return['" + x + "'] = $row['" + _this.fieldMapping[x] + "'];\n";
+                                    }
+                                }
+                                code += "return $return;";
+                                _this.formData.field_mapping_code = code;
+                                _this.codeMirror && _this.codeMirror.setValue(code);
+                            }
+
+                        }, function () {
+                            _this.srcTableFieldsLoading = false;
+                        });
+                    }
+                },
+                loadDstTableFields: function () {
+                    if (this.tableFields[this.formData.dst_ds_id] !== undefined &&
+                        this.tableFields[this.formData.dst_ds_id][this.formData.dst_table] !== undefined) {
+                        this.dstTableFields = this.tableFields[this.formData.dst_ds_id][this.formData.dst_table];
+                    } else {
+                        this.dstTableFieldsLoading = true;
+                        var _this = this;
+                        this.loadTableFields(this.formData.dst_ds_id, this.formData.dst_table, function () {
+                            _this.dstTableFieldsLoading = false;
+                            _this.dstTableFields = _this.tableFields[_this.formData.dst_ds_id][_this.formData.dst_table];
+                            _this.updateFieldMapping();
+
+                            _this.loadSrcTableFields();
+                        }, function () {
+                            _this.dstTableFieldsLoading = false;
+                        });
+                    }
+                },
+                loadTableFields: function (dsId, table, fnSuccess, fnFail) {
+                    var _this = this;
+                    _this.$http.post("<?php echo beUrl('Etl.Ds.getTableFields'); ?>", {
+                        dsId: dsId,
+                        table: table
+                    }).then(function (response) {
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                if (_this.tableFields[dsId] == undefined) {
+                                    _this.tableFields[dsId] = {};
+                                }
+
+                                _this.tableFields[dsId][table] = responseData.data.fields;
+                                fnSuccess();
+                            } else {
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                                fnFail();
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.$message.error(error);
+                        fnFail();
+                    });
+                },
+                updateFieldMapping: function() {
+                    var hasSrcTableFields = this.srcTableFields.length > 0;
+                    if (this.dstTableFields.length > 0) {
+                        for (var i=0; i<this.dstTableFields.length; i++) {
+                            if (hasSrcTableFields) {
+                                var srcName = '';
+                                for (var j=0; j<this.srcTableFields.length; j++) {
+                                    if (this.dstTableFields[i].name == this.srcTableFields[j].name) {
+                                        srcName = this.srcTableFields[j].name;
+                                        break;
+                                    }
+                                }
+                                this.fieldMapping[this.dstTableFields[i].name] = srcName;
+                            } else {
+                                this.fieldMapping[this.dstTableFields[i].name] = "";
+                            }
+                        }
+                    }
+                },
                 save: function () {
+                    if (this.formData.step == 1) {
+                        console.log(this.fieldMapping);
+                        return;
+                    }
+
+                    if (this.formData.step == 1 && this.formData.field_mapping_type == '1' && !this.fieldMappingInput) {
+                        var isAllMapping = true;
+                        var fieldMapping = [];
+                        for (var x in this.fieldMapping) {
+                            if (this.fieldMapping[x] == "") {
+                                isAllMapping = false;
+                                break;
+                            }
+
+                            fieldMapping.push(x + ":" + this.fieldMapping[x]);
+                        }
+
+                        if (isAllMapping) {
+                            this.formData.field_mapping = fieldMapping.join(",");
+                        } else {
+                            this.formData.field_mapping = "";
+                        }
+                    }
+
                     var _this = this;
                     this.$refs["formRef-" + _this.formData.step].validate(function (valid) {
                         if (valid) {
@@ -317,6 +518,9 @@
                                         if (_this.formData.step == 0) {
                                             _this.formData.id = responseData.data.extract.id;
                                             _this.formData.step = 1;
+
+                                            _this.loadDstTableFields();
+
                                         } else if (_this.formData.step == 1) {
                                             _this.formData.step = 2;
                                         } else if (_this.formData.step == 2) {
@@ -341,7 +545,17 @@
                 },
                 close: function () {
                     parent.close();
+                },
+                forceUpdate: function () {
+                    this.$forceUpdate();
                 }
+            },
+            mounted: function () {
+                this.codeMirror = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($option) ?>);
+            },
+            updated: function () {
+                this.codeMirror && this.codeMirror.refresh();
+                this.formData.field_mapping_code = this.codeMirror.getValue();
             }
         });
     </script>

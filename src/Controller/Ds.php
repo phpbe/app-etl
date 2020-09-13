@@ -484,4 +484,25 @@ class Ds extends Controller
         }
     }
 
+    /**
+     * @BePermission("*")
+     */
+    public function getTableFields()
+    {
+        try {
+            $postData = Request::json();
+            $fields = Be::getService('Etl.Ds')->getTableFields($postData['dsId'], $postData['table']);
+            Response::set('success', true);
+            Response::set('data', [
+                'fields' => $fields,
+            ]);
+            Response::ajax();
+        } catch (\Exception $e) {
+            Response::set('success', false);
+            Response::set('message', $e->getMessage());
+            Response::ajax();
+        }
+    }
+
+
 }

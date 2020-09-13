@@ -26,7 +26,8 @@ CREATE TABLE `etl_extract` (
   `src_table` varchar(60) NOT NULL DEFAULT '' COMMENT '来源数据源表名',
   `dst_table` varchar(60) NOT NULL DEFAULT '' COMMENT '目标数据源表名',
   `field_mapping_type` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '字段映射类型（0:不需要映射/1：字段映射/2：代码处理）',
-  `field_mapping` text NOT NULL DEFAULT '' COMMENT '映射数据	',
+  `field_mapping` text NOT NULL DEFAULT '' COMMENT '字段映射',
+  `field_mapping_code` text NOT NULL DEFAULT '' COMMENT '代码映射',
   `breakpoint_type` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '断点类型（0：全量/1：有断点）',
   `breakpoint_field` varchar(60) NOT NULL DEFAULT '' COMMENT '断点字段',
   `breakpoint` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '断点',
@@ -38,6 +39,7 @@ CREATE TABLE `etl_extract` (
   `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽取任务';
+
 
 CREATE TABLE `etl_extract_category` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
