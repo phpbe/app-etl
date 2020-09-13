@@ -46,7 +46,8 @@ class Extract extends Controller
 
             'lists' => [
                 'title' => '抽取任务管理',
-
+                'orderBy' => 'id',
+                'orderByDir' => 'DESC',
                 'filter' => [
                     ['is_delete', '=', '0'],
                 ],
@@ -64,9 +65,10 @@ class Extract extends Controller
                             'label' => '任务名称',
                         ],
                         [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
-                            'driver' => FormItemDatePickerRange::class,
+                            'name' => 'breakpoint_type',
+                            'label' => '断点类型',
+                            'driver' => FormItemSelect::class,
+                            'keyValues' => array_merge(['' => '不限'], $breakpointTypeKeyValues)
                         ],
                         [
                             'name' => 'is_enable',
@@ -200,40 +202,35 @@ class Extract extends Controller
                             'target' => 'drawer'
                         ],
                         [
-                            'name' => 'src_ds_id',
-                            'label' => '来源数据源',
+                            'name' => 'src',
+                            'label' => '输入',
                             'width' => '120',
-                            'keyValues' => $dsKeyValues,
+                            'value' => function ($row) use($dsKeyValues) {
+                                $ds = isset($dsKeyValues[$row['src_ds_id']]) ? $dsKeyValues[$row['src_ds_id']] : '';
+                                $table = $row['src_table'];
+                                return $ds . '.' . $table;
+                            }
                         ],
                         [
-                            'name' => 'src_table',
-                            'label' => '来源数据源表名',
+                            'name' => 'dst',
+                            'label' => '输出',
                             'width' => '120',
-                        ],
-                        [
-                            'name' => 'dst_ds_id',
-                            'label' => '目标数据源',
-                            'width' => '120',
-                            'keyValues' => $dsKeyValues,
-                        ],
-                        [
-                            'name' => 'dst_table',
-                            'label' => '目标数据源表名',
-                            'width' => '120',
-                        ],
-                        [
-                            'name' => 'breakpoint_type',
-                            'label' => '断点类型',
-                            'keyValues' => $breakpointTypeKeyValues,
-                        ],
-                        [
-                            'name' => 'breakpoint_field',
-                            'label' => '断点字段',
+                            'value' => function ($row) use($dsKeyValues) {
+                                $ds = isset($dsKeyValues[$row['dst_ds_id']]) ? $dsKeyValues[$row['dst_ds_id']] : '';
+                                $table = $row['dst_table'];
+                                return $ds . '.' . $table;
+                            }
                         ],
                         [
                             'name' => 'breakpoint',
                             'label' => '断点',
-                            'width' => '150',
+                            'value' => function ($row) {
+                                if ($row['breakpoint_type']) {
+                                    return $row['breakpoint_field'] . '=' . $row['breakpoint'];
+                                } else {
+                                    return '全量';
+                                }
+                            }
                         ],
                         [
                             'name' => 'schedule',
@@ -250,11 +247,6 @@ class Extract extends Controller
                             'exportValue' => function ($row) {
                                 return $row['is_enable'] ? '启用' : '禁用';
                             },
-                        ],
-                        [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
-                            'width' => '150',
                         ],
                     ],
                     'exclude' => ['password', 'salt', 'remember_me_token']
@@ -338,21 +330,21 @@ class Extract extends Controller
                         ],
                         [
                             'name' => 'src_ds_id',
-                            'label' => '来源数据源',
+                            'label' => '输入数据源',
                             'keyValues' => $dsKeyValues,
                         ],
                         [
                             'name' => 'src_table',
-                            'label' => '来源数据源表名',
+                            'label' => '输入数据源表名',
                         ],
                         [
                             'name' => 'dst_ds_id',
-                            'label' => '目标数据源',
+                            'label' => '输出数据源',
                             'keyValues' => $dsKeyValues,
                         ],
                         [
                             'name' => 'dst_table',
-                            'label' => '目标数据源表名',
+                            'label' => '输出数据源表名',
                         ],
                         [
                             'name' => 'field_mapping_type',

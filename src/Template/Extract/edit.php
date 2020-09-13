@@ -30,11 +30,11 @@
 
             <el-row :gutter="24" style="margin: 20px;">
                 <el-col :span="12">
-                    <el-card header="来源" shadow="hover">
+                    <el-card header="输入" shadow="hover">
 
-                        <el-form-item label="来源数据源" prop="src_ds_id"
-                                      :rules="[{required: true, message: '请选择来源数据源', trigger: 'change' }]">
-                            <el-select v-model="formData.src_ds_id" placeholder="请选择来源数据源" @change="srcDsChange">
+                        <el-form-item label="来输入数据源" prop="src_ds_id"
+                                      :rules="[{required: true, message: '请选择输入数据源', trigger: 'change' }]">
+                            <el-select v-model="formData.src_ds_id" placeholder="请选择输入数据源" @change="srcDsChange">
                                 <el-option
                                         v-for="(name, id) in dsKeyValues"
                                         :key="id"
@@ -44,9 +44,9 @@
                             </el-select>
                         </el-form-item>
 
-                        <el-form-item label="来源数据表" prop="src_table"
-                                      :rules="[{required: true, message: '请选来源数据表', trigger: 'change' }]">
-                            <el-select v-model="formData.src_table" placeholder="请选来源数据表" v-loading="srcTablesLoading">
+                        <el-form-item label="输入数据表" prop="src_table"
+                                      :rules="[{required: true, message: '请选输入数据表', trigger: 'change' }]">
+                            <el-select v-model="formData.src_table" placeholder="请选输入数据表" v-loading="srcTablesLoading">
                                 <el-option
                                         v-for="table in srcTables"
                                         :key="table"
@@ -59,10 +59,10 @@
                     </el-card>
                 </el-col>
                 <el-col :span="12">
-                    <el-card header="目标" shadow="hover">
-                        <el-form-item label="目标数据源" prop="dst_ds_id"
-                                      :rules="[{required: true, message: '请选择目标数据源', trigger: 'change' }]">
-                            <el-select v-model="formData.dst_ds_id" placeholder="请选择目标数据源" @change="dstDsChange">
+                    <el-card header="输出" shadow="hover">
+                        <el-form-item label="输出数据源" prop="dst_ds_id"
+                                      :rules="[{required: true, message: '请选择输出数据源', trigger: 'change' }]">
+                            <el-select v-model="formData.dst_ds_id" placeholder="请选择输出数据源" @change="dstDsChange">
                                 <el-option
                                         v-for="(name, id) in dsKeyValues"
                                         :key="id"
@@ -72,9 +72,9 @@
                             </el-select>
                         </el-form-item>
 
-                        <el-form-item label="目标数据表" prop="dst_table"
-                                      :rules="[{required: true, message: '请选择目标数据表', trigger: 'change' }]">
-                            <el-select v-model="formData.dst_table" placeholder="请选择目标数据表" v-loading="dstTablesLoading">
+                        <el-form-item label="输出数据表" prop="dst_table"
+                                      :rules="[{required: true, message: '请选择输出数据表', trigger: 'change' }]">
+                            <el-select v-model="formData.dst_table" placeholder="请选择输出数据表" v-loading="dstTablesLoading">
                                 <el-option
                                         v-for="table in dstTables"
                                         :key="table"
@@ -493,7 +493,7 @@
                             if (_this.formData.step == 0 &&
                                 _this.formData.src_ds_id == _this.formData.dst_ds_id &&
                                 _this.formData.src_table == _this.formData.dst_table) {
-                                _this.$message.error("来源和目标不能完全一致");
+                                _this.$message.error("输入和输出不能完全一致");
                                 return false;
                             }
 
