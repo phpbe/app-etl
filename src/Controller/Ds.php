@@ -22,7 +22,7 @@ use Be\System\Response;
  * Class Ds
  * @package App\Etl\Controller
  *
- * @BeMenuGroup("数据源", icon="el-icon-fa fa-database")
+ * @BeMenuGroup("数据源", icon="el-icon-fa fa-database", ordering="10")
  * @BePermissionGroup("数据源")
  */
 class Ds extends Controller
@@ -30,7 +30,7 @@ class Ds extends Controller
     /**
      * 数据源管理
      *
-     * @BeMenu("数据源管理", icon="el-icon-fa fa-list-ul")
+     * @BeMenu("数据源管理", icon="el-icon-fa fa-list-ul", ordering="10")
      * @BePermission("数据源管理")
      */
     public function lists()

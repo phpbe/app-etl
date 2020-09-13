@@ -20,7 +20,7 @@ use Be\System\Response;
  * Class Extract
  * @package App\Etl\Controller
  *
- * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy")
+ * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy", ordering="20")
  * @BePermissionGroup("抽取")
  */
 class Extract extends Controller
@@ -28,7 +28,7 @@ class Extract extends Controller
     /**
      * 任务管理
      *
-     * @BeMenu("任务管理", icon="el-icon-fa fa-list-ul")
+     * @BeMenu("任务管理", icon="el-icon-fa fa-list-ul", ordering="20")
      * @BePermission("任务管理")
      */
     public function lists()

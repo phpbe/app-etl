@@ -395,7 +395,15 @@ class Task extends \Be\System\Service
             echo $e->getMessage();
             print_r($e->getTrace());
 
-            // TODO 通知，钉钉，短信，邮件
+            $config = Be::getConfig('Etl.Notify');
+            $serviceNotify = Be::getService('Etl.Notify');
+            if ($config->mail) {
+                $serviceNotify->mail('抽取数据任务发生异常：' . $e->getMessage());
+            }
+
+            if ($config->dingTalkRobot) {
+                $serviceNotify->dingTalkRobot('抽取数据任务发生异常：' . $e->getMessage());
+            }
         }
     }
 
