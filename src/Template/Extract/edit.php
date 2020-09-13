@@ -100,14 +100,9 @@
 
             <el-form-item label="字段映射类型" prop="field_mapping_type"
                           :rules="[{required: true, message: '字段映射类型', trigger: 'change' }]">
-                <el-select v-model="formData.field_mapping_type" placeholder="字段映射类型">
-                    <el-option
-                            v-for="(v, k) in fieldMappingTypeKeyValues"
-                            :key="k"
-                            :label="v"
-                            :value="k">
-                    </el-option>
-                </el-select>
+                <el-radio-group v-model="formData.field_mapping_type">
+                    <el-radio-button v-for="(v, k) in fieldMappingTypeKeyValues" :label="k">{{v}}</el-radio-button>
+                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="字段映射"
@@ -177,14 +172,9 @@
         <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-if="formData.step == '2'">
             <el-form-item label="断点类型" prop="breakpoint_type"
                           :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
-                <el-select v-model="formData.breakpoint_type" placeholder="请选择断点类型">
-                    <el-option
-                            v-for="(v, k) in breakpointTypeKeyValues"
-                            :key="k"
-                            :label="v"
-                            :value="k">
-                    </el-option>
-                </el-select>
+                <el-radio-group v-model="formData.breakpoint_type">
+                    <el-radio-button v-for="(v, k) in breakpointTypeKeyValues" :label="k">{{v}}</el-radio-button>
+                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="断点字段" prop="breakpoint_field"
@@ -213,14 +203,9 @@
             <el-form-item label="断点递增量" prop="breakpoint_step"
                           :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点递增量', trigger: 'change' }]"
                           v-if="formData.breakpoint_type=='1'">
-                <el-select v-model="formData.breakpoint_step" placeholder="请选择断点递增量">
-                    <el-option
-                            v-for="(v, k) in breakpointStepKeyValues"
-                            :key="k"
-                            :label="v"
-                            :value="k">
-                    </el-option>
-                </el-select>
+                <el-radio-group v-model="formData.breakpoint_step">
+                    <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
+                </el-radio-group>
             </el-form-item>
 
             <el-form-item label="断点向前编移量" prop="breakpoint_offset" v-if="formData.breakpoint_type=='1'">
