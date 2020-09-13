@@ -268,11 +268,6 @@ class Ds extends Controller
                                 ]
                             ]
                         ],
-                        [
-                            'label' => 'ER',
-                            'task' => 'er',
-                            'target' => 'blank',
-                        ],
                     ]
                 ],
 
