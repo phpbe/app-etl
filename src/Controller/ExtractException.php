@@ -5,12 +5,12 @@ namespace Be\App\Etl\Controller;
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\System\Be;
 use Be\System\Controller;
+use Be\System\Request;
 
 /**
  * Class ExtractException
  * @package App\Etl\Controller
  *
- * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy")
  * @BePermissionGroup("抽取")
  */
 class ExtractException extends Controller
@@ -18,13 +18,12 @@ class ExtractException extends Controller
     /**
      * 分类管理
      *
-     * @BeMenu("异常", icon="el-icon-fa fa-warning")
      * @BePermission("异常")
      */
     public function lists()
     {
 
-        $extractKeyValues = Be::getService('Etl.Extract')->getIdNameKeyValues();
+        $extractId = Request::get('extractId');
 
         Be::getPlugin('Curd')->setting([
 
@@ -33,14 +32,11 @@ class ExtractException extends Controller
 
             'lists' => [
                 'title' => '抽取任务异常',
-
+                'filter' => [
+                    ['extract_id', '=', $extractId],
+                ],
                 'form' => [
                     'items' => [
-                        [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'keyValues' => $extractKeyValues,
-                        ],
                         [
                             'name' => 'create_time',
                             'label' => '时间',
@@ -55,11 +51,6 @@ class ExtractException extends Controller
                             'name' => 'id',
                             'label' => 'ID',
                             'width' => '60',
-                        ],
-                        [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'keyValues' => $extractKeyValues,
                         ],
                         [
                             'name' => 'message',
@@ -100,11 +91,6 @@ class ExtractException extends Controller
                             'name' => 'id',
                             'label' => 'ID',
                             'width' => '60',
-                        ],
-                        [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'keyValues' => $extractKeyValues,
                         ],
                         [
                             'name' => 'message',

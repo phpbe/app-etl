@@ -11,14 +11,14 @@ use Be\System\Response;
  * Class Task
  * @package App\Etl\Controller
  *
- * @BePermissionGroup("*")
+ * @BePermissionGroup("计划任务")
  */
 class Task extends Controller
 {
 
-
     /**
      * 执行计划任务调度
+     * @BePermission("*")
      */
     public function run()
     {
@@ -48,6 +48,8 @@ class Task extends Controller
 
     /**
      * 抽取计划任务
+     *
+     * @BePermission("*")
      */
     public function runExtract()
     {
@@ -81,6 +83,8 @@ class Task extends Controller
 
     /**
      * 手工启动抽取任务
+     *
+     * @BePermission("手运运行抽取")
      */
     public function manualRunExtract()
     {

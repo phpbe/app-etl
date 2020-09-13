@@ -2,6 +2,7 @@
 
 namespace Be\App\Etl\Controller;
 
+use Be\Plugin\Detail\Item\DetailItemCode;
 use Be\Plugin\Detail\Item\DetailItemProgress;
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemSelect;
@@ -14,20 +15,20 @@ use Be\System\Request;
  * Class ExtractLog
  * @package App\Etl\Controller
  *
- * @BeMenuGroup("抽取")
  * @BePermissionGroup("抽取")
  */
 class ExtractLog extends Controller
 {
+
     /**
      * 任务日志
      *
-     * @BeMenu("任务日志", icon="el-icon-fa fa-tasks")
      * @BePermission("任务日志")
      */
     public function lists()
     {
-        $extractKeyValues = Be::getService('Etl.Extract')->getIdNameKeyValues();
+        $extractId = Request::get('extractId');
+
         $statusKeyValues = Be::getService('Etl.ExtractLog')->getStatusKeyValues();
         $triggerKeyValues = Be::getService('Etl.ExtractLog')->getTriggerKeyValues();
         $breakpointTypeKeyValues = Be::getService('Etl.Extract')->getBreakpointTypeKeyValues();
@@ -43,14 +44,11 @@ class ExtractLog extends Controller
                 'reload' => '10000', // 10 秒刷新下数据
                 'orderBy' => 'id',
                 'orderByDir' => 'DESC',
+                'filter' => [
+                    ['extract_id', '=', $extractId],
+                ],
                 'form' => [
                     'items' => [
-                        [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'driver' => FormItemSelect::class,
-                            'keyValues' => $extractKeyValues,
-                        ],
                         [
                             'name' => 'create_time',
                             'label' => '时间',
@@ -71,11 +69,6 @@ class ExtractLog extends Controller
                             'name' => 'id',
                             'label' => 'ID',
                             'width' => '60',
-                        ],
-                        [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'keyValues' => $extractKeyValues,
                         ],
                         [
                             'name' => 'breakpoint_type',
@@ -107,7 +100,7 @@ class ExtractLog extends Controller
                         [
                             'name' => 'progress',
                             'label' => '进度',
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['total'] == 0) {
                                     return 100;
                                 }
@@ -184,11 +177,6 @@ class ExtractLog extends Controller
                             'label' => 'ID',
                         ],
                         [
-                            'name' => 'extract_id',
-                            'label' => '抽取任务',
-                            'keyValues' => $extractKeyValues,
-                        ],
-                        [
                             'name' => 'breakpoint_type',
                             'label' => '断点类型',
                             'keyValues' => $breakpointTypeKeyValues,
@@ -212,7 +200,7 @@ class ExtractLog extends Controller
                         [
                             'name' => 'progress',
                             'label' => '进度',
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 if ($row['total'] == 0) {
                                     return 100;
                                 }
@@ -253,7 +241,13 @@ class ExtractLog extends Controller
         ])->execute();
     }
 
-    public function snapshot() {
+    /**
+     * 任务日志
+     *
+     * @BePermission("任务快照")
+     */
+    public function snapshot()
+    {
 
         $postData = Request::post('data', '', '');
         if ($postData) {
@@ -272,14 +266,29 @@ class ExtractLog extends Controller
                             [
                                 'name' => 'extract_data',
                                 'label' => '抽取任务数据',
+                                'value' => function ($row) {
+                                    return json_encode(json_decode($row['extract_data']), JSON_PRETTY_PRINT);
+                                },
+                                'driver' => DetailItemCode::class,
+                                'language' => 'json',
                             ],
                             [
                                 'name' => 'src_ds_data',
                                 'label' => '来源数据源数据',
+                                'value' => function ($row) {
+                                    return json_encode(json_decode($row['src_ds_data']), JSON_PRETTY_PRINT);
+                                },
+                                'driver' => DetailItemCode::class,
+                                'language' => 'json',
                             ],
                             [
                                 'name' => 'dst_ds_data',
                                 'label' => '目标数据源数据',
+                                'value' => function ($row) {
+                                    return json_encode(json_decode($row['dst_ds_data']), JSON_PRETTY_PRINT);
+                                },
+                                'driver' => DetailItemCode::class,
+                                'language' => 'json',
                             ],
                             [
                                 'name' => 'create_time',

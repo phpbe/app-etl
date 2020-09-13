@@ -11,6 +11,7 @@ use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Table\Item\TableItemSelection;
 use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
+use Be\System\Exception\ControllerException;
 use Be\System\Request;
 use Be\System\Controller;
 use Be\System\Response;
@@ -261,7 +262,7 @@ class Extract extends Controller
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '160',
+                    'width' => '220',
                     'items' => [
                         [
                             'label' => '编辑',
@@ -281,6 +282,26 @@ class Extract extends Controller
                             'ui' => [
                                 'link' => [
                                     'v-if' => 'scope.row.is_enable == \'1\'',
+                                    'type' => 'danger'
+                                ]
+                            ]
+                        ],
+                        [
+                            'label' => '日志',
+                            'action' => 'log',
+                            'target' => 'blank',
+                            'ui' => [
+                                'link' => [
+                                    'type' => 'info'
+                                ]
+                            ]
+                        ],
+                        [
+                            'label' => '异常',
+                            'action' => 'exception',
+                            'target' => 'blank',
+                            'ui' => [
+                                'link' => [
                                     'type' => 'warning'
                                 ]
                             ]
@@ -424,6 +445,33 @@ class Extract extends Controller
         ])->execute();
     }
 
+    /**
+     * @BePermission("任务日志")
+     */
+    public function log() {
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
+        if (!isset($postData['row']['id'])) {
+            throw new ControllerException('主键（row.id）缺失！');
+        }
+        Response::redirect(beUrl('Etl.ExtractLog.lists', ['extractId' => $postData['row']['id']]));
+    }
+
+    /**
+     * @BePermission("任务异常")
+     */
+    public function exception() {
+        $postData = Request::post('data', '', '');
+        $postData = json_decode($postData, true);
+        if (!isset($postData['row']['id'])) {
+            throw new ControllerException('主键（row.id）缺失！');
+        }
+        Response::redirect(beUrl('Etl.ExtractException.lists', ['extractId' => $postData['row']['id']]));
+    }
+
+    /**
+     * @BePermission("编辑")
+     */
     public function edit()
     {
         if (Request::isAjax()) {
