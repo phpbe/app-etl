@@ -477,7 +477,7 @@
                                 break;
                             }
 
-                            fieldMapping.push(x + ":" + this.fieldMapping[x]);
+                            fieldMapping.push(this.fieldMapping[x] + ":" + x);
                         }
 
                         if (isAllMapping) {
