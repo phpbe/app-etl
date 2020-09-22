@@ -41,7 +41,7 @@ class ExtractLog extends Controller
 
             'lists' => [
                 'title' => '任务日志',
-                'reload' => '10000', // 10 秒刷新下数据
+                'reload' => '10', // 10 秒刷新下数据
                 'orderBy' => 'id',
                 'orderByDir' => 'DESC',
                 'filter' => [
