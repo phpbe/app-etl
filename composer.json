@@ -11,7 +11,7 @@
         }
     ],
     "require": {
-        "be/mf": "~1.0"
+        "be/mf": "dev-master"
     },
     "autoload": {
         "psr-4": {
