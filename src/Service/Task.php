@@ -41,7 +41,7 @@ class Task extends \Be\System\Service
             $extractLog->status = 0; // 状态（0：创建/1：运行中/2：执行完成/-1：出错）
             $extractLog->message = ''; // 异常信息
             $extractLog->trigger = $trigger;
-            $extractLog->complete_time = '0000-00-00 00:00:00';
+            $extractLog->complete_time = null;
             $extractLog->create_time = date('Y-m-d H:i:s');
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
@@ -249,7 +249,7 @@ class Task extends \Be\System\Service
                         $batchUpdateData = [];
                         if (is_array($primaryKey)) { // 多主键
                             $sql = 'SELECT ' . $primaryKeyFields . ' 
-                                    FROM ' . $dbSrc->quoteKey($extract->src_table) . ' 
+                                    FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
                                     WHERE (' . $primaryKeyFields . ') IN (' . implode(',', $primaryKeyIn) . ')';
                             $exists = $dbDst->getValues($sql);
                             if (count($exists) == 0) {
@@ -269,7 +269,7 @@ class Task extends \Be\System\Service
                             }
                         } else {
                             $sql = 'SELECT ' . $primaryKey . ' 
-                                    FROM ' . $dbSrc->quoteKey($extract->src_table) . ' 
+                                    FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
                                     WHERE ' . $primaryKey . ' IN (' . implode(',', $primaryKeyIn) . ')';
                             $exists = $dbDst->getValues($sql);
 
@@ -310,7 +310,7 @@ class Task extends \Be\System\Service
                     $batchUpdateData = [];
                     if (is_array($primaryKey)) { // 多主键
                         $sql = 'SELECT ' . $primaryKeyFields . ' 
-                                FROM ' . $dbSrc->quoteKey($extract->src_table) . ' 
+                                FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
                                 WHERE (' . $primaryKeyFields . ') IN (' . implode(',', $primaryKeyIn) . ')';
                         $exists = $dbDst->getValues($sql);
                         if (count($exists) == 0) {
@@ -330,7 +330,7 @@ class Task extends \Be\System\Service
                         }
                     } else {
                         $sql = 'SELECT ' . $primaryKey . ' 
-                                FROM ' . $dbSrc->quoteKey($extract->src_table) . ' 
+                                FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
                                 WHERE ' . $primaryKey . ' IN (' . implode(',', $primaryKeyIn) . ')';
                         $exists = $dbDst->getValues($sql);
 
