@@ -104,7 +104,7 @@ class ExtractLog extends Controller
                                 if ($row['total'] == 0) {
                                     return 100;
                                 }
-                                return $row['offset'] * 100 / $row['total'];
+                                return round($row['offset'] * 100 / $row['total']);
                             },
                             'driver' => TableItemProgress::class,
                             'width' => '120',
