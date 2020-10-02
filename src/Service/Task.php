@@ -6,6 +6,7 @@ namespace Be\App\Etl\Service;
 use Be\System\Be;
 use Be\System\Db\Tuple;
 use Be\System\Exception\ServiceException;
+use Be\System\Exception\TupleException;
 use Be\Util\Datetime;
 
 class Task extends \Be\System\Service
@@ -30,6 +31,24 @@ class Task extends \Be\System\Service
                 if (!$this->isOnTime($extract->schedule, $timestamp)) {
                     return;
                 }
+            }
+
+            $runningExtractLog = Be::newTuple('etl_extract_log');
+            try {
+                $runningExtractLog->loadBy([
+                    'extract_id' => $extractId,
+                    'status' => 1,
+                ]);
+
+                if (time() - strtotime($runningExtractLog->update_time) > 3600) {
+                    $runningExtractLog->status = -1;
+                    $runningExtractLog->message = '执行超过1小时未更新';
+                    $runningExtractLog->update();
+                } else {
+                    // 抽取任务仍在运行中...
+                    return;
+                }
+            } catch (\Exception $e) {
             }
 
             $extractLog = Be::newTuple('etl_extract_log');

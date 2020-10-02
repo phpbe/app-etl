@@ -9,7 +9,7 @@
 
         <div style="height: 20px;"></div>
 
-        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-if="formData.step == '0'">
+        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-show="formData.step == '0'">
 
             <el-form-item label="分类" prop="category_id"
                           :rules="[{required: true, message: '请选择分类', trigger: 'change' }]">
@@ -44,8 +44,19 @@
                             </el-select>
                         </el-form-item>
 
-                        <el-form-item label="输入数据表" prop="src_table"
-                                      :rules="[{required: true, message: '请选输入数据表', trigger: 'change' }]">
+
+                        <el-form-item label="输入类型"
+                                      prop="src_type"
+                                      :rules="[{required: true, message: '请选择输入类型', trigger: 'change' }]">
+                            <el-radio-group v-model="formData.src_type">
+                                <el-radio-button v-for="(v, k) in srcTypeKeyValues" :label="k">{{v}}</el-radio-button>
+                            </el-radio-group>
+                        </el-form-item>
+
+                        <el-form-item label="输入数据表"
+                                      prop="src_table"
+                                      :rules="[{required: formData.src_type == '0', message: '请选择输入数据表', trigger: 'change' }]"
+                                      v-show="formData.src_type == '0'">
                             <el-select v-model="formData.src_table" placeholder="请选输入数据表" v-loading="srcTablesLoading">
                                 <el-option
                                         v-for="table in srcTables"
@@ -54,6 +65,13 @@
                                         :value="table">
                                 </el-option>
                             </el-select>
+                        </el-form-item>
+
+                        <el-form-item label="输入SQL语句"
+                                      prop="src_sql"
+                                      :rules="[{required: formData.src_type == '1', message: '请输入SQL语句', trigger: 'blur' }]"
+                                      v-show="formData.src_type == '1'">
+                            <textarea ref="srcSqlRef" v-model="formData.src_sql"></textarea>
                         </el-form-item>
 
                     </el-card>
@@ -112,7 +130,10 @@
 
                 <div v-loading="dstTableFieldsLoading" v-show="!fieldMappingInput">
                     <div v-for="dstField in dstTableFields" style="padding: 1px 0;">
-                        <el-select v-model="fieldMapping[dstField.name]" @change="forceUpdate" placeholder="请选择输入表的字段" v-loading="srcTablesLoading">
+
+                        <el-checkbox v-model="fieldMappingChecked[dstField.name]" @change="forceUpdate"></el-checkbox>
+
+                        <el-select v-model="fieldMapping[dstField.name]" @change="forceUpdate" :disabled="!fieldMappingChecked[dstField.name]" placeholder="请选择输入表的字段" v-loading="srcTablesLoading">
                             <el-option
                                     v-for="srcfield in srcTableFields"
                                     :key="srcfield.name"
@@ -123,7 +144,7 @@
 
                         <i class="el-icon-right"></i>
 
-                        <el-tag size="small" style="width:200px; text-align:center;">{{dstField.name}}</el-tag>
+                        <el-tag size="small" :type="fieldMappingChecked[dstField.name] ? 'primary' : 'info'" style="width:200px; text-align:center;">{{dstField.name}}</el-tag>
                     </div>
                 </div>
 
@@ -293,6 +314,7 @@
                 formData: <?php echo json_encode($formData); ?>,
                 categoryKeyValues: <?php echo json_encode($this->categoryKeyValues); ?>,
                 dsKeyValues: <?php echo json_encode($this->dsKeyValues); ?>,
+                srcTypeKeyValues: <?php echo json_encode($this->srcTypeKeyValues); ?>,
 
                 srcTablesLoading: false,
                 dstTablesLoading: false,
@@ -309,6 +331,7 @@
                 tableFields: [],
 
                 fieldMappingInput: false,
+                fieldMappingChecked: {},
                 fieldMapping: {},
 
                 breakpointTypeKeyValues: <?php echo json_encode($this->breakpointTypeKeyValues); ?>,
@@ -464,6 +487,7 @@
                             } else {
                                 this.fieldMapping[this.dstTableFields[i].name] = "";
                             }
+                            this.fieldMappingChecked[this.dstTableFields[i].name] = true;
                         }
                     }
                 },
@@ -472,12 +496,14 @@
                         var isAllMapping = true;
                         var fieldMapping = [];
                         for (var x in this.fieldMapping) {
-                            if (this.fieldMapping[x] == "") {
-                                isAllMapping = false;
-                                break;
-                            }
+                            if (this.fieldMappingChecked[x]) {
+                                if (this.fieldMapping[x] == "") {
+                                    isAllMapping = false;
+                                    break;
+                                }
 
-                            fieldMapping.push(this.fieldMapping[x] + ":" + x);
+                                fieldMapping.push(this.fieldMapping[x] + ":" + x);
+                            }
                         }
 
                         if (isAllMapping) {

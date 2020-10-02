@@ -16,6 +16,15 @@ class Extract extends \Be\System\Service
             ->getKeyValues('id', 'name');
     }
 
+
+    public function getSrcTypeKeyValues()
+    {
+        return [
+            '0' => '表',
+            '1' => 'SQL语句',
+        ];
+    }
+
     public function getFieldMappingTypeKeyValues()
     {
         return [

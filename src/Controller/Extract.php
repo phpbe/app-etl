@@ -207,7 +207,11 @@ class Extract extends Controller
                             'width' => '120',
                             'value' => function ($row) use($dsKeyValues) {
                                 $ds = isset($dsKeyValues[$row['src_ds_id']]) ? $dsKeyValues[$row['src_ds_id']] : '';
-                                $table = $row['src_table'];
+                                if ($row['src_type'] == '1') {
+                                    $table = 'SQL语句';
+                                } else {
+                                    $table = $row['src_table'];
+                                }
                                 return $ds . '.' . $table;
                             }
                         ],
@@ -367,7 +371,7 @@ class Extract extends Controller
                             'language' => 'php',
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.field_mapping_type == \'2\'',
+                                    'v-show' => 'formData.field_mapping_type == \'2\'',
                                 ]
                             ]
                         ],
@@ -496,7 +500,9 @@ class Extract extends Controller
                     $tuple->category_id = $formData['category_id'];
                     $tuple->src_ds_id = $formData['src_ds_id'];
                     $tuple->dst_ds_id = $formData['dst_ds_id'];
+                    $tuple->src_type = $formData['src_type'];
                     $tuple->src_table = $formData['src_table'];
+                    $tuple->src_sql = $formData['src_sql'];
                     $tuple->dst_table = $formData['dst_table'];
                 } elseif  ($formData['step'] == '1') {
                     $tuple->field_mapping_type = $formData['field_mapping_type'];
@@ -544,6 +550,9 @@ class Extract extends Controller
 
                 $dsKeyValues = Be::getService('Etl.Ds')->getIdNameKeyValues();
                 Response::set('dsKeyValues', (object)$dsKeyValues);
+
+                $srcTypeKeyValues = Be::getService('Etl.Extract')->getSrcTypeKeyValues();
+                Response::set('srcTypeKeyValues', (object)$srcTypeKeyValues);
 
                 $tuple = Be::newTuple('etl_extract');
                 $postData = Request::post('data', '', '');
