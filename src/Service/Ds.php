@@ -27,6 +27,20 @@ class Ds extends \Be\System\Service
         return array_values($db->getTableFields($tableName));
     }
 
+    public function getSqlFields($dsId, $sql) {
+        $db = $this->getDb($dsId);
+        $arr = $db->getArray($sql);
+
+        $fields = [];
+        foreach ($arr as $key => $val) {
+            $fields[] = [
+                'name' => $key,
+            ];
+        }
+
+        return $fields;
+    }
+
     /**
      * 数据数据库连接
      *

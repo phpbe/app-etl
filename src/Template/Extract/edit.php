@@ -183,6 +183,7 @@
                 <div style="color:#999;">return 需返回要写入目的的数据，</div>
             </el-form-item>
 
+
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
                 <el-button type="primary" @click="save" :disabled="loading">保存，进入下一步</el-button>
@@ -260,13 +261,34 @@
         'mode/clike/clike.js',
         'mode/php/php.js',
         'addon/edit/matchbrackets.js',
+
+        'mode/sql/sql.js',
+        'addon/hint/show-hint.js',
+        'addon/hint/sql-hint.js',
     ];
 
     $css = [
         'lib/codemirror.css',
+        'addon/hint/show-hint.css',
     ];
 
-    $option = [
+    $codeMirrorOptionSrcSql = [
+        'theme' => 'default',
+        'mode' => 'text/x-sql',
+        'lineNumbers' => true,
+        'lineWrapping' => true,
+        'matchBrackets' => true,
+    ];
+
+    $codeMirrorOptionDstSql = [
+        'theme' => 'default',
+        'mode' => 'text/x-sql',
+        'lineNumbers' => true,
+        'lineWrapping' => true,
+        'matchBrackets' => true,
+    ];
+
+    $codeMirrorOptionFieldMappingCode = [
         'theme' => 'default',
         'mode' => 'text/x-php',
         'lineNumbers' => true,
@@ -339,7 +361,9 @@
 
                 loading: false,
 
-                codeMirror: false
+                codeMirrorSrcSql: false,
+                codeMirrorDstSql: false,
+                codeMirrorFieldMappingCode: false
             },
             methods: {
                 srcDsChange: function () {
@@ -395,15 +419,18 @@
                     });
                 },
                 loadSrcTableFields: function () {
+                    var srcTable = this.formData.src_type == '0' ? this.formData.src_table : '_sql';
+
                     if (this.tableFields[this.formData.src_ds_id] !== undefined &&
-                        this.tableFields[this.formData.src_ds_id][this.formData.src_table] !== undefined) {
-                        this.srcTableFields = this.tableFields[this.formData.src_ds_id][this.formData.src_table];
+                        this.tableFields[this.formData.src_ds_id][srcTable] !== undefined) {
+                        this.srcTableFields = this.tableFields[this.formData.src_ds_id][srcTable];
                     } else {
                         this.srcTableFieldsLoading = true;
+
                         var _this = this;
-                        this.loadTableFields(this.formData.src_ds_id, this.formData.src_table, function () {
+                        var fnSuccess = function () {
                             _this.srcTableFieldsLoading = false;
-                            _this.srcTableFields = _this.tableFields[_this.formData.src_ds_id][_this.formData.src_table];
+                            _this.srcTableFields = _this.tableFields[_this.formData.src_ds_id][srcTable];
                             _this.updateFieldMapping();
 
                             // 生成 CODE
@@ -418,12 +445,20 @@
                                 }
                                 code += "return $return;";
                                 _this.formData.field_mapping_code = code;
-                                _this.codeMirror && _this.codeMirror.setValue(code);
+                                _this.codeMirrorFieldMappingCode && _this.codeMirrorFieldMappingCode.setValue(code);
                             }
 
-                        }, function () {
+                        };
+
+                        var fnFail = function () {
                             _this.srcTableFieldsLoading = false;
-                        });
+                        };
+
+                        if (this.formData.src_type == '0') {
+                            this.loadTableFields(this.formData.src_ds_id, this.formData.src_table, fnSuccess, fnFail);
+                        } else {
+                            this.loadSqlFields(this.formData.src_ds_id, this.formData.src_sql, fnSuccess, fnFail);
+                        }
                     }
                 },
                 loadDstTableFields: function () {
@@ -443,6 +478,33 @@
                             _this.dstTableFieldsLoading = false;
                         });
                     }
+                },
+                loadSqlFields: function (dsId, sql, fnSuccess, fnFail) {
+                    var _this = this;
+                    _this.$http.post("<?php echo beUrl('Etl.Ds.getSqlFields'); ?>", {
+                        dsId: dsId,
+                        sql: sql
+                    }).then(function (response) {
+                        if (response.status == 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                if (_this.tableFields[dsId] == undefined) {
+                                    _this.tableFields[dsId] = {};
+                                }
+
+                                _this.tableFields[dsId]['_sql'] = responseData.data.fields;
+                                fnSuccess();
+                            } else {
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                }
+                                fnFail();
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.$message.error(error);
+                        fnFail();
+                    });
                 },
                 loadTableFields: function (dsId, table, fnSuccess, fnFail) {
                     var _this = this;
@@ -518,6 +580,7 @@
                         if (valid) {
                             if (_this.formData.step == 0 &&
                                 _this.formData.src_ds_id == _this.formData.dst_ds_id &&
+                                _this.formData.src_type == 0 &&
                                 _this.formData.src_table == _this.formData.dst_table) {
                                 _this.$message.error("输入和输出不能完全一致");
                                 return false;
@@ -567,11 +630,19 @@
                 }
             },
             mounted: function () {
-                this.codeMirror = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($option) ?>);
+                this.codeMirrorSrcSql = CodeMirror.fromTextArea(this.$refs.srcSqlRef, <?php echo json_encode($codeMirrorOptionSrcSql) ?>);
+                //this.codeMirrorDstSql = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionDstSql) ?>);
+                this.codeMirrorFieldMappingCode = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionFieldMappingCode) ?>);
             },
+
             updated: function () {
-                this.codeMirror && this.codeMirror.refresh();
-                this.formData.field_mapping_code = this.codeMirror.getValue();
+                this.codeMirrorSrcSql && this.codeMirrorSrcSql.refresh();
+                //this.codeMirrorDstSql && this.codeMirrorDstSql.refresh();
+                this.codeMirrorFieldMappingCode && this.codeMirrorFieldMappingCode.refresh();
+
+                this.formData.src_sql = this.codeMirrorSrcSql.getValue();
+                //this.formData.dst_sql = this.codeMirrorDstSql.getValue();
+                this.formData.field_mapping_code = this.codeMirrorFieldMappingCode.getValue();
             }
         });
     </script>

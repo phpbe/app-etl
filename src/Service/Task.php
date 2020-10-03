@@ -170,7 +170,13 @@ class Task extends \Be\System\Service
                 $dbDst->query($sql);
             }
 
-            $sql = 'SELECT * FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
+            $sql = null;
+            if ($extract->src_type == '0') {
+                $sql = 'SELECT * FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
+            } else {
+                $sql = 'SELECT * FROM (' . $dbSrc->quoteKey($extract->src_sql) . ' ) t ' . $where;
+            }
+
             $srcRows = $dbSrc->getYieldArrays($sql);
 
             $dbDstDriverName = $dbDst->getDriverName();
