@@ -57,7 +57,8 @@ class Ds extends \Be\System\Service
                 'port' => $ds->db_port,
                 'user' => $ds->db_user,
                 'pass' => $ds->db_pass,
-                'name' => $ds->db_name
+                'name' => $ds->db_name,
+                'charset' => $ds->db_charset
             ];
 
             $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';

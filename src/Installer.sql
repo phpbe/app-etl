@@ -9,6 +9,7 @@ CREATE TABLE `etl_ds` (
   `db_user` varchar(60) NOT NULL DEFAULT '' COMMENT '用户名',
   `db_pass` varchar(60) NOT NULL DEFAULT '' COMMENT '密码',
   `db_name` varchar(60) NOT NULL DEFAULT '' COMMENT '库名',
+  `db_charset` varchar(60) NOT NULL DEFAULT '' COMMENT '字符编码',
   `remark` varchar(200) NOT NULL DEFAULT '' COMMENT '备注',
   `is_enable` tinyint(3) unsigned NOT NULL DEFAULT '1' COMMENT '是否可用',
   `is_delete` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '是否已删除',
@@ -16,6 +17,7 @@ CREATE TABLE `etl_ds` (
   `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='数据源';
+
 
 CREATE TABLE `etl_extract` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增ID',
