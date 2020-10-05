@@ -91,7 +91,7 @@ class Extract extends Controller
                             'label' => '新建抽取任务',
                             'url' => beUrl('Etl.Extract.edit'),
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
-                            'drawer' => ['width' => '60%'],
+                            'drawer' => ['width' => '80%'],
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-plus',
@@ -199,7 +199,8 @@ class Extract extends Controller
                             'driver' => TableItemLink::class,
                             'align' => 'left',
                             'task' => 'detail',
-                            'target' => 'drawer'
+                            'target' => 'drawer',
+                            'drawer' => ['width' => '80%'],
                         ],
                         [
                             'name' => 'src',
@@ -264,7 +265,7 @@ class Extract extends Controller
                             'label' => '编辑',
                             'url' => beUrl('Etl.Extract.edit'),
                             'target' => 'drawer',
-                            'drawer' => ['width' => '60%'],
+                            'drawer' => ['width' => '80%'],
                             'ui' => [
                                 'link' => [
                                     'type' => 'primary'
