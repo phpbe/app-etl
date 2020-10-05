@@ -174,7 +174,7 @@ class Task extends \Be\System\Service
             if ($extract->src_type == '0') {
                 $sql = 'SELECT * FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
             } else {
-                $sql = 'SELECT * FROM (' . $dbSrc->quoteKey($extract->src_sql) . ' ) t ' . $where;
+                $sql = 'SELECT * FROM (' . $extract->src_sql . ' ) t ' . $where;
             }
 
             $srcRows = $dbSrc->getYieldArrays($sql);
