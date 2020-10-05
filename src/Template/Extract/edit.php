@@ -57,7 +57,8 @@
                                       prop="src_table"
                                       :rules="[{required: formData.src_type == '0', message: '请选择输入数据表', trigger: 'change' }]"
                                       v-show="formData.src_type == '0'">
-                            <el-select v-model="formData.src_table" placeholder="请选输入数据表" v-loading="srcTablesLoading">
+                            <el-select v-model="formData.src_table" placeholder="请选输入数据表" v-loading="srcTablesLoading"
+                                       filterable>
                                 <el-option
                                         v-for="table in srcTables"
                                         :key="table"
@@ -92,7 +93,8 @@
 
                         <el-form-item label="输出数据表" prop="dst_table"
                                       :rules="[{required: true, message: '请选择输出数据表', trigger: 'change' }]">
-                            <el-select v-model="formData.dst_table" placeholder="请选择输出数据表" v-loading="dstTablesLoading">
+                            <el-select v-model="formData.dst_table" placeholder="请选择输出数据表" v-loading="dstTablesLoading"
+                                       filterable>
                                 <el-option
                                         v-for="table in dstTables"
                                         :key="table"
@@ -129,11 +131,21 @@
                           v-show="formData.field_mapping_type == '1'">
 
                 <div v-loading="dstTableFieldsLoading" v-show="!fieldMappingInput">
+
+                    <div style="padding: 5px;">
+
+                        <el-button @click="fieldMappingSelectAll" size="mini">全选</el-button>
+                        <el-button @click="fieldMappingSelectNone" size="mini">全不选</el-button>
+                        <el-button @click="fieldMappingSelectMatched" size="mini">选中已匹配的</el-button>
+                    </div>
+
                     <div v-for="dstField in dstTableFields" style="padding: 1px 0;">
 
                         <el-checkbox v-model="fieldMappingChecked[dstField.name]" @change="forceUpdate"></el-checkbox>
 
-                        <el-select v-model="fieldMapping[dstField.name]" @change="forceUpdate" :disabled="!fieldMappingChecked[dstField.name]" placeholder="请选择输入表的字段" v-loading="srcTablesLoading">
+                        <el-select v-model="fieldMapping[dstField.name]" @change="forceUpdate"
+                                   :disabled="!fieldMappingChecked[dstField.name]" placeholder="请选择输入表的字段"
+                                   v-loading="srcTablesLoading" filterable>
                             <el-option
                                     v-for="srcfield in srcTableFields"
                                     :key="srcfield.name"
@@ -144,7 +156,9 @@
 
                         <i class="el-icon-right"></i>
 
-                        <el-tag size="small" :type="fieldMappingChecked[dstField.name] ? 'primary' : 'info'" style="width:200px; text-align:center;">{{dstField.name}}</el-tag>
+                        <el-tag size="small" :type="fieldMappingChecked[dstField.name] ? 'primary' : 'info'"
+                                style="width:200px; text-align:center;">{{dstField.name}}
+                        </el-tag>
                     </div>
                 </div>
 
@@ -167,7 +181,9 @@
                 </div>
 
                 <div style="color:#999;">如果没有权限获取到表结构，可手工输入字段映射。</div>
-                <div style="color:#999;" v-show="fieldMappingInput">手工输入时，源字段与目标字段用英文冒号(:)分隔，字段间用英文逗号(,)分隔，例：A1:B1,A2:B2</div>
+                <div style="color:#999;" v-show="fieldMappingInput">
+                    手工输入时，源字段与目标字段用英文冒号(:)分隔，字段间用英文逗号(,)分隔，例：A1:B1,A2:B2
+                </div>
 
             </el-form-item>
 
@@ -233,9 +249,10 @@
             <el-form-item label="断点向前编移量" prop="breakpoint_offset" v-if="formData.breakpoint_type=='1'">
                 <el-input-number v-model="formData.breakpoint_offset" :step="1"></el-input-number>
                 <div style="color:#999;">
-                    此偏移量会将断点范围向前扩充指定的秒数，<br />
-                    例如：断点为: 2020-09-10 00:00:00，断点递增量：一天, 断点向前编移量 86400 秒。<br />
-                    计划任务2010-09-11执行时，断点范围为: 2020-09-09 00:00:00 (2020-09-10向前偏移86400秒) <= T < 2020-09-11 00:00:00，即拉取了两天的数据<br />
+                    此偏移量会将断点范围向前扩充指定的秒数，<br/>
+                    例如：断点为: 2020-09-10 00:00:00，断点递增量：一天, 断点向前编移量 86400 秒。<br/>
+                    计划任务2010-09-11执行时，断点范围为: 2020-09-09 00:00:00 (2020-09-10向前偏移86400秒) <= T < 2020-09-11
+                    00:00:00，即拉取了两天的数据<br/>
                     计划任务2010-09-12执行时，断点范围为: 2020-09-10 00:00:00 (2020-09-11向前偏移86400秒) <= T < 2020-09-12 00:00:00。
                 </div>
             </el-form-item>
@@ -533,23 +550,24 @@
                         fnFail();
                     });
                 },
-                updateFieldMapping: function() {
+                updateFieldMapping: function () {
                     var hasSrcTableFields = this.srcTableFields.length > 0;
                     if (this.dstTableFields.length > 0) {
-                        for (var i=0; i<this.dstTableFields.length; i++) {
+                        for (var i = 0; i < this.dstTableFields.length; i++) {
                             if (hasSrcTableFields) {
                                 var srcName = '';
-                                for (var j=0; j<this.srcTableFields.length; j++) {
+                                for (var j = 0; j < this.srcTableFields.length; j++) {
                                     if (this.dstTableFields[i].name == this.srcTableFields[j].name) {
                                         srcName = this.srcTableFields[j].name;
                                         break;
                                     }
                                 }
                                 this.fieldMapping[this.dstTableFields[i].name] = srcName;
+                                this.fieldMappingChecked[this.dstTableFields[i].name] = true;
                             } else {
                                 this.fieldMapping[this.dstTableFields[i].name] = "";
+                                this.fieldMappingChecked[this.dstTableFields[i].name] = false;
                             }
-                            this.fieldMappingChecked[this.dstTableFields[i].name] = true;
                         }
                     }
                 },
@@ -622,9 +640,28 @@
                         }
                     });
                 },
+                fieldMappingSelectAll: function () {
+                    for (var x in this.fieldMappingChecked) {
+                        this.fieldMappingChecked[x] = true;
+                    }
+                    this.forceUpdate();
+                },
+                fieldMappingSelectNone: function () {
+                    for (var x in this.fieldMappingChecked) {
+                        this.fieldMappingChecked[x] = false;
+                    }
+                    this.forceUpdate();
+                },
+                fieldMappingSelectMatched: function () {
+                    for (var x in this.fieldMapping) {
+                        this.fieldMappingChecked[x] = this.fieldMapping[x] != "";
+                    }
+                    this.forceUpdate();
+                },
                 close: function () {
                     parent.close();
-                },
+                }
+                ,
                 forceUpdate: function () {
                     this.$forceUpdate();
                 }
@@ -634,7 +671,6 @@
                 //this.codeMirrorDstSql = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionDstSql) ?>);
                 this.codeMirrorFieldMappingCode = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionFieldMappingCode) ?>);
             },
-
             updated: function () {
                 this.codeMirrorSrcSql && this.codeMirrorSrcSql.refresh();
                 //this.codeMirrorDstSql && this.codeMirrorDstSql.refresh();
@@ -644,7 +680,8 @@
                 //this.formData.dst_sql = this.codeMirrorDstSql.getValue();
                 this.formData.field_mapping_code = this.codeMirrorFieldMappingCode.getValue();
             }
-        });
+        })
+        ;
     </script>
 
 </be-body>

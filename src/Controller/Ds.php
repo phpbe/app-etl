@@ -356,6 +356,11 @@ class Ds extends Controller
                             'driver' => FormItemSelect::class,
                             'keyValues' => $typeKeyValues,
                             'required' => true,
+                            'ui' => [
+                                'select' => [
+                                    '@change' => 'switch(formData.type) {case \'mysql\': formData.db_port=\'3306\';break;case \'mssql\': formData.db_port=\'1433\';break;case \'oracle\': formData.db_port=\'1521\';break;}',
+                                ]
+                            ]
                         ],
                         [
                             'name' => 'db_host',
