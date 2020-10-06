@@ -292,7 +292,7 @@ class Task extends \Be\System\Service
                                     }
                                 }
                             }
-                        } else {
+                        } elseif ($primaryKey) {
                             $sql = 'SELECT ' . $primaryKey . ' 
                                     FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
                                     WHERE ' . $primaryKey . ' IN (' . implode(',', $primaryKeyIn) . ')';
@@ -310,6 +310,8 @@ class Task extends \Be\System\Service
                                     }
                                 }
                             }
+                        } else {
+                            $batchInsertData[] = $batchData;
                         }
 
                         if (count($batchInsertData) > 0) {
@@ -412,7 +414,7 @@ class Task extends \Be\System\Service
                 $extractException->extract_log_id = $extractLog->id;
                 $extractException->extract_id = $extractLog->extract_id;
                 $extractException->message = $e->getMessage();
-                $extractException->trace = $e->getTraceAsString();
+                $extractException->trace = print_r($e->getTrace(), true);
                 $extractException->create_time = date('Y-m-d H:i:s');
                 $extractException->save();
             }
