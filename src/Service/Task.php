@@ -57,7 +57,7 @@ class Task extends \Be\System\Service
             $extractLog->breakpoint_step = $extract->breakpoint_step; // 断点递增量
             $extractLog->total = 0; // 总数据量
             $extractLog->offset = 0; // 已处理数据量
-            $extractLog->status = 0; // 状态（0：创建/1：运行中/2：执行完成/-1：出错）
+            $extractLog->status = 1; // 状态（0：创建/1：运行中/2：执行完成/-1：出错）
             $extractLog->message = ''; // 异常信息
             $extractLog->trigger = $trigger;
             $extractLog->complete_time = null;
@@ -133,7 +133,6 @@ class Task extends \Be\System\Service
             $sql = 'SELECT COUNT(*) FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
             $total = $dbSrc->getValue($sql);
             $extractLog->total = $total;
-            $extractLog->status = 1;
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
 
