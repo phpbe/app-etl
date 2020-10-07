@@ -188,9 +188,9 @@ class Task extends \Be\System\Service
 
             $srcRows = $dbSrc->getYieldArrays($sql);
 
-            $dbDstDriverName = $dbDst->getDriverName();
-            // mysql 支持 replace into， 特殊处理
-            if ($dbDstDriverName == 'Mysql') {
+            // 全量插入
+            if ($extract->breakpoint_type == '0') {
+
                 $batchData = [];
                 $offset = 0;
                 foreach ($srcRows as $srcRow) {
@@ -216,8 +216,7 @@ class Task extends \Be\System\Service
 
                     if ($offset == $configExtract->batchQuantity) {
                         $offset = 0;
-
-                        $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                        $dbDst->quickInsertMany($extract->dst_table, $batchData);
                         $batchData = [];
 
                         $extractLog->update_time = date('Y-m-d H:i:s');
@@ -226,59 +225,167 @@ class Task extends \Be\System\Service
                 }
 
                 if (count($batchData) > 0) {
-                    $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                    $dbDst->quickInsertMany($extract->dst_table, $batchData);
                     $batchData = [];
                 }
-            } else {
 
-                $primaryKey = $dbDst->getTablePrimaryKey($extract->dst_table);
-                $primaryKeyFields = null;
-                if (is_array($primaryKey)) { // 多主键
-                    $primaryKeyFields = 'CONCAT(';
-                    foreach ($primaryKey as $pKey) {
-                        $primaryKeyFields .= $dbDst->quoteKey($pKey) . ', \',\',';
-                    }
-                    $primaryKeyFields = substr($primaryKeyFields, -1);
-                    $primaryKeyFields .=  ')';
-                }
+            } else { // 境量方式
 
-                $batchData = [];
-                $primaryKeyIn = [];
-                $offset = 0;
-                foreach ($srcRows as $srcRow) {
-                    $extractLog->offset++;
-                    $offset++;
+                $dbDstDriverName = $dbDst->getDriverName();
 
-                    $dstRow = null;
-                    switch ($extract->field_mapping_type) {
-                        case '0':
-                            $dstRow = $srcRow;
-                            break;
-                        case '1':
-                            foreach ($fieldMappingKv as $k => $v) {
-                                $dstRow[$v] = $srcRow[$k];
-                            }
-                            break;
-                        case '2':
-                            $dstRow = $fieldMappingFn($srcRow);
-                            break;
-                    }
+                // mysql 支持 replace into， 特殊处理
+                if ($dbDstDriverName == 'Mysql') {
+                    $batchData = [];
+                    $offset = 0;
+                    foreach ($srcRows as $srcRow) {
+                        $extractLog->offset++;
+                        $offset++;
 
-                    $batchData[] = $dstRow;
-
-                    if (is_array($primaryKey)) { // 多主键
-                        $pKeyIn = [];
-                        foreach ($primaryKey as $pKey) {
-                            $pKeyIn[] = $dbDst->quoteValue($dstRow[$pKey]);
+                        $dstRow = null;
+                        switch ($extract->field_mapping_type) {
+                            case '0':
+                                $dstRow = $srcRow;
+                                break;
+                            case '1':
+                                foreach ($fieldMappingKv as $k => $v) {
+                                    $dstRow[$v] = $srcRow[$k];
+                                }
+                                break;
+                            case '2':
+                                $dstRow = $fieldMappingFn($srcRow);
+                                break;
                         }
-                        $primaryKeyIn[] = '(' . implode(',', $pKeyIn) . ')';
-                    } else {
-                        $primaryKeyIn[] = $dstRow[$primaryKey];
+
+                        $batchData[] = $dstRow;
+
+                        if ($offset == $configExtract->batchQuantity) {
+                            $offset = 0;
+
+                            $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                            $batchData = [];
+
+                            $extractLog->update_time = date('Y-m-d H:i:s');
+                            $extractLog->save();
+                        }
                     }
 
-                    if ($offset == $configExtract->batchQuantity) {
-                        $offset = 0;
+                    if (count($batchData) > 0) {
+                        $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                        $batchData = [];
+                    }
+                } else {
 
+                    $primaryKey = $dbDst->getTablePrimaryKey($extract->dst_table);
+                    $primaryKeyFields = null;
+                    if (is_array($primaryKey)) { // 多主键
+                        $primaryKeyFields = 'CONCAT(';
+                        foreach ($primaryKey as $pKey) {
+                            $primaryKeyFields .= $dbDst->quoteKey($pKey) . ', \',\',';
+                        }
+                        $primaryKeyFields = substr($primaryKeyFields, -1);
+                        $primaryKeyFields .=  ')';
+                    }
+
+                    $batchData = [];
+                    $primaryKeyIn = [];
+                    $offset = 0;
+                    foreach ($srcRows as $srcRow) {
+                        $extractLog->offset++;
+                        $offset++;
+
+                        $dstRow = null;
+                        switch ($extract->field_mapping_type) {
+                            case '0':
+                                $dstRow = $srcRow;
+                                break;
+                            case '1':
+                                foreach ($fieldMappingKv as $k => $v) {
+                                    $dstRow[$v] = $srcRow[$k];
+                                }
+                                break;
+                            case '2':
+                                $dstRow = $fieldMappingFn($srcRow);
+                                break;
+                        }
+
+                        $batchData[] = $dstRow;
+
+                        if (is_array($primaryKey)) { // 多主键
+                            $pKeyIn = [];
+                            foreach ($primaryKey as $pKey) {
+                                $pKeyIn[] = $dbDst->quoteValue($dstRow[$pKey]);
+                            }
+                            $primaryKeyIn[] = '(' . implode(',', $pKeyIn) . ')';
+                        } elseif ($primaryKey) {
+                            $primaryKeyIn[] = $dstRow[$primaryKey];
+                        }
+
+                        if ($offset == $configExtract->batchQuantity) {
+                            $offset = 0;
+
+                            $batchInsertData = [];
+                            $batchUpdateData = [];
+                            if (is_array($primaryKey)) { // 多主键
+                                $sql = 'SELECT ' . $primaryKeyFields . ' 
+                                        FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
+                                        WHERE (' . $primaryKeyFields . ') IN (' . implode(',', $primaryKeyIn) . ')';
+                                $exists = $dbDst->getValues($sql);
+                                if (count($exists) == 0) {
+                                    $batchInsertData = $batchData;
+                                } else {
+                                    foreach ($batchData as $row) {
+                                        $key = '';
+                                        foreach ($primaryKey as $pKey) {
+                                            $key .= $row[$pKey] . ',';
+                                        }
+                                        if (in_array($key, $exists)) {
+                                            $batchUpdateData[] = $row;
+                                        } else {
+                                            $batchInsertData[] = $row;
+                                        }
+                                    }
+                                }
+                            } elseif ($primaryKey) {
+                                $sql = 'SELECT ' . $primaryKey . ' 
+                                        FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
+                                        WHERE ' . $primaryKey . ' IN (' . implode(',', $primaryKeyIn) . ')';
+                                $exists = $dbDst->getValues($sql);
+
+                                if (count($exists) == 0) {
+                                    $batchInsertData = $batchData;
+                                } else {
+                                    foreach ($batchData as $row) {
+                                        // 已存在的更新，不存在的插入
+                                        if (in_array($row[$primaryKey], $exists)) {
+                                            $batchUpdateData[] = $row;
+                                        } else {
+                                            $batchInsertData[] = $row;
+                                        }
+                                    }
+                                }
+                            } else {
+                                $batchInsertData[] = $batchData;
+                            }
+
+                            if (count($batchInsertData) > 0) {
+                                $dbDst->quickInsertMany($extract->dst_table, $batchInsertData);
+                                $batchInsertData = [];
+                            }
+
+                            if (count($batchUpdateData) > 0) {
+                                $dbDst->quickUpdateMany($extract->dst_table, $batchUpdateData);
+                                $batchUpdateData = [];
+                            }
+
+                            $batchData = [];
+                            $primaryKeyIn = [];
+
+                            $extractLog->update_time = date('Y-m-d H:i:s');
+                            $extractLog->save();
+                        }
+                    }
+
+                    if (count($batchData) > 0 && count($primaryKeyIn) > 0) {
                         $batchInsertData = [];
                         $batchUpdateData = [];
                         if (is_array($primaryKey)) { // 多主键
@@ -335,67 +442,7 @@ class Task extends \Be\System\Service
 
                         $batchData = [];
                         $primaryKeyIn = [];
-
-                        $extractLog->update_time = date('Y-m-d H:i:s');
-                        $extractLog->save();
                     }
-                }
-
-                if (count($batchData) > 0 && count($primaryKeyIn) > 0) {
-                    $batchInsertData = [];
-                    $batchUpdateData = [];
-                    if (is_array($primaryKey)) { // 多主键
-                        $sql = 'SELECT ' . $primaryKeyFields . ' 
-                                FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
-                                WHERE (' . $primaryKeyFields . ') IN (' . implode(',', $primaryKeyIn) . ')';
-                        $exists = $dbDst->getValues($sql);
-                        if (count($exists) == 0) {
-                            $batchInsertData = $batchData;
-                        } else {
-                            foreach ($batchData as $row) {
-                                $key = '';
-                                foreach ($primaryKey as $pKey) {
-                                    $key .= $row[$pKey] . ',';
-                                }
-                                if (in_array($key, $exists)) {
-                                    $batchUpdateData[] = $row;
-                                } else {
-                                    $batchInsertData[] = $row;
-                                }
-                            }
-                        }
-                    } else {
-                        $sql = 'SELECT ' . $primaryKey . ' 
-                                FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
-                                WHERE ' . $primaryKey . ' IN (' . implode(',', $primaryKeyIn) . ')';
-                        $exists = $dbDst->getValues($sql);
-
-                        if (count($exists) == 0) {
-                            $batchInsertData = $batchData;
-                        } else {
-                            foreach ($batchData as $row) {
-                                // 已存在的更新，不存在的插入
-                                if (in_array($row[$primaryKey], $exists)) {
-                                    $batchUpdateData[] = $row;
-                                } else {
-                                    $batchInsertData[] = $row;
-                                }
-                            }
-                        }
-                    }
-
-                    if (count($batchInsertData) > 0) {
-                        $dbDst->quickInsertMany($extract->dst_table, $batchInsertData);
-                        $batchInsertData = [];
-                    }
-
-                    if (count($batchUpdateData) > 0) {
-                        $dbDst->quickUpdateMany($extract->dst_table, $batchUpdateData);
-                        $batchUpdateData = [];
-                    }
-
-                    $batchData = [];
-                    $primaryKeyIn = [];
                 }
             }
 
