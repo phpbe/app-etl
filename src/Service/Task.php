@@ -33,6 +33,8 @@ class Task extends \Be\System\Service
                 }
             }
 
+            $configExtract = Be::getConfig('Etl.Extract');
+
             $runningExtractLog = Be::newTuple('etl_extract_log');
             try {
                 $runningExtractLog->loadBy([
@@ -40,7 +42,7 @@ class Task extends \Be\System\Service
                     'status' => 1,
                 ]);
 
-                if (time() - strtotime($runningExtractLog->update_time) > 3600) {
+                if (time() - strtotime($runningExtractLog->update_time) > $configExtract->timeout) {
                     $runningExtractLog->status = -1;
                     $runningExtractLog->message = '执行超过1小时未更新';
                     $runningExtractLog->update();
@@ -165,7 +167,15 @@ class Task extends \Be\System\Service
 
             // 全量同步时先删数据
             if ($extract->breakpoint_type == '0') {
-                $sql = 'DELETE FROM ' . $dbSrc->quoteKey($extract->dst_table);
+                $sql = null;
+                switch ($configExtract->clearType) {
+                    case 'truncate':
+                        $sql = 'TRUNCATE TABLE ' . $dbSrc->quoteKey($extract->dst_table);
+                        break;
+                    case 'delete':
+                        $sql = 'DELETE FROM ' . $dbSrc->quoteKey($extract->dst_table);
+                        break;
+                }
                 $dbDst->query($sql);
             }
 
@@ -204,7 +214,7 @@ class Task extends \Be\System\Service
 
                     $batchData[] = $dstRow;
 
-                    if ($offset == 1000) {
+                    if ($offset == $configExtract->batchQuantity) {
                         $offset = 0;
 
                         $dbDst->quickReplaceMany($extract->dst_table, $batchData);
@@ -266,7 +276,7 @@ class Task extends \Be\System\Service
                         $primaryKeyIn[] = $dstRow[$primaryKey];
                     }
 
-                    if ($offset == 1000) {
+                    if ($offset == $configExtract->batchQuantity) {
                         $offset = 0;
 
                         $batchInsertData = [];
@@ -403,6 +413,9 @@ class Task extends \Be\System\Service
             }
 
         } catch (\Throwable $e) {
+            echo $e->getMessage();
+            print_r($e->getTrace());
+
             if ($extractLog !== null) {
 
                 $db = Be::newDb();
@@ -422,9 +435,6 @@ class Task extends \Be\System\Service
                     'create_time' => date('Y-m-d H:i:s'),
                 ]);
             }
-
-            echo $e->getMessage();
-            print_r($e->getTrace());
 
             $config = Be::getConfig('Etl.Notify');
             $serviceNotify = Be::getService('Etl.Notify');

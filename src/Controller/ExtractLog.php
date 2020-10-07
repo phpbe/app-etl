@@ -165,6 +165,16 @@ class ExtractLog extends Controller
                                 ]
                             ]
                         ],
+                        [
+                            'label' => '删除',
+                            'task' => 'delete',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'link' => [
+                                    'type' => 'danger'
+                                ]
+                            ]
+                        ]
                     ]
                 ],
             ],
