@@ -404,18 +404,23 @@ class Task extends \Be\System\Service
 
         } catch (\Throwable $e) {
             if ($extractLog !== null) {
-                $extractLog->status = -1; // 状态（0：创建/1：运行中/2：执行完成/-1：出错）
-                $extractLog->message = $e->getMessage(); // 异常信息
-                $extractLog->update_time = date('Y-m-d H:i:s');
-                $extractLog->save();
 
-                $extractException = Be::newTuple('etl_extract_exception');
-                $extractException->extract_log_id = $extractLog->id;
-                $extractException->extract_id = $extractLog->extract_id;
-                $extractException->message = $e->getMessage();
-                $extractException->trace = print_r($e->getTrace(), true);
-                $extractException->create_time = date('Y-m-d H:i:s');
-                $extractException->save();
+                $db = Be::newDb();
+
+                $db->update('etl_extract_log', [
+                    'id' => $extractLog->id,
+                    'status' => -1,
+                    'message' => $e->getMessage(),
+                    'update_time' => date('Y-m-d H:i:s'),
+                ], 'id');
+
+                $db->insert('etl_extract_exception', [
+                    'extract_log_id' => $extractLog->id,
+                    'extract_id' => $extractLog->extract_id,
+                    'message' => $e->getMessage(),
+                    'trace' => print_r($e->getTrace(), true),
+                    'create_time' => date('Y-m-d H:i:s'),
+                ]);
             }
 
             echo $e->getMessage();
