@@ -214,7 +214,7 @@ class Task extends \Be\System\Service
 
                     $batchData[] = $dstRow;
 
-                    if ($offset == $configExtract->batchQuantity) {
+                    if ($offset >= $configExtract->batchQuantity) {
                         $offset = 0;
                         $dbDst->quickInsertMany($extract->dst_table, $batchData);
                         $batchData = [];
@@ -258,7 +258,7 @@ class Task extends \Be\System\Service
 
                         $batchData[] = $dstRow;
 
-                        if ($offset == $configExtract->batchQuantity) {
+                        if ($offset >= $configExtract->batchQuantity) {
                             $offset = 0;
 
                             $dbDst->quickReplaceMany($extract->dst_table, $batchData);
@@ -320,7 +320,7 @@ class Task extends \Be\System\Service
                             $primaryKeyIn[] = $dstRow[$primaryKey];
                         }
 
-                        if ($offset == $configExtract->batchQuantity) {
+                        if ($offset >= $configExtract->batchQuantity) {
                             $offset = 0;
 
                             $batchInsertData = [];
