@@ -202,7 +202,7 @@
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
-                <el-button type="primary" @click="gotoStep(0)" :disabled="loading">上一步</el-button>
+                <el-button type="primary" @click="gotoStep(0)" :disabled="loading" plain>上一步</el-button>
                 <el-button type="primary" @click="save" :disabled="loading">保存，进入下一步</el-button>
             </el-form-item>
         </el-form>
@@ -265,7 +265,7 @@
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
 
-                <el-button type="primary" @click="gotoStep(1)" :disabled="loading">上一步</el-button>
+                <el-button type="primary" @click="gotoStep(1)" :disabled="loading" plain>上一步</el-button>
                 <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
             </el-form-item>
 
@@ -673,7 +673,7 @@
                 }
             },
             mounted: function () {
-                
+
                 if (this.formData.src_ds_id) {
                     this.srcDsChange();
                 }

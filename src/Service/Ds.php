@@ -124,10 +124,10 @@ class Ds extends \Be\System\Service
                 $sql = 'SELECT `SCHEMA_NAME` FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'';
                 break;
             case 'mssql':
-                $sql = 'SELECT [name] FROM master..sysdatabasesWHERE [name]!=\'master\'';
+                $sql = 'SELECT [name] FROM master..sysdatabases WHERE [name]!=\'master\'';
                 break;
             case 'oracle':
-                $sql = '';
+                $sql = 'SELECT * FROM v$tablespace';
                 break;
         }
 

@@ -3,6 +3,7 @@
 namespace Be\App\Etl\Controller;
 
 
+use Be\Plugin\Form\Item\FormItemAutoComplete;
 use Be\Plugin\Form\Item\FormItemCustom;
 use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
@@ -398,9 +399,8 @@ class Ds extends Controller
                         [
                             'name' => 'db_name',
                             'label' => '库名',
-                            'driver' => FormItemSelect::class,
+                            'driver' => FormItemAutoComplete::class,
                             'required' => true,
-                            'keyValues' => [],
                         ],
                         /*
                         [
@@ -449,13 +449,13 @@ class Ds extends Controller
                                             message = \'连接成功！\';
                                         }
                                         _this.$message.success(message);
-                                        var keyValues = {};
+                                        var suggestions = [];
                                         for(var x in responseData.data.databases) {
-                                            keyValues[responseData.data.databases[x]] = responseData.data.databases[x];
+                                            suggestions.push({
+                                                "value" : responseData.data.databases[x]
+                                            });
                                         }
-                                        console.log(responseData);
-                                        console.log(keyValues);
-                                        _this.formItems.db_name.keyValues = keyValues;
+                                        _this.formItems.db_name.suggestions = suggestions;
                                     } else {
                                         if (responseData.message) {
                                             _this.$message.error(responseData.message);
@@ -516,9 +516,8 @@ class Ds extends Controller
                         [
                             'name' => 'db_name',
                             'label' => '库名',
-                            'driver' => FormItemSelect::class,
+                            'driver' => FormItemAutoComplete::class,
                             'required' => true,
-                            'keyValues' => [],
                         ],
                         /*
                         [
@@ -566,13 +565,13 @@ class Ds extends Controller
                                             message = \'连接成功！\';
                                         }
                                         _this.$message.success(message);
-                                        var keyValues = {};
+                                        var suggestions = [];
                                         for(var x in responseData.data.databases) {
-                                            keyValues[responseData.data.databases[x]] = responseData.data.databases[x];
+                                            suggestions.push({
+                                                "value" : responseData.data.databases[x]
+                                            });
                                         }
-                                        console.log(responseData);
-                                        console.log(keyValues);
-                                        _this.formItems.db_name.keyValues = keyValues;
+                                        _this.formItems.db_name.suggestions = suggestions;
                                     } else {
                                         if (responseData.message) {
                                             _this.$message.error(responseData.message);
