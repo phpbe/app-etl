@@ -17,17 +17,20 @@ class Ds extends \Be\System\Service
      * @param int $dsId
      * @return array
      */
-    public function getTableNames($dsId) {
+    public function getTableNames($dsId)
+    {
         $db = $this->getDb($dsId);
         return $db->getTableNames();
     }
 
-    public function getTableFields($dsId, $tableName) {
+    public function getTableFields($dsId, $tableName)
+    {
         $db = $this->getDb($dsId);
         return array_values($db->getTableFields($tableName));
     }
 
-    public function getSqlFields($dsId, $sql) {
+    public function getSqlFields($dsId, $sql)
+    {
         $db = $this->getDb($dsId);
         $arr = $db->getArray($sql);
 
@@ -48,7 +51,8 @@ class Ds extends \Be\System\Service
      * @return Driver
      * @throws \Exception
      */
-    public function getDb($dsId) {
+    public function getDb($dsId)
+    {
         if (!isset($this->dbs[$dsId])) {
             $ds = Be::getTuple('etl_ds')->load($dsId);
             $config = [
@@ -58,7 +62,6 @@ class Ds extends \Be\System\Service
                 'user' => $ds->db_user,
                 'pass' => $ds->db_pass,
                 'name' => $ds->db_name,
-                'charset' => $ds->db_charset
             ];
 
             $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';
@@ -78,5 +81,48 @@ class Ds extends \Be\System\Service
             ->where('is_enable', 1)
             ->getKeyValues('id', 'name');
     }
+
+
+    public function connect($type, $host, $port, $user, $pass)
+    {
+        $options = array(
+            \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
+        );
+
+        switch ($type) {
+            case 'mysql':
+                $dsn = 'mysql:host=' . $host . ';port=' . $port;
+                return new \PDO($dsn, $user, $pass, $options);
+                break;
+            case 'mssql':
+                $dsn = 'sqlsrv:Server=' . $host .',' . $port;
+                return new \PDO($dsn, $user, $pass, $options);
+                break;
+            case 'oracle':
+                $dsn = 'oci:dbname=//' . $host .  ':' . $port . '/';
+                return new \PDO($dsn, $user, $pass, $options);
+                break;
+        }
+    }
+
+    public function getDatabases($type, $host, $port, $user, $pass) {
+        $connection = $this->connect($type, $host, $port, $user, $pass);
+        switch ($type) {
+            case 'mysql':
+                return $this->getValues('SELECT `SCHEMA_NAME` FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'');
+                break;
+            case 'mssql':
+                return $this->getValues('SELECT [name] FROM master..sysdatabasesWHERE [name]!=\'master\'');
+                break;
+            case 'oracle':
+
+
+                break;
+        }
+
+
+    }
+
+
 
 }

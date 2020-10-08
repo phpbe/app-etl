@@ -211,10 +211,12 @@ class Ds extends Controller
                             'name' => 'db_name',
                             'label' => '库名',
                         ],
+                        /*
                         [
                             'name' => 'db_charset',
                             'label' => '字符集',
                         ],
+                        */
                         [
                             'name' => 'create_time',
                             'label' => '创建时间',
@@ -316,10 +318,12 @@ class Ds extends Controller
                             'name' => 'db_name',
                             'label' => '库名',
                         ],
+                        /*
                         [
                             'name' => 'db_charset',
                             'label' => '字符集',
                         ],
+                        */
                         [
                             'name' => 'remark',
                             'label' => '备注',
@@ -390,10 +394,12 @@ class Ds extends Controller
                             'label' => '库名',
                             'required' => true,
                         ],
+                        /*
                         [
                             'name' => 'db_charset',
                             'label' => '字符集',
                         ],
+                        */
                         [
                             'name' => 'remark',
                             'label' => '备注',
@@ -458,10 +464,12 @@ class Ds extends Controller
                             'label' => '库名',
                             'required' => true,
                         ],
+                        /*
                         [
                             'name' => 'db_charset',
                             'label' => '字符集',
                         ],
+                        */
                         [
                             'name' => 'remark',
                             'label' => '备注',
