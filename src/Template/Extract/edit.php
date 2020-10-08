@@ -202,12 +202,13 @@
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
+                <el-button type="primary" @click="gotoStep(0)" :disabled="loading">上一步</el-button>
                 <el-button type="primary" @click="save" :disabled="loading">保存，进入下一步</el-button>
             </el-form-item>
         </el-form>
 
 
-        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-if="formData.step == '2'">
+        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-show="formData.step == '2'">
             <el-form-item label="断点类型" prop="breakpoint_type"
                           :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
                 <el-radio-group v-model="formData.breakpoint_type">
@@ -263,6 +264,8 @@
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
+
+                <el-button type="primary" @click="gotoStep(1)" :disabled="loading">上一步</el-button>
                 <el-button type="primary" @click="save" :disabled="loading">保存</el-button>
             </el-form-item>
 
@@ -571,6 +574,10 @@
                         }
                     }
                 },
+                gotoStep: function (step) {
+                    this.formData.step = step;
+                    this.$forceUpdate();
+                },
                 save: function () {
                     if (this.formData.step == 1 && this.formData.field_mapping_type == '1' && !this.fieldMappingInput) {
                         var isAllMapping = true;
@@ -666,6 +673,15 @@
                 }
             },
             mounted: function () {
+                
+                if (this.formData.src_ds_id) {
+                    this.srcDsChange();
+                }
+
+                if (this.formData.dst_ds_id) {
+                    this.dstDsChange();
+                }
+
                 this.codeMirrorSrcSql = CodeMirror.fromTextArea(this.$refs.srcSqlRef, <?php echo json_encode($codeMirrorOptionSrcSql) ?>);
                 //this.codeMirrorDstSql = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionDstSql) ?>);
                 this.codeMirrorFieldMappingCode = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionFieldMappingCode) ?>);
