@@ -82,47 +82,66 @@ class Ds extends \Be\System\Service
             ->getKeyValues('id', 'name');
     }
 
-
-    public function connect($type, $host, $port, $user, $pass)
+    public function testDb($data)
     {
+        $type = $data['type'];
+        $host = $data['db_host'];
+        $port = $data['db_port'];
+        $user = $data['db_user'];
+        $pass = $data['db_pass'];
+
         $options = array(
             \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION
         );
 
-        switch ($type) {
-            case 'mysql':
-                $dsn = 'mysql:host=' . $host . ';port=' . $port;
-                return new \PDO($dsn, $user, $pass, $options);
-                break;
-            case 'mssql':
-                $dsn = 'sqlsrv:Server=' . $host .',' . $port;
-                return new \PDO($dsn, $user, $pass, $options);
-                break;
-            case 'oracle':
-                $dsn = 'oci:dbname=//' . $host .  ':' . $port . '/';
-                return new \PDO($dsn, $user, $pass, $options);
-                break;
-        }
-    }
-
-    public function getDatabases($type, $host, $port, $user, $pass) {
-        $connection = $this->connect($type, $host, $port, $user, $pass);
-        switch ($type) {
-            case 'mysql':
-                return $this->getValues('SELECT `SCHEMA_NAME` FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'');
-                break;
-            case 'mssql':
-                return $this->getValues('SELECT [name] FROM master..sysdatabasesWHERE [name]!=\'master\'');
-                break;
-            case 'oracle':
-
-
-                break;
+        if (!in_array($type, ['mysql','mssql','oracle'])) {
+            throw new ServiceException('不支持的数据库类型：' . $type);
         }
 
+        $connection = null;
+        try {
+            switch ($type) {
+                case 'mysql':
+                    $dsn = 'mysql:host=' . $host . ';port=' . $port;
+                    $connection = new \PDO($dsn, $user, $pass, $options);
+                    break;
+                case 'mssql':
+                    $dsn = 'sqlsrv:Server=' . $host . ',' . $port;
+                    $connection = new \PDO($dsn, $user, $pass, $options);
+                    break;
+                case 'oracle':
+                    $dsn = 'oci:dbname=//' . $host . ':' . $port . '/';
+                    $connection = new \PDO($dsn, $user, $pass, $options);
+                    break;
+            }
+        } catch (\Throwable $t) {
+            throw new ServiceException('连接数据库失败：' . $t ->getMessage());
+        }
 
+        $sql = null;
+        switch ($type) {
+            case 'mysql':
+                $sql = 'SELECT `SCHEMA_NAME` FROM information_schema.SCHEMATA WHERE `SCHEMA_NAME`!=\'information_schema\'';
+                break;
+            case 'mssql':
+                $sql = 'SELECT [name] FROM master..sysdatabasesWHERE [name]!=\'master\'';
+                break;
+            case 'oracle':
+                $sql = '';
+                break;
+        }
+
+        $values = null;
+        try {
+            $statement = $connection->query($sql);
+            $values = $statement->fetchAll(\PDO::FETCH_COLUMN);
+            $statement->closeCursor();
+        } catch (\Throwable $t) {
+            throw new ServiceException('连接数据库成功，但获取库名列表失败：' . $t ->getMessage());
+        }
+
+        return $values;
     }
-
 
 
 }

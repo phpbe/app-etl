@@ -3,6 +3,7 @@
 namespace Be\App\Etl\Controller;
 
 
+use Be\Plugin\Form\Item\FormItemCustom;
 use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemInputNumberInt;
@@ -390,9 +391,16 @@ class Ds extends Controller
                             'required' => true,
                         ],
                         [
+                            'name' => 'testDb',
+                            'driver' => FormItemCustom::class,
+                            'html' => '<el-form-item><el-button type="success" @click="testDb" v-loading="testDbLoading" size="mini" plain>测试连接，并获取库名列表</el-button></el-form-item>'
+                        ],
+                        [
                             'name' => 'db_name',
                             'label' => '库名',
+                            'driver' => FormItemSelect::class,
                             'required' => true,
+                            'keyValues' => [],
                         ],
                         /*
                         [
@@ -418,6 +426,47 @@ class Ds extends Controller
                         $tuple->create_time = date('Y-m-d H:i:s');
                         $tuple->update_time = date('Y-m-d H:i:s');
                     },
+                ],
+                'vueData' => [
+                    'testDbLoading' => false, // 测试数据库连接中
+                ],
+                'vueMethods' => [
+                    'testDb' => 'function() {
+                        var _this = this;
+                        this.testDbLoading = true;
+                        this.$http.post("'. beUrl('Etl.Ds.testDb') .'", {
+                                formData: _this.formData
+                            }).then(function (response) {
+                                _this.testDbLoading = false;
+                                //console.log(response);
+                                if (response.status == 200) {
+                                    var responseData = response.data;
+                                    if (responseData.success) {
+                                        var message;
+                                        if (responseData.message) {
+                                            message = responseData.message;
+                                        } else {
+                                            message = \'连接成功！\';
+                                        }
+                                        _this.$message.success(message);
+                                        var keyValues = {};
+                                        for(var x in responseData.data.databases) {
+                                            keyValues[responseData.data.databases[x]] = responseData.data.databases[x];
+                                        }
+                                        console.log(responseData);
+                                        console.log(keyValues);
+                                        _this.formItems.db_name.keyValues = keyValues;
+                                    } else {
+                                        if (responseData.message) {
+                                            _this.$message.error(responseData.message);
+                                        }
+                                    }
+                                }
+                            }).catch(function (error) {
+                                _this.testDbLoading = false;
+                                _this.$message.error(error);
+                            });
+                    }',
                 ],
             ],
 
@@ -460,9 +509,16 @@ class Ds extends Controller
                             'required' => true,
                         ],
                         [
+                            'name' => 'testDb',
+                            'driver' => FormItemCustom::class,
+                            'html' => '<el-form-item><el-button type="success" @click="testDb" v-loading="testDbLoading" size="mini" plain>测试连接，并获取库名列表</el-button></el-form-item>'
+                        ],
+                        [
                             'name' => 'db_name',
                             'label' => '库名',
+                            'driver' => FormItemSelect::class,
                             'required' => true,
+                            'keyValues' => [],
                         ],
                         /*
                         [
@@ -487,10 +543,72 @@ class Ds extends Controller
                     'before' => function (Tuple &$tuple) {
                         $tuple->update_time = date('Y-m-d H:i:s');
                     }
-                ]
+                ],
+                'vueData' => [
+                    'testDbLoading' => false, // 测试数据库连接中
+                ],
+                'vueMethods' => [
+                    'testDb' => 'function() {
+                        var _this = this;
+                        this.testDbLoading = true;
+                        this.$http.post("'. beUrl('Etl.Ds.testDb') .'", {
+                                formData: _this.formData
+                            }).then(function (response) {
+                                _this.testDbLoading = false;
+                                //console.log(response);
+                                if (response.status == 200) {
+                                    var responseData = response.data;
+                                    if (responseData.success) {
+                                        var message;
+                                        if (responseData.message) {
+                                            message = responseData.message;
+                                        } else {
+                                            message = \'连接成功！\';
+                                        }
+                                        _this.$message.success(message);
+                                        var keyValues = {};
+                                        for(var x in responseData.data.databases) {
+                                            keyValues[responseData.data.databases[x]] = responseData.data.databases[x];
+                                        }
+                                        console.log(responseData);
+                                        console.log(keyValues);
+                                        _this.formItems.db_name.keyValues = keyValues;
+                                    } else {
+                                        if (responseData.message) {
+                                            _this.$message.error(responseData.message);
+                                        }
+                                    }
+                                }
+                            }).catch(function (error) {
+                                _this.testDbLoading = false;
+                                _this.$message.error(error);
+                            });
+                    }',
+                ],
             ],
 
         ])->execute();
+    }
+
+    /**
+     * @BePermission("*")
+     */
+    public function testDb()
+    {
+        try {
+            $postData = Request::json();
+            $databases = Be::getService('Etl.Ds')->testDb($postData['formData']);
+            Response::set('success', true);
+            Response::set('data', [
+                'databases' => $databases,
+            ]);
+            Response::ajax();
+        } catch (\Exception $e) {
+            Response::set('success', false);
+            Response::set('message', $e->getMessage());
+            Response::set('trace', $e->getTrace());
+            Response::ajax();
+        }
     }
 
     /**

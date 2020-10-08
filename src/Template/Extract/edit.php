@@ -660,8 +660,7 @@
                 },
                 close: function () {
                     parent.close();
-                }
-                ,
+                },
                 forceUpdate: function () {
                     this.$forceUpdate();
                 }
