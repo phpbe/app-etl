@@ -66,7 +66,7 @@ class ExtractException extends Controller
 
                 'operation' => [
                     'label' => '操作',
-                    'width' => '60',
+                    'width' => '90',
                     'items' => [
                         [
                             'label' => '查看',
@@ -79,6 +79,17 @@ class ExtractException extends Controller
                                 ]
                             ]
                         ],
+                        [
+                            'label' => '删除',
+                            'task' => 'delete',
+                            'confirm' => '确认要删除么？',
+                            'target' => 'ajax',
+                            'ui' => [
+                                'link' => [
+                                    'type' => 'danger'
+                                ]
+                            ]
+                        ]
                     ]
                 ],
 

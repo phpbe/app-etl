@@ -168,6 +168,7 @@ class ExtractLog extends Controller
                         [
                             'label' => '删除',
                             'task' => 'delete',
+                            'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'ui' => [
                                 'link' => [

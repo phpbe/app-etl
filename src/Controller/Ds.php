@@ -126,6 +126,7 @@ class Ds extends Controller
                         [
                             'label' => '批量删除',
                             'task' => 'fieldEdit',
+                            'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'postData' => [
                                 'field' => 'is_delete',
@@ -265,6 +266,7 @@ class Ds extends Controller
                         [
                             'label' => '删除',
                             'task' => 'fieldEdit',
+                            'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'postData' => [
                                 'field' => 'is_delete',

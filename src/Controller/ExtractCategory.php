@@ -140,6 +140,7 @@ class ExtractCategory extends Controller
                         [
                             'label' => '删除',
                             'task' => 'fieldEdit',
+                            'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'postData' => [
                                 'field' => 'is_delete',
