@@ -59,8 +59,8 @@ class Ds extends \Be\System\Service
                 'driver' => $ds->type,
                 'host' => $ds->db_host,
                 'port' => $ds->db_port,
-                'user' => $ds->db_user,
-                'pass' => $ds->db_pass,
+                'username' => $ds->db_user,
+                'password' => $ds->db_pass,
                 'name' => $ds->db_name,
             ];
 

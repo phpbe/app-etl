@@ -603,12 +603,12 @@ class Ds extends Controller
             Response::set('data', [
                 'databases' => $databases,
             ]);
-            Response::ajax();
+            Response::json();
         } catch (\Exception $e) {
             Response::set('success', false);
             Response::set('message', $e->getMessage());
             Response::set('trace', $e->getTrace());
-            Response::ajax();
+            Response::json();
         }
     }
 
@@ -624,11 +624,11 @@ class Ds extends Controller
             Response::set('data', [
                 'tables' => $tables,
             ]);
-            Response::ajax();
+            Response::json();
         } catch (\Exception $e) {
             Response::set('success', false);
             Response::set('message', $e->getMessage());
-            Response::ajax();
+            Response::json();
         }
     }
 
@@ -644,11 +644,11 @@ class Ds extends Controller
             Response::set('data', [
                 'fields' => $fields,
             ]);
-            Response::ajax();
+            Response::json();
         } catch (\Exception $e) {
             Response::set('success', false);
             Response::set('message', $e->getMessage());
-            Response::ajax();
+            Response::json();
         }
     }
 
@@ -665,11 +665,11 @@ class Ds extends Controller
             Response::set('data', [
                 'fields' => $fields,
             ]);
-            Response::ajax();
+            Response::json();
         } catch (\Exception $e) {
             Response::set('success', false);
             Response::set('message', $e->getMessage());
-            Response::ajax();
+            Response::json();
         }
     }
 

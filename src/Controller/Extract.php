@@ -539,7 +539,7 @@ class Extract extends Controller
                 Response::set('data', [
                     'extract' => $tuple,
                 ]);
-                Response::ajax();
+                Response::json();
             } catch (\Exception $e) {
                 $db->rollback();
                 Response::error($e->getMessage());

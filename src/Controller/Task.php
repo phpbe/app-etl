@@ -103,13 +103,13 @@ class Task extends Controller
                 Response::set('success', true);
                 Response::set('message', '手工启动抽取任务成功！');
                 Response::set('url', $url);
-                Response::ajax();
+                Response::json();
             }
         }
 
         Response::set('success', false);
         Response::set('message', '参数错误！');
-        Response::ajax();
+        Response::json();
     }
 
 }
