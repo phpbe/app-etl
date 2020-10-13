@@ -188,6 +188,8 @@ class Task extends \Be\System\Service
 
             $srcRows = $dbSrc->getYieldArrays($sql);
 
+            $dbDstDriverName = $dbDst->getDriverName();
+
             // 全量插入
             if ($extract->breakpoint_type == '0') {
 
@@ -216,7 +218,12 @@ class Task extends \Be\System\Service
 
                     if ($offset >= $configExtract->batchQuantity) {
                         $offset = 0;
-                        $dbDst->quickInsertMany($extract->dst_table, $batchData);
+                        // mysql 支持 replace into， 特殊处理
+                        if ($dbDstDriverName == 'Mysql') {
+                            $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                        } else {
+                            $dbDst->quickInsertMany($extract->dst_table, $batchData);
+                        }
                         $batchData = [];
 
                         $extractLog->update_time = date('Y-m-d H:i:s');
@@ -225,13 +232,16 @@ class Task extends \Be\System\Service
                 }
 
                 if (count($batchData) > 0) {
-                    $dbDst->quickInsertMany($extract->dst_table, $batchData);
+                    // mysql 支持 replace into， 特殊处理
+                    if ($dbDstDriverName == 'Mysql') {
+                        $dbDst->quickReplaceMany($extract->dst_table, $batchData);
+                    } else {
+                        $dbDst->quickInsertMany($extract->dst_table, $batchData);
+                    }
                     $batchData = [];
                 }
 
             } else { // 境量方式
-
-                $dbDstDriverName = $dbDst->getDriverName();
 
                 // mysql 支持 replace into， 特殊处理
                 if ($dbDstDriverName == 'Mysql') {
