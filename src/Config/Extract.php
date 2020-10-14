@@ -16,7 +16,7 @@ class Extract
     /**
      * @BeConfigItem("批量处理的数据量", driver="FormItemInputNumberInt")
      */
-    public $batchQuantity = 1000;
+    public $batchQuantity = 5000;
 
     /**
      * @BeConfigItem("计划任务无更新超时时间(秒)", driver="FormItemInputNumberInt")

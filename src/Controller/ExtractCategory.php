@@ -70,7 +70,7 @@ class ExtractCategory extends Controller
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-plus',
-                                    'type' => 'success',
+                                    'type' => 'primary',
                                 ]
                             ]
                         ],

@@ -89,12 +89,12 @@ class Ds extends Controller
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-plus',
-                                    'type' => 'success',
+                                    'type' => 'primary',
                                 ]
                             ]
                         ],
                         [
-                            'label' => '批量启用',
+                            'label' => '启用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -104,12 +104,12 @@ class Ds extends Controller
                             'ui' => [
                                 'button' => [
                                     'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'primary',
+                                    'type' => 'success',
                                 ]
                             ]
                         ],
                         [
-                            'label' => '批量禁用',
+                            'label' => '禁用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -124,7 +124,7 @@ class Ds extends Controller
                             ]
                         ],
                         [
-                            'label' => '批量删除',
+                            'label' => '删除',
                             'task' => 'fieldEdit',
                             'confirm' => '确认要删除么？',
                             'target' => 'ajax',
