@@ -1,5 +1,12 @@
 <be-body>
-
+    <?php
+    $js = [];
+    $css = [];
+    $formData = [];
+    $vueData = [];
+    $vueMethods = [];
+    $vueHooks = [];
+    ?>
     <div id="app" v-cloak>
         <el-steps :active="formData.step" finish-status="success" simple>
             <el-step title="配置数据源" icon="el-icon-fa fa-database"></el-step>
@@ -258,9 +265,23 @@
                 </div>
             </el-form-item>
 
-            <el-form-item label="执行计划" prop="schedule">
-                <el-input v-model="formData.schedule" placeholder="请输入执行计划"></el-input>
-            </el-form-item>
+            <?php
+            $formItemSchedule = new \Be\Plugin\Form\Item\FormItemCron([
+                'name' => 'schedule',
+                'label' => '执行计划',
+            ]);
+            echo $formItemSchedule->getHtml();
+
+            $vueDataX = $formItemSchedule->getVueData();
+            if ($vueDataX) {
+                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
+            }
+
+            $vueMethodsX = $formItemSchedule->getVueMethods();
+            if ($vueMethodsX) {
+                $vueMethods = array_merge($vueMethods, $vueMethodsX);
+            }
+            ?>
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
@@ -383,7 +404,13 @@
 
                 codeMirrorSrcSql: false,
                 codeMirrorDstSql: false,
-                codeMirrorFieldMappingCode: false
+                codeMirrorFieldMappingCode: false<?php
+                if ($vueData) {
+                    foreach ($vueData as $k => $v) {
+                        echo ',' . $k . ':' . json_encode($v);
+                    }
+                }
+                ?>
             },
             methods: {
                 srcDsChange: function () {
@@ -671,6 +698,13 @@
                 forceUpdate: function () {
                     this.$forceUpdate();
                 }
+                <?php
+                if ($vueMethods) {
+                    foreach ($vueMethods as $k => $v) {
+                        echo ',' . $k . ':' . $v;
+                    }
+                }
+                ?>
             },
             mounted: function () {
 
