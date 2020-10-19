@@ -54,24 +54,36 @@ class Ds extends \Be\System\Service
     public function getDb($dsId)
     {
         if (!isset($this->dbs[$dsId])) {
-            $ds = Be::getTuple('etl_ds')->load($dsId);
-            $config = [
-                'driver' => $ds->type,
-                'host' => $ds->db_host,
-                'port' => $ds->db_port,
-                'username' => $ds->db_user,
-                'password' => $ds->db_pass,
-                'name' => $ds->db_name,
-            ];
-
-            $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';
-            if (!class_exists($class)) throw new ServiceException('数据源（' . $ds->name . '）指定的数据库驱动' . $ds->type . '不支持！');
-
-            $db = new $class($config);
-            $db->connect();
-            $this->dbs[$dsId] = $db;
+            $this->dbs[$dsId] = $this->newDb($dsId);
         }
         return $this->dbs[$dsId];
+    }
+
+    /**
+     * 数据数据库连接
+     *
+     * @param int $dsId
+     * @return Driver
+     * @throws \Exception
+     */
+    public function newDb($dsId)
+    {
+        $ds = Be::getTuple('etl_ds')->load($dsId);
+        $config = [
+            'driver' => $ds->type,
+            'host' => $ds->db_host,
+            'port' => $ds->db_port,
+            'username' => $ds->db_user,
+            'password' => $ds->db_pass,
+            'name' => $ds->db_name,
+        ];
+
+        $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';
+        if (!class_exists($class)) throw new ServiceException('数据源（' . $ds->name . '）指定的数据库驱动' . $ds->type . '不支持！');
+
+        $db = new $class($config);
+        $db->connect();
+        return $db;
     }
 
     public function getIdNameKeyValues()
