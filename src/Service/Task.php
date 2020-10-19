@@ -64,6 +64,7 @@ class Task extends \Be\System\Service
             $extractLog->trigger = $trigger;
             $extractLog->complete_time = null;
             $extractLog->create_time = date('Y-m-d H:i:s');
+            $extractLog->complete_time = '1970-01-01 08:00:00';
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
 
@@ -81,8 +82,8 @@ class Task extends \Be\System\Service
             $extractSnapshot->create_time = date('Y-m-d H:i:s');
             $extractSnapshot->save();
 
-            $dbSrc = Be::getService('Etl.Ds')->getDb($extract->src_ds_id);
-            $dbDst = Be::getService('Etl.Ds')->getDb($extract->dst_ds_id);
+            $dbSrc = Be::getService('Etl.Ds')->newDb($extract->src_ds_id);
+            $dbDst = Be::getService('Etl.Ds')->newDb($extract->dst_ds_id);
 
             $breakpointEnd = null;
             $tBreakpointEnd = null;
@@ -170,10 +171,10 @@ class Task extends \Be\System\Service
                 $sql = null;
                 switch ($configExtract->clearType) {
                     case 'truncate':
-                        $sql = 'TRUNCATE TABLE ' . $dbSrc->quoteKey($extract->dst_table);
+                        $sql = 'TRUNCATE TABLE ' . $dbDst->quoteKey($extract->dst_table);
                         break;
                     case 'delete':
-                        $sql = 'DELETE FROM ' . $dbSrc->quoteKey($extract->dst_table);
+                        $sql = 'DELETE FROM ' . $dbDst->quoteKey($extract->dst_table);
                         break;
                 }
                 $dbDst->query($sql);
