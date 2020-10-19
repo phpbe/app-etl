@@ -220,7 +220,7 @@ class Task extends \Be\System\Service
                     if ($offset >= $configExtract->batchQuantity) {
                         $offset = 0;
                         // mysql 支持 replace into， 特殊处理
-                        if ($dbDstDriverName == 'Mysql') {
+                        if ($dbDstDriverName == 'Mysql' && $configExtract->mysqlUseReplaceFirst) {
                             $dbDst->quickReplaceMany($extract->dst_table, $batchData);
                         } else {
                             $dbDst->quickInsertMany($extract->dst_table, $batchData);
@@ -234,7 +234,7 @@ class Task extends \Be\System\Service
 
                 if (count($batchData) > 0) {
                     // mysql 支持 replace into， 特殊处理
-                    if ($dbDstDriverName == 'Mysql') {
+                    if ($dbDstDriverName == 'Mysql' && $configExtract->mysqlUseReplaceFirst) {
                         $dbDst->quickReplaceMany($extract->dst_table, $batchData);
                     } else {
                         $dbDst->quickInsertMany($extract->dst_table, $batchData);
@@ -245,7 +245,7 @@ class Task extends \Be\System\Service
             } else { // 境量方式
 
                 // mysql 支持 replace into， 特殊处理
-                if ($dbDstDriverName == 'Mysql') {
+                if ($dbDstDriverName == 'Mysql' && $configExtract->mysqlUseReplaceFirst) {
                     $batchData = [];
                     $offset = 0;
                     foreach ($srcRows as $srcRow) {

@@ -23,4 +23,11 @@ class Extract
      */
     public $timeout = 3600;
 
+    /**
+     * @BeConfigItem("MYSQL 数据库是否启用 Replace Into 插入",
+     *     driver="FormItemSwitch",
+     *     description="启用时，写入MYSQL数据时，将优先使用Replace批量插入，以提升效率。")
+     */
+    public $mysqlUseReplaceFirst = 0;
+
 }
