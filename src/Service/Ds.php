@@ -79,13 +79,13 @@ class Ds extends \Be\System\Service
         ];
 
         // Oracle 使用长连接避免中断
-        if ($ds->type == 'Oracle') {
+        if ($ds->type == 'oracle') {
             $config['options'] = [
                 \PDO::ATTR_PERSISTENT => TRUE,
             ];
         }
 
-        $class = 'Be\\System\\Db\\Driver\\' . $config['driver'] . 'Impl';
+        $class = 'Be\\System\\Db\\Driver\\' . ucfirst($config['driver']) . 'Impl';
         if (!class_exists($class)) throw new ServiceException('数据源（' . $ds->name . '）指定的数据库驱动' . $ds->type . '不支持！');
 
         $db = new $class($config);
