@@ -64,7 +64,6 @@ class Task extends \Be\System\Service
             $extractLog->trigger = $trigger;
             $extractLog->complete_time = null;
             $extractLog->create_time = date('Y-m-d H:i:s');
-            $extractLog->complete_time = date('Y-m-d H:i:s', 0);
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
 

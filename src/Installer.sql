@@ -68,7 +68,7 @@ CREATE TABLE `etl_extract_log` (
   `status` int(11) NOT NULL DEFAULT '0' COMMENT '状态（0：创建/1：运行中/2：执行完成/-1：出错）	',
   `message` varchar(200) NOT NULL DEFAULT '' COMMENT '异常信息',
   `trigger` tinyint(3) unsigned NOT NULL DEFAULT '0' COMMENT '触发方式：0：系统调度/1：人工启动',
-  `complete_time` TIMESTAMP NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '完成时间',
+  `complete_time` TIMESTAMP NULL DEFAULT NULL COMMENT '完成时间',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
