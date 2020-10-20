@@ -489,7 +489,7 @@ class Extract extends Controller
                     $tuple->field_mapping = '';
                     $tuple->breakpoint_type = '0';
                     $tuple->breakpoint_field = '';
-                    $tuple->breakpoint = '1970-01-01 08:00:00';
+                    $tuple->breakpoint = date('Y-m-d H:i:s', 0);
                     $tuple->breakpoint_step = '';
                     $tuple->breakpoint_offset = '0';
                     $tuple->schedule = '';
@@ -520,7 +520,7 @@ class Extract extends Controller
                     $tuple->breakpoint_type = $formData['breakpoint_type'];
                     if ($tuple->breakpoint_type == '0') {
                         $tuple->breakpoint_field = '';
-                        $tuple->breakpoint = '1970-01-01 08:00:00';
+                        $tuple->breakpoint = date('Y-m-d H:i:s', 0);
                         $tuple->breakpoint_step = '';
                         $tuple->breakpoint_offset = '0';
                     } else {
