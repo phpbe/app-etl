@@ -287,6 +287,8 @@ class Task extends \Be\System\Service
                 } else {
 
                     $primaryKey = $dbDst->getTablePrimaryKey($extract->dst_table);
+
+                    $primaryKeys = null;
                     $primaryKeyFields = null;
                     if (is_array($primaryKey)) { // 多主键
                         $primaryKeyFields = 'CONCAT(';
@@ -295,6 +297,12 @@ class Task extends \Be\System\Service
                         }
                         $primaryKeyFields = substr($primaryKeyFields, -1);
                         $primaryKeyFields .=  ')';
+
+                        $primaryKeys = [];
+                        foreach ($primaryKey as $pKey) {
+                            $primaryKeys[] = $dbDst->quoteKey($pKey);
+                        }
+                        $primaryKeys = implode(',', $primaryKeys);
                     }
 
                     $batchData = [];
@@ -339,7 +347,7 @@ class Task extends \Be\System\Service
                             if (is_array($primaryKey)) { // 多主键
                                 $sql = 'SELECT ' . $primaryKeyFields . ' 
                                         FROM ' . $dbSrc->quoteKey($extract->dst_table) . ' 
-                                        WHERE (' . $primaryKeyFields . ') IN (' . implode(',', $primaryKeyIn) . ')';
+                                        WHERE (' . $primaryKeys . ') IN (' . implode(',', $primaryKeyIn) . ')';
                                 $exists = $dbDst->getValues($sql);
                                 if (count($exists) == 0) {
                                     $batchInsertData = $batchData;
