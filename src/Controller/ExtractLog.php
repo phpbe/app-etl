@@ -133,6 +133,12 @@ class ExtractLog extends Controller
                         [
                             'name' => 'complete_time',
                             'label' => '完成时间',
+                            'value' => function ($row) {
+                                if ($row['status'] == 2) {
+                                    return $row['complete_time'];
+                                }
+                                return '-';
+                            },
                             'width' => '160',
                         ],
                     ],
@@ -244,6 +250,12 @@ class ExtractLog extends Controller
                         [
                             'name' => 'complete_time',
                             'label' => '完成时间',
+                            'value' => function ($row) {
+                                if ($row['status'] == 2) {
+                                    return $row['complete_time'];
+                                }
+                                return '-';
+                            },
                         ],
                     ]
                 ],
