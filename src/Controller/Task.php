@@ -46,6 +46,30 @@ class Task extends Controller
         echo '-';
     }
 
+
+    /**
+     * 检查超时的任务
+     * @BePermission("*")
+     */
+    public function checkExpiredExtractLog()
+    {
+        $configExtract = Be::getConfig('Etl.Extract');
+        if ($configExtract->timeout > 0) {
+            $extractTaskLogs = Be::newTable('etl_extract_log')
+                ->where('status', 1)
+                ->where('update_time', '<', (time() - $configExtract->timeout))
+                ->getObjects();
+            if (count($extractTaskLogs) > 0) {
+                $db = Be::getDb();
+                foreach ($extractTaskLogs as $extractTaskLog) {
+                    $db->update('etl_extract_log', ['id' => $extractTaskLog->id, 'status' => -1, 'message' => '执行超过 ' . $configExtract->timeout . '秒未更新！'], 'id');
+                }
+            }
+        }
+        echo '-';
+    }
+
+
     /**
      * 抽取计划任务
      *
@@ -98,7 +122,7 @@ class Task extends Controller
                 curl_setopt($curl, CURLOPT_HEADER, 1);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_TIMEOUT, 1);
-                curl_exec($curl);
+                echo curl_exec($curl);
                 curl_close($curl);
                 Response::set('success', true);
                 Response::set('message', '手工启动抽取任务成功！');

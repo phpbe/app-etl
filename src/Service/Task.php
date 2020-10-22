@@ -55,6 +55,7 @@ class Task extends \Be\System\Service
 
             $extractLog = Be::newTuple('etl_extract_log');
             $extractLog->extract_id = $extract->id;
+            $extractLog->breakpoint_type = $extract->breakpoint_type; // 断点类型
             $extractLog->breakpoint = $extract->breakpoint; // 断点
             $extractLog->breakpoint_step = $extract->breakpoint_step; // 断点递增量
             $extractLog->total = 0; // 总数据量
@@ -132,7 +133,12 @@ class Task extends \Be\System\Service
                 $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<' . $dbSrc->quoteValue($breakpointEnd);
             }
 
-            $sql = 'SELECT COUNT(*) FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
+            if ($extract->src_type == '0') {
+                $sql = 'SELECT COUNT(*) FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
+            } else {
+                $sql = 'SELECT COUNT(*) FROM (' . $extract->src_sql . ' ) t ' . $where;
+            }
+
             $total = $dbSrc->getValue($sql);
             $extractLog->total = $total;
             $extractLog->update_time = date('Y-m-d H:i:s');

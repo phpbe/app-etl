@@ -80,12 +80,25 @@ class ExtractLog extends Controller
                             'name' => 'breakpoint',
                             'label' => '断点',
                             'width' => '160',
+                            'value' => function ($row) {
+                                if ($row['breakpoint_type'] == 1) {
+                                    return $row['breakpoint'];
+                                }
+                                return '-';
+                            },
+
                         ],
                         [
                             'name' => 'breakpoint_step',
                             'label' => '断点递增量',
                             'keyValues' => $breakpointStepKeyValues,
                             'width' => '90',
+                            'value' => function ($row) {
+                                if ($row['breakpoint_type'] == 1) {
+                                    return $row['breakpoint_step'];
+                                }
+                                return '-';
+                            },
                         ],
                         [
                             'name' => 'total',
