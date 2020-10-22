@@ -122,7 +122,7 @@ class Task extends Controller
                 curl_setopt($curl, CURLOPT_HEADER, 1);
                 curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
                 curl_setopt($curl, CURLOPT_TIMEOUT, 1);
-                echo curl_exec($curl);
+                curl_exec($curl);
                 curl_close($curl);
                 Response::set('success', true);
                 Response::set('message', '手工启动抽取任务成功！');

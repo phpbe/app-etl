@@ -91,10 +91,6 @@ class Task extends \Be\System\Service
             if ($extract->breakpoint_type == '1') { // 按断点同步
                 $breakpointStart = $extract->breakpoint;
                 $tBreakpointStart = strtotime($breakpointStart);
-                if ($extract->breakpoint_offset > 0) {
-                    $tBreakpointStart -= $extract->breakpoint_offset;
-                    $breakpointStart = date('Y-m-d H:i:s', $tBreakpointStart);
-                }
 
                 if ($tBreakpointStart > $timestamp) {
                     throw new ServiceException('断点设置已超过当前时间，程序中止！');
@@ -127,10 +123,23 @@ class Task extends \Be\System\Service
                         throw new ServiceException('断点递增量(' . $extract->breakpoint_step . ')无法识别！');
                 }
 
-                $where = ' WHERE ';
-                $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=' . $dbSrc->quoteValue($breakpointStart);
-                $where .= ' AND ';
-                $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<' . $dbSrc->quoteValue($breakpointEnd);
+                if ($extract->breakpoint_offset > 0) {
+                    $tBreakpointStart -= $extract->breakpoint_offset;
+                    $breakpointStart = date('Y-m-d H:i:s', $tBreakpointStart);
+                }
+
+                $dbSrcDriverName = $dbSrc->getDriverName();
+                if ($dbSrcDriverName == 'Oracle') {
+                    $where = ' WHERE ';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=to_timestamp(\''.$breakpointStart.'\', \'yyyy-mm-dd hh24:mi:ss\')';
+                    $where .= ' AND ';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<to_timestamp(\''.$breakpointEnd.'\', \'yyyy-mm-dd hh24:mi:ss\')';
+                } else {
+                    $where = ' WHERE ';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=' . $dbSrc->quoteValue($breakpointStart);
+                    $where .= ' AND ';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<' . $dbSrc->quoteValue($breakpointEnd);
+                }
             }
 
             if ($extract->src_type == '0') {
