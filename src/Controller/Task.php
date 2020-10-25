@@ -57,7 +57,7 @@ class Task extends Controller
         if ($configExtract->timeout > 0) {
             $extractTaskLogs = Be::newTable('etl_extract_log')
                 ->where('status', 1)
-                ->where('update_time', '<', (time() - $configExtract->timeout))
+                ->where('update_time', '<', date('Y-m-d H:i:s', time() - $configExtract->timeout))
                 ->getObjects();
             if (count($extractTaskLogs) > 0) {
                 $db = Be::getDb();

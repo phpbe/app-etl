@@ -91,11 +91,12 @@ class ExtractLog extends Controller
                         [
                             'name' => 'breakpoint_step',
                             'label' => '断点递增量',
-                            'keyValues' => $breakpointStepKeyValues,
                             'width' => '90',
-                            'value' => function ($row) {
+                            'value' => function ($row) use($breakpointStepKeyValues) {
                                 if ($row['breakpoint_type'] == 1) {
-                                    return $row['breakpoint_step'];
+                                    if (isset($breakpointStepKeyValues[$row['breakpoint_step']])) {
+                                        return $breakpointStepKeyValues[$row['breakpoint_step']];
+                                    }
                                 }
                                 return '-';
                             },
