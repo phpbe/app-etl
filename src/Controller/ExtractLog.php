@@ -215,10 +215,24 @@ class ExtractLog extends Controller
                         [
                             'name' => 'breakpoint',
                             'label' => '断点',
+                            'value' => function ($row) {
+                                if ($row['breakpoint_type'] == 1) {
+                                    return $row['breakpoint'];
+                                }
+                                return '-';
+                            },
                         ],
                         [
                             'name' => 'breakpoint_step',
                             'label' => '断点递增量',
+                            'value' => function ($row) use($breakpointStepKeyValues) {
+                                if ($row['breakpoint_type'] == 1) {
+                                    if (isset($breakpointStepKeyValues[$row['breakpoint_step']])) {
+                                        return $breakpointStepKeyValues[$row['breakpoint_step']];
+                                    }
+                                }
+                                return '-';
+                            },
                         ],
                         [
                             'name' => 'total',
@@ -235,7 +249,7 @@ class ExtractLog extends Controller
                                 if ($row['total'] == 0) {
                                     return 100;
                                 }
-                                return $row['offset'] * 100 / $row['total'];
+                                return round($row['offset'] * 100 / $row['total'], 1);
                             },
                             'driver' => DetailItemProgress::class,
                         ],
