@@ -131,9 +131,9 @@ class Task extends \Be\System\Service
                 $dbSrcDriverName = $dbSrc->getDriverName();
                 if ($dbSrcDriverName == 'Oracle') {
                     $where = ' WHERE ';
-                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=to_timestamp(\''.$breakpointStart.'\', \'yyyy-mm-dd hh24:mi:ss\')';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=to_timestamp(\'' . $breakpointStart . '\', \'yyyy-mm-dd hh24:mi:ss\')';
                     $where .= ' AND ';
-                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<to_timestamp(\''.$breakpointEnd.'\', \'yyyy-mm-dd hh24:mi:ss\')';
+                    $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '<to_timestamp(\'' . $breakpointEnd . '\', \'yyyy-mm-dd hh24:mi:ss\')';
                 } else {
                     $where = ' WHERE ';
                     $where .= $dbSrc->quoteKey($extract->breakpoint_field) . '>=' . $dbSrc->quoteValue($breakpointStart);
@@ -153,6 +153,7 @@ class Task extends \Be\System\Service
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
 
+            $selectFields = null; // SQL中 SELECT 查询字段
             $fieldMappingKv = null;
             $fieldMappingFn = null;
             switch ($extract->field_mapping_type) {
@@ -160,6 +161,7 @@ class Task extends \Be\System\Service
 
                     break;
                 case '1':
+                    $selectFields = [];
                     $fieldMappings = explode(',', $extract->field_mapping);
                     foreach ($fieldMappings as $fieldMapping) {
                         $fieldMapping = trim($fieldMapping);
@@ -169,7 +171,9 @@ class Task extends \Be\System\Service
 
                         $fieldMapping = explode(':', $fieldMapping);
                         if (count($fieldMapping) == 2) {
-                            $fieldMappingKv[trim($fieldMapping[0])] = $fieldMapping[1];
+                            $field = trim($fieldMapping[0]);
+                            $fieldMappingKv[$field] = $fieldMapping[1];
+                            $selectFields[] = $dbSrc->quoteKey($field);
                         }
                     }
                     break;
@@ -196,7 +200,8 @@ class Task extends \Be\System\Service
 
             $sql = null;
             if ($extract->src_type == '0') {
-                $sql = 'SELECT * FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
+                $selectFieldsString = $selectFields === null ? '*' : implode(',', $selectFields);
+                $sql = 'SELECT ' . $selectFieldsString . ' FROM ' . $dbSrc->quoteKey($extract->src_table) . $where;
             } else {
                 $sql = 'SELECT * FROM (' . $extract->src_sql . ' ) t ' . $where;
             }
@@ -310,7 +315,7 @@ class Task extends \Be\System\Service
                             $primaryKeyFields .= $dbDst->quoteKey($pKey) . ', \',\',';
                         }
                         $primaryKeyFields = substr($primaryKeyFields, -1);
-                        $primaryKeyFields .=  ')';
+                        $primaryKeyFields .= ')';
 
                         $primaryKeys = [];
                         foreach ($primaryKey as $pKey) {
