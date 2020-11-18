@@ -8,7 +8,6 @@ use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Table\Item\TableItemProgress;
 use Be\System\Be;
-use Be\System\Controller;
 use Be\System\Request;
 
 /**
@@ -17,7 +16,7 @@ use Be\System\Request;
  *
  * @BePermissionGroup("抽取")
  */
-class ExtractLog extends Controller
+class ExtractLog
 {
 
     /**

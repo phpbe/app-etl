@@ -16,7 +16,6 @@ use Be\Plugin\Table\Item\TableItemSelection;
 use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
 use Be\System\Db\Tuple;
-use Be\System\Controller;
 use Be\System\Request;
 use Be\System\Response;
 
@@ -27,7 +26,7 @@ use Be\System\Response;
  * @BeMenuGroup("数据源", icon="el-icon-fa fa-database", ordering="10")
  * @BePermissionGroup("数据源")
  */
-class Ds extends Controller
+class Ds
 {
     /**
      * 数据源管理

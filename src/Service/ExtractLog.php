@@ -3,7 +3,7 @@
 namespace Be\App\Etl\Service;
 
 
-class ExtractLog extends \Be\System\Service
+class ExtractLog
 {
 
     public function getStatusKeyValues() {

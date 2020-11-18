@@ -4,7 +4,6 @@ namespace Be\App\Etl\Controller;
 
 use Be\Plugin\Detail\Item\DetailItemCode;
 use Be\Plugin\Detail\Item\DetailItemSwitch;
-use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Table\Item\TableItemLink;
 use Be\Plugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Plugin\Form\Item\FormItemSelect;
@@ -13,7 +12,6 @@ use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
 use Be\System\Exception\ControllerException;
 use Be\System\Request;
-use Be\System\Controller;
 use Be\System\Response;
 
 /**
@@ -23,7 +21,7 @@ use Be\System\Response;
  * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy", ordering="20")
  * @BePermissionGroup("抽取")
  */
-class Extract extends Controller
+class Extract
 {
     /**
      * 任务管理

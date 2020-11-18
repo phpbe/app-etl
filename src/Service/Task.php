@@ -9,7 +9,7 @@ use Be\System\Exception\ServiceException;
 use Be\System\Exception\TupleException;
 use Be\Util\Datetime;
 
-class Task extends \Be\System\Service
+class Task
 {
 
     /**

@@ -9,7 +9,6 @@ use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\Plugin\Table\Item\TableItemSwitch;
 use Be\System\Be;
 use Be\System\Db\Tuple;
-use Be\System\Controller;
 
 /**
  * Class ExtractCategory
@@ -18,7 +17,7 @@ use Be\System\Controller;
  * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy")
  * @BePermissionGroup("抽取")
  */
-class ExtractCategory extends Controller
+class ExtractCategory
 {
     /**
      * 分类管理

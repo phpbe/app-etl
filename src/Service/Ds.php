@@ -6,7 +6,7 @@ use Be\System\Be;
 use Be\System\db\Driver;
 use Be\System\Exception\ServiceException;
 
-class Ds extends \Be\System\Service
+class Ds
 {
 
     private $dbs = [];

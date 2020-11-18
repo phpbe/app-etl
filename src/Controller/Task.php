@@ -4,7 +4,6 @@ namespace Be\App\Etl\Controller;
 
 use Be\System\Be;
 use Be\System\Request;
-use Be\System\Controller;
 use Be\System\Response;
 
 /**
@@ -13,7 +12,7 @@ use Be\System\Response;
  *
  * @BePermissionGroup("计划任务")
  */
-class Task extends Controller
+class Task
 {
 
     /**

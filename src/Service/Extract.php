@@ -5,7 +5,7 @@ namespace Be\App\Etl\Service;
 
 use Be\System\Be;
 
-class Extract extends \Be\System\Service
+class Extract
 {
 
     public function getIdNameKeyValues()

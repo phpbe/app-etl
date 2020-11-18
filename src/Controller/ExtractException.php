@@ -4,7 +4,6 @@ namespace Be\App\Etl\Controller;
 
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\System\Be;
-use Be\System\Controller;
 use Be\System\Request;
 
 /**
@@ -13,7 +12,7 @@ use Be\System\Request;
  *
  * @BePermissionGroup("抽取")
  */
-class ExtractException extends Controller
+class ExtractException
 {
     /**
      * 分类管理
