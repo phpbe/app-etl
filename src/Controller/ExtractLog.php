@@ -166,9 +166,7 @@ class ExtractLog
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -179,9 +177,7 @@ class ExtractLog
                                 'width' => '60%',
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -190,9 +186,7 @@ class ExtractLog
                             'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger',
                             ]
                         ]
                     ]

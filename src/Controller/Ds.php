@@ -86,10 +86,8 @@ class Ds
                             'task' => 'create',
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -101,10 +99,8 @@ class Ds
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'success',
-                                ]
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -116,10 +112,8 @@ class Ds
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-lock',
-                                    'type' => 'warning',
-                                ]
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -132,19 +126,15 @@ class Ds
                                 'value' => '1',
                             ],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ]
                         ],
                         [
                             'label' => '导出',
                             'driver' => ToolbarItemButtonDropDown::class,
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ],
                             'menus' => [
                                 [
@@ -247,9 +237,7 @@ class Ds
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
+                                'type' => 'success'
                             ]
                         ],
                         [
@@ -257,9 +245,7 @@ class Ds
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary'
                             ]
                         ],
                         [
@@ -272,9 +258,7 @@ class Ds
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger'
                             ]
                         ],
                     ]
@@ -364,9 +348,7 @@ class Ds
                             'keyValues' => $typeKeyValues,
                             'required' => true,
                             'ui' => [
-                                'select' => [
-                                    '@change' => 'switch(formData.type) {case \'mysql\': formData.db_port=\'3306\';break;case \'mssql\': formData.db_port=\'1433\';break;case \'oracle\': formData.db_port=\'1521\';break;}',
-                                ]
+                                '@change' => 'switch(formData.type) {case \'mysql\': formData.db_port=\'3306\';break;case \'mssql\': formData.db_port=\'1433\';break;case \'oracle\': formData.db_port=\'1521\';break;}',
                             ]
                         ],
                         [

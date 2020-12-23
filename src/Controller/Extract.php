@@ -91,10 +91,8 @@ class Extract
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'drawer' => ['width' => '80%'],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -106,10 +104,8 @@ class Extract
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-check',
-                                    'type' => 'success',
-                                ]
+                                'icon' => 'el-icon-fa fa-check',
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -121,10 +117,8 @@ class Extract
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-lock',
-                                    'type' => 'warning',
-                                ]
+                                'icon' => 'el-icon-fa fa-lock',
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -137,19 +131,15 @@ class Extract
                                 'value' => '1',
                             ],
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-delete',
-                                    'type' => 'danger'
-                                ]
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger',
                             ]
                         ],
                         [
                             'label' => '导出',
                             'driver' => ToolbarItemButtonDropDown::class,
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-fa fa-download',
-                                ]
+                                'icon' => 'el-icon-fa fa-download',
                             ],
                             'menus' => [
                                 [
@@ -253,7 +243,6 @@ class Extract
                             },
                         ],
                     ],
-                    'exclude' => ['password', 'salt', 'remember_me_token']
                 ],
 
                 'operation' => [
@@ -266,9 +255,7 @@ class Extract
                             'target' => 'drawer',
                             'drawer' => ['width' => '80%'],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -276,10 +263,8 @@ class Extract
                             'url' => beUrl('Etl.Task.manualRunExtract'),
                             'target' => 'ajax',
                             'ui' => [
-                                'link' => [
-                                    'v-if' => 'scope.row.is_enable == \'1\'',
-                                    'type' => 'success'
-                                ]
+                                'v-if' => 'scope.row.is_enable == \'1\'',
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -287,9 +272,7 @@ class Extract
                             'action' => 'log',
                             'target' => 'blank',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'info'
-                                ]
+                                'type' => 'info',
                             ]
                         ],
                         [
@@ -297,9 +280,7 @@ class Extract
                             'action' => 'exception',
                             'target' => 'blank',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'warning'
-                                ]
+                                'type' => 'warning',
                             ]
                         ],
                         [
@@ -312,9 +293,7 @@ class Extract
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger',
                             ]
                         ],
                     ]

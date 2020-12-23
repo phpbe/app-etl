@@ -93,12 +93,17 @@ class Ds
         return $db;
     }
 
-    public function getIdNameKeyValues()
+    public function getIdNameKeyValues($wheres = null)
     {
-        return Be::getTable('etl_ds')
+        $table = Be::getTable('etl_ds')
             ->where('is_delete', 0)
-            ->where('is_enable', 1)
-            ->getKeyValues('id', 'name');
+            ->where('is_enable', 1);
+
+        if ($wheres) {
+            $table->wheres($wheres);
+        }
+
+        return $table->getKeyValues('id', 'name');
     }
 
     public function testDb($data)

@@ -73,9 +73,7 @@ class ExtractException
                             'target' => 'drawer',
                             'drawer' => ['width' => '60%'],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -84,9 +82,7 @@ class ExtractException
                             'confirm' => '确认要删除么？',
                             'target' => 'ajax',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger',
                             ]
                         ]
                     ]

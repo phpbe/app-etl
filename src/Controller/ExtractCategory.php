@@ -67,10 +67,8 @@ class ExtractCategory
                             'task' => 'create',
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'ui' => [
-                                'button' => [
-                                    'icon' => 'el-icon-plus',
-                                    'type' => 'primary',
-                                ]
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
                             ]
                         ],
                     ]
@@ -121,9 +119,7 @@ class ExtractCategory
                             'task' => 'detail',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'success'
-                                ]
+                                'type' => 'success',
                             ]
                         ],
                         [
@@ -131,9 +127,7 @@ class ExtractCategory
                             'task' => 'edit',
                             'target' => 'drawer',
                             'ui' => [
-                                'link' => [
-                                    'type' => 'primary'
-                                ]
+                                'type' => 'primary',
                             ]
                         ],
                         [
@@ -146,9 +140,7 @@ class ExtractCategory
                                 'value' => 1,
                             ],
                             'ui' => [
-                                'link' => [
-                                    'type' => 'danger'
-                                ]
+                                'type' => 'danger',
                             ]
                         ],
                     ]
