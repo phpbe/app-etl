@@ -3,15 +3,18 @@
     "type": "library",
     "license": "MIT",
     "description": "基于BE框架实现的简单实用的的ETL工具",
+    "keywords": [
+        "ETL"
+    ],
     "authors": [
         {
-            "name": "liu12",
-            "email": "i@liu12.com",
-            "homepage": "http://www.liu12.com/"
+            "name": "1024i team",
+            "email": "1024i@1024i.com",
+            "homepage": "https://www.1024i.com/team"
         }
     ],
     "require": {
-        "be/mf": "dev-master"
+        "be/be": "~2.7.0"
     },
     "autoload": {
         "psr-4": {

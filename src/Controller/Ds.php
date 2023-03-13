@@ -14,10 +14,10 @@ use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\Plugin\Table\Item\TableItemSelection;
 use Be\Plugin\Table\Item\TableItemSwitch;
-use Be\System\Be;
-use Be\System\Db\Tuple;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Be;
+use Be\Db\Tuple;
+use Be\Request;
+use Be\Response;
 
 /**
  * Class Ds

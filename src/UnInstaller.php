@@ -1,12 +1,12 @@
 <?php
 namespace Be\App\Etl;
 
-use Be\System\Be;
+use Be\Be;
 
 /**
  * 应用安装器
  */
-class UnInstaller extends \Be\System\App\UnInstaller
+class UnInstaller extends \Be\App\UnInstaller
 {
 
     /**

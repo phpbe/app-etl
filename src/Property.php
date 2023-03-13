@@ -3,7 +3,7 @@
 namespace Be\App\Etl;
 
 
-class Property extends \Be\System\App\Property
+class Property extends \Be\App\Property
 {
 
     public $label = 'ETL';

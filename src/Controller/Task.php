@@ -2,9 +2,9 @@
 
 namespace Be\App\Etl\Controller;
 
-use Be\System\Be;
-use Be\System\Request;
-use Be\System\Response;
+use Be\Be;
+use Be\Request;
+use Be\Response;
 
 /**
  * Class Task

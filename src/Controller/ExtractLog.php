@@ -7,8 +7,8 @@ use Be\Plugin\Detail\Item\DetailItemProgress;
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Table\Item\TableItemProgress;
-use Be\System\Be;
-use Be\System\Request;
+use Be\Be;
+use Be\Request;
 
 /**
  * Class ExtractLog

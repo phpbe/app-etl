@@ -295,7 +295,7 @@
     </div>
 
     <?php
-    $baseUrl = \Be\System\Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
+    $baseUrl = \Be\Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
 
     $js = [
         'lib/codemirror.js',

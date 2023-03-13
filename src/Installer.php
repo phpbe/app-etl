@@ -1,12 +1,12 @@
 <?php
 namespace Be\App\Etl;
 
-use Be\System\Be;
+use Be\Be;
 
 /**
  * 应用安装器
  */
-class Installer extends \Be\System\App\Installer
+class Installer extends \Be\App\Installer
 {
 
     /**

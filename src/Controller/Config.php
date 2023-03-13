@@ -2,7 +2,7 @@
 
 namespace Be\App\Etl\Controller;
 
-use Be\System\Be;
+use Be\Be;
 
 /**
  * @BeMenuGroup("配置", ordering="40")

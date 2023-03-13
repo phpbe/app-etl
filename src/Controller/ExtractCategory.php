@@ -7,8 +7,8 @@ use Be\Plugin\Detail\Item\DetailItemSwitch;
 use Be\Plugin\Form\Item\FormItemSelect;
 use Be\Plugin\Form\Item\FormItemSwitch;
 use Be\Plugin\Table\Item\TableItemSwitch;
-use Be\System\Be;
-use Be\System\Db\Tuple;
+use Be\Be;
+use Be\Db\Tuple;
 
 /**
  * Class ExtractCategory

@@ -2,7 +2,7 @@
 
 namespace Be\App\Etl\Service;
 
-use Be\System\Be;
+use Be\Be;
 
 class ExtractCategory
 {

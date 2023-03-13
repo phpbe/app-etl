@@ -3,8 +3,8 @@
 namespace Be\App\Etl\Controller;
 
 use Be\Plugin\Form\Item\FormItemDatePickerRange;
-use Be\System\Be;
-use Be\System\Request;
+use Be\Be;
+use Be\Request;
 
 /**
  * Class ExtractException
