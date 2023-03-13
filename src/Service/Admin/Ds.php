@@ -5,6 +5,7 @@ namespace Be\App\Etl\Service\Admin;
 use Be\Be;
 use Be\db\Driver;
 use Be\App\ServiceException;
+use Be\Util\Str\Uuid;
 
 class Ds
 {
@@ -14,22 +15,22 @@ class Ds
     /**
      * 获取指定数据源的表信息
      *
-     * @param int $dsId
+     * @param string $dsId
      * @return array
      */
-    public function getTableNames($dsId)
+    public function getTableNames(string $dsId)
     {
         $db = $this->getDb($dsId);
         return $db->getTableNames();
     }
 
-    public function getTableFields($dsId, $tableName)
+    public function getTableFields(string $dsId, $tableName)
     {
         $db = $this->getDb($dsId);
         return array_values($db->getTableFields($tableName));
     }
 
-    public function getSqlFields($dsId, $sql)
+    public function getSqlFields(string $dsId, $sql)
     {
         $db = $this->getDb($dsId);
         $arr = $db->getArray($sql);
@@ -47,11 +48,11 @@ class Ds
     /**
      * 数据数据库连接
      *
-     * @param int $dsId
+     * @param string $dsId
      * @return Driver
      * @throws \Exception
      */
-    public function getDb($dsId)
+    public function getDb(string $dsId)
     {
         if (!isset($this->dbs[$dsId])) {
             $this->dbs[$dsId] = $this->newDb($dsId);
@@ -62,14 +63,14 @@ class Ds
     /**
      * 数据数据库连接
      *
-     * @param int $dsId
+     * @param string $dsId
      * @return Driver
      * @throws \Exception
      */
-    public function newDb($dsId)
+    public function newDb(string $dsId)
     {
         $ds = Be::getTuple('etl_ds')->load($dsId);
-        $config = [
+        $dsConfig = [
             'driver' => $ds->type,
             'host' => $ds->db_host,
             'port' => $ds->db_port,
@@ -80,17 +81,16 @@ class Ds
 
         // Oracle 使用长连接避免中断
         if ($ds->type == 'oracle') {
-            $config['options'] = [
+            $dsConfig['options'] = [
                 \PDO::ATTR_PERSISTENT => TRUE,
             ];
         }
 
-        $class = 'Be\\System\\Db\\Driver\\' . ucfirst($config['driver']) . 'Impl';
-        if (!class_exists($class)) throw new ServiceException('数据源（' . $ds->name . '）指定的数据库驱动' . $ds->type . '不支持！');
+        $config = Be::getConfig('App.System.Db');
+        $name = 'etl_' . Uuid::strip($dsId);
+        $config->$name = $dsConfig;
 
-        $db = new $class($config);
-        $db->connect();
-        return $db;
+        return Be::newDb($name);
     }
 
     public function getIdNameKeyValues($wheres = null)

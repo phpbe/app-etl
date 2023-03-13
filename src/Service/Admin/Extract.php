@@ -20,25 +20,25 @@ class Extract
     public function getSrcTypeKeyValues()
     {
         return [
-            '0' => '表',
-            '1' => 'SQL语句',
+            'table' => '表',
+            'sql' => 'SQL语句',
         ];
     }
 
     public function getFieldMappingTypeKeyValues()
     {
         return [
-            '0' => '完全一致',
-            '1' => '字段映射',
-            '2' => '代码处理',
+            'same' => '完全一致',
+            'mapping' => '字段映射',
+            'code' => '代码处理',
         ];
     }
 
     public function getBreakpointTypeKeyValues()
     {
         return [
-            '0' => '全量',
-            '1' => '有断点',
+            'full' => '全量',
+            'breakpoint' => '有断点',
         ];
     }
 

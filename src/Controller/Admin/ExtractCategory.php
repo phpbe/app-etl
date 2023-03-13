@@ -14,7 +14,7 @@ use Be\AdminPlugin\Table\Item\TableItemSwitch;
  * Class ExtractCategory
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy")
+ * @BeMenuGroup("抽取")
  * @BePermissionGroup("抽取")
  */
 class ExtractCategory
@@ -22,18 +22,18 @@ class ExtractCategory
     /**
      * 分类管理
      *
-     * @BeMenu("分类管理", icon="el-icon-fa fa-bookmark")
-     * @BePermission("分类管理")
+     * @BeMenu("分类", icon="el-icon-folder", ordering="2.2")
+     * @BePermission("分类")
      */
     public function lists()
     {
         Be::getAdminPlugin('Curd')->setting([
 
-            'label' => '分类管理',
+            'label' => '分类',
             'table' => 'etl_extract_category',
 
             'grid' => [
-                'title' => '分类管理',
+                'title' => '分类',
 
                 'filter' => [
                     ['is_delete', '=', '0'],

@@ -18,15 +18,15 @@ use Be\Response;
  * Class Extract
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy", ordering="20")
- * @BePermissionGroup("抽取")
+ * @BeMenuGroup("抽取", icon="bi-box-arrow-right", ordering="2")
+ * @BePermissionGroup("抽取", ordering="2.1")
  */
 class Extract
 {
     /**
      * 任务管理
      *
-     * @BeMenu("任务管理", icon="el-icon-fa fa-list-ul", ordering="20")
+     * @BeMenu("任务管理", icon="bi-list", ordering="2.1")
      * @BePermission("任务管理")
      */
     public function lists()

@@ -3,6 +3,8 @@
 namespace Be\App\Etl\Controller\Admin;
 
 
+use Be\AdminPlugin\Table\Item\TableItemLink;
+use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
 use Be\Be;
 use Be\Db\Tuple;
 use Be\AdminPlugin\Detail\Item\DetailItemSwitch;
@@ -15,7 +17,6 @@ use Be\AdminPlugin\Form\Item\FormItemSelect;
 use Be\AdminPlugin\Form\Item\FormItemSwitch;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
-use Be\AdminPlugin\Toolbar\Item\ToolbarItemButtonDropDown;
 use Be\Request;
 use Be\Response;
 
@@ -39,6 +40,8 @@ class Ds
             'oracle' => 'Oracel',
             'mssql' => 'SQL Server',
         ];
+
+        $configDb = Be::getConfig('App.System.Db');
 
         Be::getAdminPlugin('Curd')->setting([
 
@@ -75,9 +78,37 @@ class Ds
                     ],
                 ],
 
+                'titleToolbar' => [
+                    'items' => [
+                        [
+                            'label' => '导出',
+                            'driver' => ToolbarItemDropDown::class,
+                            'ui' => [
+                                'icon' => 'el-icon-download',
+                            ],
+                            'menus' => [
+                                [
+                                    'label' => 'CSV',
+                                    'task' => 'export',
+                                    'postData' => [
+                                        'driver' => 'csv',
+                                    ],
+                                    'target' => 'blank',
+                                ],
+                                [
+                                    'label' => 'EXCEL',
+                                    'task' => 'export',
+                                    'postData' => [
+                                        'driver' => 'excel',
+                                    ],
+                                    'target' => 'blank',
+                                ],
+                            ]
+                        ],
+                    ]
+                ],
 
-                'toolbar' => [
-
+                'titleRightToolbar' => [
                     'items' => [
                         [
                             'label' => '新建',
@@ -88,8 +119,13 @@ class Ds
                                 'type' => 'primary',
                             ]
                         ],
+                    ]
+                ],
+
+                'tableToolbar' => [
+                    'items' => [
                         [
-                            'label' => '启用',
+                            'label' => '批量启用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -102,7 +138,7 @@ class Ds
                             ]
                         ],
                         [
-                            'label' => '禁用',
+                            'label' => '批量禁用',
                             'task' => 'fieldEdit',
                             'postData' => [
                                 'field' => 'is_enable',
@@ -115,7 +151,7 @@ class Ds
                             ]
                         ],
                         [
-                            'label' => '删除',
+                            'label' => '批量删除',
                             'task' => 'fieldEdit',
                             'confirm' => '确认要删除么？',
                             'target' => 'ajax',
@@ -128,37 +164,6 @@ class Ds
                                 'type' => 'danger'
                             ]
                         ],
-                        [
-                            'label' => '导出',
-                            'driver' => ToolbarItemButtonDropDown::class,
-                            'ui' => [
-                                'icon' => 'el-icon-fa fa-download',
-                            ],
-                            'menus' => [
-                                [
-                                    'label' => 'CSV',
-                                    'task' => 'export',
-                                    'postData' => [
-                                        'driver' => 'csv',
-                                    ],
-                                    'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-text-o',
-                                    ],
-                                ],
-                                [
-                                    'label' => 'EXCEL',
-                                    'task' => 'export',
-                                    'postData' => [
-                                        'driver' => 'excel',
-                                    ],
-                                    'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-excel-o',
-                                    ],
-                                ],
-                            ]
-                        ],
                     ]
                 ],
 
@@ -169,13 +174,14 @@ class Ds
                             'width' => '50',
                         ],
                         [
-                            'name' => 'id',
-                            'label' => 'ID',
-                            'width' => '60',
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '名称',
+                            'driver' => TableItemLink::class,
+                            'align' => 'left',
+                            'task' => 'detail',
+                            'drawer' => [
+                                'width' => '80%'
+                            ],
                         ],
                         [
                             'name' => 'type',
@@ -208,11 +214,6 @@ class Ds
                         ],
                         */
                         [
-                            'name' => 'create_time',
-                            'label' => '创建时间',
-                            'width' => '150',
-                        ],
-                        [
                             'name' => 'is_enable',
                             'label' => '启用/禁用',
                             'driver' => TableItemSwitch::class,
@@ -223,45 +224,41 @@ class Ds
                                 return $row['is_enable'] ? '启用' : '禁用';
                             },
                         ],
+                        [
+                            'name' => 'create_time',
+                            'label' => '创建时间',
+                            'width' => '180',
+                        ],
+                    ],
+
+                    'operation' => [
+                        'label' => '操作',
+                        'width' => '120',
+                        'items' => [
+                            [
+                                'label' => '编辑',
+                                'task' => 'edit',
+                                'target' => 'drawer',
+                                'ui' => [
+                                    'type' => 'primary'
+                                ]
+                            ],
+                            [
+                                'label' => '删除',
+                                'task' => 'fieldEdit',
+                                'confirm' => '确认要删除么？',
+                                'target' => 'ajax',
+                                'postData' => [
+                                    'field' => 'is_delete',
+                                    'value' => 1,
+                                ],
+                                'ui' => [
+                                    'type' => 'danger'
+                                ]
+                            ],
+                        ]
                     ],
                 ],
-
-                'operation' => [
-                    'label' => '操作',
-                    'width' => '120',
-                    'items' => [
-                        [
-                            'label' => '查看',
-                            'task' => 'detail',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'type' => 'success'
-                            ]
-                        ],
-                        [
-                            'label' => '编辑',
-                            'task' => 'edit',
-                            'target' => 'drawer',
-                            'ui' => [
-                                'type' => 'primary'
-                            ]
-                        ],
-                        [
-                            'label' => '删除',
-                            'task' => 'fieldEdit',
-                            'confirm' => '确认要删除么？',
-                            'target' => 'ajax',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => 1,
-                            ],
-                            'ui' => [
-                                'type' => 'danger'
-                            ]
-                        ],
-                    ]
-                ],
-
             ],
 
             'detail' => [
@@ -340,6 +337,10 @@ class Ds
                             'required' => true,
                         ],
                         [
+                            'driver' => FormItemCustom::class,
+                            'html' => '<el-form-item><el-button type="primary" @click="loadSystemDb"  size="mini" plain>系统主库</el-button></el-form-item>'
+                        ],
+                        [
                             'name' => 'type',
                             'label' => '驱动类型',
                             'driver' => FormItemSelect::class,
@@ -410,6 +411,14 @@ class Ds
                     'testDbLoading' => false, // 测试数据库连接中
                 ],
                 'vueMethods' => [
+                    'loadSystemDb' => 'function() {
+                        this.formData.type = \'' . $configDb->master['driver'] . '\';
+                        this.formData.db_host = \'' . $configDb->master['host'] . '\';
+                        this.formData.db_port = \'' . $configDb->master['port'] . '\';
+                        this.formData.db_user = \'' . $configDb->master['username'] . '\';
+                        this.formData.db_pass = \'' . $configDb->master['password'] . '\';
+                        this.formData.db_name = \'' . $configDb->master['name'] . '\';
+                    }',
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;
@@ -457,6 +466,10 @@ class Ds
                             'name' => 'name',
                             'label' => '名称',
                             'required' => true,
+                        ],
+                        [
+                            'driver' => FormItemCustom::class,
+                            'html' => '<el-form-item><el-button type="primary" @click="loadSystemDb"  size="mini" plain>系统主库</el-button></el-form-item>'
                         ],
                         [
                             'name' => 'type',
@@ -525,6 +538,14 @@ class Ds
                     'testDbLoading' => false, // 测试数据库连接中
                 ],
                 'vueMethods' => [
+                    'loadSystemDb' => 'function() {
+                        this.formData.type = \'' . $configDb->master['driver'] . '\';
+                        this.formData.db_host = \'' . $configDb->master['host'] . '\';
+                        this.formData.db_port = \'' . $configDb->master['port'] . '\';
+                        this.formData.db_user = \'' . $configDb->master['username'] . '\';
+                        this.formData.db_pass = \'' . $configDb->master['password'] . '\';
+                        this.formData.db_name = \'' . $configDb->master['name'] . '\';
+                    }',
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;

@@ -4,7 +4,7 @@ $installed = false;
 $db = \Be\Be::getDb();
 $tableNames = $db->getTableNames();
 if (in_array('etl_ds', $tableNames)) {
-    if (in_array('etl_extract_exception', $tableNames)) {
+    if (in_array('etl_extract_snapshot', $tableNames)) {
         $installed = true;
     } else {
         throw new \Be\Runtime\RuntimeException('剑测到部分数据表已存在，请检查数据库！');
