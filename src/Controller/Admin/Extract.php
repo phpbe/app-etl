@@ -16,7 +16,7 @@ use Be\Response;
 
 /**
  * Class Extract
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy", ordering="20")
  * @BePermissionGroup("抽取")
@@ -31,18 +31,18 @@ class Extract
      */
     public function lists()
     {
-        $dsKeyValues = Be::getService('Etl.Ds')->getIdNameKeyValues();
-        $fieldMappingTypeKeyValues = Be::getService('Etl.Extract')->getFieldMappingTypeKeyValues();
-        $breakpointTypeKeyValues = Be::getService('Etl.Extract')->getBreakpointTypeKeyValues();
-        $breakpointStepKeyValues = Be::getService('Etl.Extract')->getBreakpointStepKeyValues();
-        $categoryKeyValues = Be::getService('Etl.ExtractCategory')->getIdNameKeyValues();
+        $dsKeyValues = Be::getService('App.Etl.Admin.Ds')->getIdNameKeyValues();
+        $fieldMappingTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getFieldMappingTypeKeyValues();
+        $breakpointTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointTypeKeyValues();
+        $breakpointStepKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointStepKeyValues();
+        $categoryKeyValues = Be::getService('App.Etl.Admin.ExtractCategory')->getIdNameKeyValues();
 
-        Be::getPlugin('Curd')->setting([
+        Be::getAdminPlugin('Curd')->setting([
 
             'label' => '抽取任务管理',
             'table' => 'etl_extract',
 
-            'lists' => [
+            'grid' => [
                 'title' => '抽取任务管理',
                 'orderBy' => 'id',
                 'orderByDir' => 'DESC',
@@ -87,7 +87,7 @@ class Extract
                     'items' => [
                         [
                             'label' => '新建抽取任务',
-                            'url' => beUrl('Etl.Extract.edit'),
+                            'url' => beAdminUrl('Etl.Extract.edit'),
                             'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
                             'drawer' => ['width' => '80%'],
                             'ui' => [
@@ -251,7 +251,7 @@ class Extract
                     'items' => [
                         [
                             'label' => '编辑',
-                            'url' => beUrl('Etl.Extract.edit'),
+                            'url' => beAdminUrl('Etl.Extract.edit'),
                             'target' => 'drawer',
                             'drawer' => ['width' => '80%'],
                             'ui' => [
@@ -260,7 +260,7 @@ class Extract
                         ],
                         [
                             'label' => '手动执行',
-                            'url' => beUrl('Etl.Task.manualRunExtract'),
+                            'url' => beAdminUrl('Etl.Task.manualRunExtract'),
                             'target' => 'ajax',
                             'ui' => [
                                 'v-if' => 'scope.row.is_enable == \'1\'',
@@ -430,7 +430,7 @@ class Extract
         if (!isset($postData['row']['id'])) {
             throw new ControllerException('主键（row.id）缺失！');
         }
-        Response::redirect(beUrl('Etl.ExtractLog.lists', ['extractId' => $postData['row']['id']]));
+        Response::redirect(beAdminUrl('Etl.ExtractLog.lists', ['extractId' => $postData['row']['id']]));
     }
 
     /**
@@ -442,7 +442,7 @@ class Extract
         if (!isset($postData['row']['id'])) {
             throw new ControllerException('主键（row.id）缺失！');
         }
-        Response::redirect(beUrl('Etl.ExtractException.lists', ['extractId' => $postData['row']['id']]));
+        Response::redirect(beAdminUrl('Etl.ExtractException.lists', ['extractId' => $postData['row']['id']]));
     }
 
     /**
@@ -525,13 +525,13 @@ class Extract
         } else {
 
             try {
-                $categoryKeyValues = Be::getService('Etl.ExtractCategory')->getIdNameKeyValues();
+                $categoryKeyValues = Be::getService('App.Etl.Admin.ExtractCategory')->getIdNameKeyValues();
                 Response::set('categoryKeyValues', $categoryKeyValues);
 
-                $dsKeyValues = Be::getService('Etl.Ds')->getIdNameKeyValues();
+                $dsKeyValues = Be::getService('App.Etl.Admin.Ds')->getIdNameKeyValues();
                 Response::set('dsKeyValues', (object)$dsKeyValues);
 
-                $srcTypeKeyValues = Be::getService('Etl.Extract')->getSrcTypeKeyValues();
+                $srcTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getSrcTypeKeyValues();
                 Response::set('srcTypeKeyValues', (object)$srcTypeKeyValues);
 
                 $tuple = Be::getTuple('etl_extract');
@@ -548,16 +548,16 @@ class Extract
 
                 Response::set('extract', $tuple);
 
-                $fieldMappingTypeKeyValues = Be::getService('Etl.Extract')->getFieldMappingTypeKeyValues();
+                $fieldMappingTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getFieldMappingTypeKeyValues();
                 Response::set('fieldMappingTypeKeyValues', (object)$fieldMappingTypeKeyValues);
 
-                $breakpointTypeKeyValues = Be::getService('Etl.Extract')->getBreakpointTypeKeyValues();
+                $breakpointTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointTypeKeyValues();
                 Response::set('breakpointTypeKeyValues', (object)$breakpointTypeKeyValues);
 
-                $breakpointStepKeyValues = Be::getService('Etl.Extract')->getBreakpointStepKeyValues();
+                $breakpointStepKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointStepKeyValues();
                 Response::set('breakpointStepKeyValues', $breakpointStepKeyValues);
 
-                Response::display('App.Etl.Extract.edit', 'Nude');
+                Response::display('App.Etl.Extract.edit', 'Blank');
             } catch (\Exception $e) {
                 Response::error($e->getMessage());
             }

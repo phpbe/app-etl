@@ -12,7 +12,7 @@ use Be\Request;
 
 /**
  * Class ExtractLog
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BePermissionGroup("抽取")
  */
@@ -28,17 +28,17 @@ class ExtractLog
     {
         $extractId = Request::get('extractId');
 
-        $statusKeyValues = Be::getService('Etl.ExtractLog')->getStatusKeyValues();
-        $triggerKeyValues = Be::getService('Etl.ExtractLog')->getTriggerKeyValues();
-        $breakpointTypeKeyValues = Be::getService('Etl.Extract')->getBreakpointTypeKeyValues();
-        $breakpointStepKeyValues = Be::getService('Etl.Extract')->getBreakpointStepKeyValues();
+        $statusKeyValues = Be::getService('App.Etl.Admin.ExtractLog')->getStatusKeyValues();
+        $triggerKeyValues = Be::getService('App.Etl.Admin.ExtractLog')->getTriggerKeyValues();
+        $breakpointTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointTypeKeyValues();
+        $breakpointStepKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointStepKeyValues();
 
-        Be::getPlugin('Curd')->setting([
+        Be::getAdminPlugin('Curd')->setting([
 
             'label' => '任务日志',
             'table' => 'etl_extract_log',
 
-            'lists' => [
+            'grid' => [
                 'title' => '任务日志',
                 'reload' => '10', // 10 秒刷新下数据
                 'orderBy' => 'id',
@@ -300,7 +300,7 @@ class ExtractLog
                 $tuple = Be::getTuple('etl_extract_snapshot');
                 $tuple->loadBy('extract_log_id', $postData['row']['id']);
 
-                Be::getPlugin('Detail')->setting([
+                Be::getAdminPlugin('Detail')->setting([
                     'form' => [
                         'items' => [
                             [

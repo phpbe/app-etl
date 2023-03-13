@@ -8,7 +8,7 @@ use Be\Request;
 
 /**
  * Class ExtractException
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BePermissionGroup("抽取")
  */
@@ -24,12 +24,12 @@ class ExtractException
 
         $extractId = Request::get('extractId');
 
-        Be::getPlugin('Curd')->setting([
+        Be::getAdminPlugin('Curd')->setting([
 
             'label' => '抽取任务异常',
             'table' => 'etl_extract_exception',
 
-            'lists' => [
+            'grid' => [
                 'title' => '抽取任务异常',
                 'filter' => [
                     ['extract_id', '=', $extractId],

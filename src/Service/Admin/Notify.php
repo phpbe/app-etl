@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Etl\Service;
+namespace Be\App\Etl\Service\Admin;
 
 
 use Be\Be;
@@ -9,12 +9,12 @@ class Notify
 {
 
     public function mail($message) {
-        $config = Be::getConfig('Etl.Notify');
+        $config = Be::getConfig('App.Etl.Notify');
         if (!$config->mail) {
             return false;
         }
 
-        return Be::getService('System.Mail')
+        return Be::getService('App.System.Mail')
             ->subject('计划任务发生异常')
             ->body($message)
             ->to($config->toEmail)
@@ -23,7 +23,7 @@ class Notify
 
     public function dingTalkRobot($message) {
 
-        $config = Be::getConfig('Etl.Notify');
+        $config = Be::getConfig('App.Etl.Notify');
         if (!$config->dingTalkRobot) {
             return false;
         }

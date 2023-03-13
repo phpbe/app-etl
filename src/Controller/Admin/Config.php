@@ -17,7 +17,7 @@ class Config
      */
     public function dashboard()
     {
-        Be::getPlugin('Config')->setting(['appName' => 'Etl'])->execute();
+        Be::getAdminPlugin('Config')->setting(['appName' => 'Etl'])->execute();
     }
 
 

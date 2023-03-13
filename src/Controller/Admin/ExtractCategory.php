@@ -12,7 +12,7 @@ use Be\AdminPlugin\Table\Item\TableItemSwitch;
 
 /**
  * Class ExtractCategory
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BeMenuGroup("抽取", icon="el-icon-fa fa-copy")
  * @BePermissionGroup("抽取")
@@ -27,12 +27,12 @@ class ExtractCategory
      */
     public function lists()
     {
-        Be::getPlugin('Curd')->setting([
+        Be::getAdminPlugin('Curd')->setting([
 
             'label' => '分类管理',
             'table' => 'etl_extract_category',
 
-            'lists' => [
+            'grid' => [
                 'title' => '分类管理',
 
                 'filter' => [

@@ -21,7 +21,7 @@ use Be\Response;
 
 /**
  * Class Ds
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BeMenuGroup("数据源", icon="el-icon-fa fa-database", ordering="10")
  * @BePermissionGroup("数据源")
@@ -42,12 +42,12 @@ class Ds
             'mssql' => 'SQL Server',
         ];
 
-        Be::getPlugin('Curd')->setting([
+        Be::getAdminPlugin('Curd')->setting([
 
             'label' => '数据源管理',
             'table' => 'etl_ds',
 
-            'lists' => [
+            'grid' => [
                 'title' => '数据源列表',
 
                 'filter' => [
@@ -415,7 +415,7 @@ class Ds
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;
-                        this.$http.post("'. beUrl('Etl.Ds.testDb') .'", {
+                        this.$http.post("'. beAdminUrl('Etl.Ds.testDb') .'", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.testDbLoading = false;
@@ -530,7 +530,7 @@ class Ds
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;
-                        this.$http.post("'. beUrl('Etl.Ds.testDb') .'", {
+                        this.$http.post("'. beAdminUrl('Etl.Ds.testDb') .'", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.testDbLoading = false;
@@ -576,7 +576,7 @@ class Ds
     {
         try {
             $postData = Request::json();
-            $databases = Be::getService('Etl.Ds')->testDb($postData['formData']);
+            $databases = Be::getService('App.Etl.Admin.Ds')->testDb($postData['formData']);
             Response::set('success', true);
             Response::set('data', [
                 'databases' => $databases,
@@ -597,7 +597,7 @@ class Ds
     {
         try {
             $postData = Request::json();
-            $tables = Be::getService('Etl.Ds')->getTableNames($postData['dsId']);
+            $tables = Be::getService('App.Etl.Admin.Ds')->getTableNames($postData['dsId']);
             Response::set('success', true);
             Response::set('data', [
                 'tables' => $tables,
@@ -617,7 +617,7 @@ class Ds
     {
         try {
             $postData = Request::json();
-            $fields = Be::getService('Etl.Ds')->getTableFields($postData['dsId'], $postData['table']);
+            $fields = Be::getService('App.Etl.Admin.Ds')->getTableFields($postData['dsId'], $postData['table']);
             Response::set('success', true);
             Response::set('data', [
                 'fields' => $fields,
@@ -638,7 +638,7 @@ class Ds
     {
         try {
             $postData = Request::json();
-            $fields = Be::getService('Etl.Ds')->getSqlFields($postData['dsId'], $postData['sql']);
+            $fields = Be::getService('App.Etl.Admin.Ds')->getSqlFields($postData['dsId'], $postData['sql']);
             Response::set('success', true);
             Response::set('data', [
                 'fields' => $fields,

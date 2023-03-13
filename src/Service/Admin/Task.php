@@ -1,13 +1,11 @@
 <?php
 
-namespace Be\App\Etl\Service;
+namespace Be\App\Etl\Service\Admin;
 
 
 use Be\Be;
-use Be\Db\Tuple;
-use Be\Exception\ServiceException;
-use Be\Exception\TupleException;
-use Be\Util\Datetime;
+use Be\App\ServiceException;
+use Be\Util\Time\Datetime;
 
 class Task
 {
@@ -33,7 +31,7 @@ class Task
                 }
             }
 
-            $configExtract = Be::getConfig('Etl.Extract');
+            $configExtract = Be::getConfig('App.Etl.Extract');
 
             $runningExtractLog = Be::getTuple('etl_extract_log');
             try {
@@ -82,8 +80,8 @@ class Task
             $extractSnapshot->create_time = date('Y-m-d H:i:s');
             $extractSnapshot->save();
 
-            $dbSrc = Be::getService('Etl.Ds')->newDb($extract->src_ds_id);
-            $dbDst = Be::getService('Etl.Ds')->newDb($extract->dst_ds_id);
+            $dbSrc = Be::getService('App.Etl.Admin.Ds')->newDb($extract->src_ds_id);
+            $dbDst = Be::getService('App.Etl.Admin.Ds')->newDb($extract->dst_ds_id);
 
             $breakpointEnd = null;
             $tBreakpointEnd = null;
@@ -187,7 +185,7 @@ class Task
             // 全量同步时先删数据
             if ($extract->breakpoint_type == '0') {
                 $sql = null;
-                switch ($configExtract->clearType) {
+                switch ($configExtract->deleteType) {
                     case 'truncate':
                         $sql = 'TRUNCATE TABLE ' . $dbDst->quoteKey($extract->dst_table);
                         break;
@@ -521,8 +519,8 @@ class Task
                 ]);
             }
 
-            $config = Be::getConfig('Etl.Notify');
-            $serviceNotify = Be::getService('Etl.Notify');
+            $config = Be::getConfig('App.Etl.Notify');
+            $serviceNotify = Be::getService('App.Etl.Admin.Notify');
             if ($config->mail) {
                 $serviceNotify->mail('抽取数据任务发生异常：' . $e->getMessage());
             }
@@ -545,8 +543,8 @@ class Task
         try {
             $transform = Be::getTuple('etl_extract')->load($extractId);
 
-            $dbSrc = Be::getService('Etl.Ds')->getDb($transform->src_ds_id);
-            $dbDst = Be::getService('Etl.Ds')->getDb($transform->dst_ds_id);
+            $dbSrc = Be::getService('App.Etl.Admin.Ds')->getDb($transform->src_ds_id);
+            $dbDst = Be::getService('App.Etl.Admin.Ds')->getDb($transform->dst_ds_id);
 
 
         } catch (\Throwable $e) {

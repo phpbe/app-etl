@@ -9,33 +9,33 @@ class Notify
     /**
      * @BeConfigItem("发送邮件", driver="FormItemSwitch")
      */
-    public $mail = 0;
+    public int $mail = 0;
 
     /**
      * @BeConfigItem("收件人邮箱",
      *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.mail==1']];")
      */
-    public $toMail = '';
+    public string $toMail = '';
 
 
     /**
      * @BeConfigItem("钉钉机器人", driver="FormItemSwitch")
      */
-    public $dingTalkRobot = 0;
+    public int $dingTalkRobot = 0;
 
     /**
      * @BeConfigItem("钉钉机器人Access Token",
      *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.dingTalkRobot==1']];")
      */
-    public $dingTalkRobotToken = '';
+    public string $dingTalkRobotToken = '';
 
     /**
      * @BeConfigItem("钉钉机器人密钥",
      *     driver="FormItemInput",
      *     ui="return ['form-item' => ['v-show' => 'formData.dingTalkRobot==1']];")
      */
-    public $dingTalkRobotSecret = '';
+    public string $dingTalkRobotSecret = '';
 
 }

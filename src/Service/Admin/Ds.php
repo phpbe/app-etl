@@ -1,10 +1,10 @@
 <?php
 
-namespace Be\App\Etl\Service;
+namespace Be\App\Etl\Service\Admin;
 
 use Be\Be;
 use Be\db\Driver;
-use Be\Exception\ServiceException;
+use Be\App\ServiceException;
 
 class Ds
 {

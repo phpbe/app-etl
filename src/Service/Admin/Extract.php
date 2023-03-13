@@ -1,6 +1,6 @@
 <?php
 
-namespace Be\App\Etl\Service;
+namespace Be\App\Etl\Service\Admin;
 
 
 use Be\Be;

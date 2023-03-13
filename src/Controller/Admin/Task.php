@@ -8,7 +8,7 @@ use Be\Response;
 
 /**
  * Class Task
- * @package App\Etl\Controller
+ * @package Be\App\Etl\Controller\Admin
  *
  * @BePermissionGroup("计划任务")
  */
@@ -31,7 +31,7 @@ class Task
 
         $t = time();
         foreach ($extractTasks as $extractTask) {
-            $url = beUrl('Etl.Task.runExtract', ['id' => $extractTask->id, 't' => $t]);
+            $url = beAdminUrl('Etl.Task.runExtract', ['id' => $extractTask->id, 't' => $t]);
             echo $url . '<br>';
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
@@ -52,7 +52,7 @@ class Task
      */
     public function checkExpiredExtractLog()
     {
-        $configExtract = Be::getConfig('Etl.Extract');
+        $configExtract = Be::getConfig('App.Etl.Extract');
         if ($configExtract->timeout > 0) {
             $extractTaskLogs = Be::newTable('etl_extract_log')
                 ->where('status', 1)
@@ -96,7 +96,7 @@ class Task
         $t = Request::get('t', time());
         $manual = Request::get('manual', 0);
         try {
-            Be::getService('Etl.Task')->runExtract($id, $t, $manual);
+            Be::getService('App.Etl.Admin.Task')->runExtract($id, $t, $manual);
             echo '-';
         } catch (\Exception $e) {
             echo '#' . $e->getCode() . ' : ' . $e->getMessage();
@@ -115,7 +115,7 @@ class Task
         if ($postData) {
             if (isset($postData['row']['id']) && $postData['row']['id']) {
                 $id = $postData['row']['id'];
-                $url = beUrl('Etl.Task.runExtract', ['id' => $id, 'manual' => 1]);
+                $url = beAdminUrl('Etl.Task.runExtract', ['id' => $id, 'manual' => 1]);
                 $curl = curl_init();
                 curl_setopt($curl, CURLOPT_URL, $url);
                 curl_setopt($curl, CURLOPT_HEADER, 1);
