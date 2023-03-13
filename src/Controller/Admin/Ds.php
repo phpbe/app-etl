@@ -23,16 +23,14 @@ use Be\Response;
  * Class Ds
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("数据源", icon="el-icon-fa fa-database", ordering="10")
- * @BePermissionGroup("数据源")
  */
 class Ds
 {
     /**
      * 数据源管理
      *
-     * @BeMenu("数据源管理", icon="el-icon-fa fa-list-ul", ordering="10")
-     * @BePermission("数据源管理")
+     * @BeMenu("数据源", icon="bi-database", ordering="1")
+     * @BePermission("数据源")
      */
     public function lists()
     {
@@ -44,11 +42,11 @@ class Ds
 
         Be::getAdminPlugin('Curd')->setting([
 
-            'label' => '数据源管理',
+            'label' => '数据源',
             'table' => 'etl_ds',
 
             'grid' => [
-                'title' => '数据源列表',
+                'title' => '数据源',
 
                 'filter' => [
                     ['is_delete', '=', '0'],
