@@ -6,8 +6,8 @@ namespace Be\App\Etl;
 class Property extends \Be\App\Property
 {
 
-    public $label = 'ETL';
-    public $icon = 'el-icon-fa fa-rocket';
+    public string $label = 'ETL';
+    public string $icon = 'bi-box-arrow-right';
 
     public function __construct() {
         parent::__construct(__FILE__);

@@ -24,7 +24,7 @@ class Task
         $db = Be::getDb();
         $extractLog = null;
         try {
-            $extract = Be::newTuple('etl_extract')->load($extractId);
+            $extract = Be::getTuple('etl_extract')->load($extractId);
 
             if ($trigger == 0) {
                 // 系统自动运行时，校验时间是否匹配计划设置
@@ -35,7 +35,7 @@ class Task
 
             $configExtract = Be::getConfig('Etl.Extract');
 
-            $runningExtractLog = Be::newTuple('etl_extract_log');
+            $runningExtractLog = Be::getTuple('etl_extract_log');
             try {
                 $runningExtractLog->loadBy([
                     'extract_id' => $extractId,
@@ -53,7 +53,7 @@ class Task
             } catch (\Exception $e) {
             }
 
-            $extractLog = Be::newTuple('etl_extract_log');
+            $extractLog = Be::getTuple('etl_extract_log');
             $extractLog->extract_id = $extract->id;
             $extractLog->breakpoint_type = $extract->breakpoint_type; // 断点类型
             $extractLog->breakpoint = $extract->breakpoint; // 断点
@@ -68,10 +68,10 @@ class Task
             $extractLog->update_time = date('Y-m-d H:i:s');
             $extractLog->save();
 
-            $srcDs = Be::newTuple('etl_ds')->load($extract->src_ds_id);
-            $dstDs = Be::newTuple('etl_ds')->load($extract->dst_ds_id);
+            $srcDs = Be::getTuple('etl_ds')->load($extract->src_ds_id);
+            $dstDs = Be::getTuple('etl_ds')->load($extract->dst_ds_id);
 
-            $extractSnapshot = Be::newTuple('etl_extract_snapshot');
+            $extractSnapshot = Be::getTuple('etl_extract_snapshot');
             $extractSnapshot->extract_log_id = $extractLog->id;
             $extractSnapshot->extract_id = $extract->id;
             $extractSnapshot->extract_data = json_encode($extract->toArray());
@@ -543,7 +543,7 @@ class Task
     public function runTransform($extractId, $timestamp, $trigger = 0)
     {
         try {
-            $transform = Be::newTuple('etl_extract')->load($extractId);
+            $transform = Be::getTuple('etl_extract')->load($extractId);
 
             $dbSrc = Be::getService('Etl.Ds')->getDb($transform->src_ds_id);
             $dbDst = Be::getService('Etl.Ds')->getDb($transform->dst_ds_id);
