@@ -2,17 +2,27 @@
 
 namespace Be\App\Etl\Controller\Admin;
 
+use Be\App\System\Controller\Admin\Auth;
 use Be\Be;
-use Be\Request;
-use Be\Response;
 
 /**
- * Class Task
- * @package Be\App\Etl\Controller\Admin
- *
- * @BePermissionGroup("计划任务")
+ * @BeMenuGroup("控制台")
+ * @BePermissionGroup("控制台")
  */
-class Task
+class Task extends Auth
+{
+    /**
+     * @BeMenu("计划任务", icon="el-icon-timer", ordering="9.2")
+     * @BePermission("计划任务", ordering="9.2")
+     */
+    public function dashboard()
+    {
+        Be::getAdminPlugin('Task')->setting(['appName' => 'Etl'])->execute();
+    }
+
+}
+
+class Task_
 {
 
     /**
@@ -87,14 +97,17 @@ class Task
         header("HTTP/1.1 200 OK");
         ob_implicit_flush();
 
-        $id = Request::get('id', 0);
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $id = $request->get('id', 0);
         if (!$id) {
             echo '参数错误！';
             exit;
         }
 
-        $t = Request::get('t', time());
-        $manual = Request::get('manual', 0);
+        $t = $request->get('t', time());
+        $manual = $request->get('manual', 0);
         try {
             Be::getService('App.Etl.Admin.Task')->runExtract($id, $t, $manual);
             echo '-';
@@ -111,7 +124,10 @@ class Task
      */
     public function manualRunExtract()
     {
-        $postData = Request::json();
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->json();
         if ($postData) {
             if (isset($postData['row']['id']) && $postData['row']['id']) {
                 $id = $postData['row']['id'];
@@ -123,16 +139,16 @@ class Task
                 curl_setopt($curl, CURLOPT_TIMEOUT, 1);
                 curl_exec($curl);
                 curl_close($curl);
-                Response::set('success', true);
-                Response::set('message', '手工启动抽取任务成功！');
-                Response::set('url', $url);
-                Response::json();
+                $response->set('success', true);
+                $response->set('message', '手工启动抽取任务成功！');
+                $response->set('url', $url);
+                $response->json();
             }
         }
 
-        Response::set('success', false);
-        Response::set('message', '参数错误！');
-        Response::json();
+        $response->set('success', false);
+        $response->set('message', '参数错误！');
+        $response->json();
     }
 
 }

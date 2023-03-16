@@ -8,7 +8,6 @@ use Be\AdminPlugin\Detail\Item\DetailItemProgress;
 use Be\AdminPlugin\Form\Item\FormItemDatePickerRange;
 use Be\AdminPlugin\Form\Item\FormItemSelect;
 use Be\AdminPlugin\Table\Item\TableItemProgress;
-use Be\Request;
 
 /**
  * Class ExtractLog
@@ -26,7 +25,10 @@ class ExtractLog
      */
     public function lists()
     {
-        $extractId = Request::get('extractId');
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $extractId = $request->get('extractId');
 
         $statusKeyValues = Be::getService('App.Etl.Admin.ExtractLog')->getStatusKeyValues();
         $triggerKeyValues = Be::getService('App.Etl.Admin.ExtractLog')->getTriggerKeyValues();
@@ -91,7 +93,7 @@ class ExtractLog
                             'name' => 'breakpoint_step',
                             'label' => '断点递增量',
                             'width' => '90',
-                            'value' => function ($row) use($breakpointStepKeyValues) {
+                            'value' => function ($row) use ($breakpointStepKeyValues) {
                                 if ($row['breakpoint_type'] == 1) {
                                     if (isset($breakpointStepKeyValues[$row['breakpoint_step']])) {
                                         return $breakpointStepKeyValues[$row['breakpoint_step']];
@@ -218,7 +220,7 @@ class ExtractLog
                         [
                             'name' => 'breakpoint_step',
                             'label' => '断点递增量',
-                            'value' => function ($row) use($breakpointStepKeyValues) {
+                            'value' => function ($row) use ($breakpointStepKeyValues) {
                                 if ($row['breakpoint_type'] == 1) {
                                     if (isset($breakpointStepKeyValues[$row['breakpoint_step']])) {
                                         return $breakpointStepKeyValues[$row['breakpoint_step']];
@@ -292,8 +294,10 @@ class ExtractLog
      */
     public function snapshot()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $postData = Request::post('data', '', '');
+        $postData = $request->post('data', '', '');
         if ($postData) {
             $postData = json_decode($postData, true);
             if (isset($postData['row']['id']) && $postData['row']['id']) {

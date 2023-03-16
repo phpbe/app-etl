@@ -4,7 +4,6 @@ namespace Be\App\Etl\Controller\Admin;
 
 use Be\Be;
 use Be\AdminPlugin\Form\Item\FormItemDatePickerRange;
-use Be\Request;
 
 /**
  * Class ExtractException
@@ -21,8 +20,10 @@ class ExtractException
      */
     public function lists()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
-        $extractId = Request::get('extractId');
+        $extractId = $request->get('extractId');
 
         Be::getAdminPlugin('Curd')->setting([
 

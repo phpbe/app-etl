@@ -11,18 +11,18 @@ use Be\AdminPlugin\Form\Item\FormItemSwitch;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
 
 /**
- * Class ExtractCategory
+ * Class FlowCategory
  * @package Be\App\Etl\Controller\Admin
  *
- * BeMenuGroup("抽取")
- * @BePermissionGroup("抽取")
+ * @BeMenuGroup("数据流")
+ * @BePermissionGroup("数据流")
  */
-class ExtractCategory
+class FlowCategory
 {
     /**
      * 分类管理
      *
-     * BeMenu("分类", icon="el-icon-folder", ordering="2.2")
+     * @BeMenu("分类", icon="el-icon-folder", ordering="2.2")
      * @BePermission("分类")
      */
     public function lists()
@@ -30,7 +30,7 @@ class ExtractCategory
         Be::getAdminPlugin('Curd')->setting([
 
             'label' => '分类',
-            'table' => 'etl_extract_category',
+            'table' => 'etl_flow_category',
 
             'grid' => [
                 'title' => '分类',

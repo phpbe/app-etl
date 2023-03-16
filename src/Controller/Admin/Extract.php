@@ -2,6 +2,7 @@
 
 namespace Be\App\Etl\Controller\Admin;
 
+use Be\AdminPlugin\Toolbar\Item\ToolbarItemDropDown;
 use Be\Be;
 use Be\App\ControllerException;
 use Be\AdminPlugin\Detail\Item\DetailItemCode;
@@ -10,15 +11,12 @@ use Be\AdminPlugin\Form\Item\FormItemSelect;
 use Be\AdminPlugin\Table\Item\TableItemLink;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
-use Be\AdminPlugin\Toolbar\Item\ToolbarItemButtonDropDown;
-use Be\Request;
-use Be\Response;
 
 /**
  * Class Extract
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("抽取", icon="bi-box-arrow-right", ordering="2")
+ * BeMenuGroup("抽取", icon="bi-box-arrow-right", ordering="2")
  * @BePermissionGroup("抽取", ordering="2.1")
  */
 class Extract
@@ -26,7 +24,7 @@ class Extract
     /**
      * 任务管理
      *
-     * @BeMenu("任务管理", icon="bi-list", ordering="2.1")
+     * BeMenu("任务管理", icon="bi-list", ordering="2.1")
      * @BePermission("任务管理")
      */
     public function lists()
@@ -81,65 +79,13 @@ class Extract
                     ],
                 ],
 
-
-                'toolbar' => [
-
+                'titleToolbar' => [
                     'items' => [
                         [
-                            'label' => '新建抽取任务',
-                            'url' => beAdminUrl('Etl.Extract.edit'),
-                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
-                            'drawer' => ['width' => '80%'],
-                            'ui' => [
-                                'icon' => 'el-icon-plus',
-                                'type' => 'primary',
-                            ]
-                        ],
-                        [
-                            'label' => '启用',
-                            'task' => 'fieldEdit',
-                            'postData' => [
-                                'field' => 'is_enable',
-                                'value' => '1',
-                            ],
-                            'target' => 'ajax',
-                            'ui' => [
-                                'icon' => 'el-icon-fa fa-check',
-                                'type' => 'success',
-                            ]
-                        ],
-                        [
-                            'label' => '禁用',
-                            'task' => 'fieldEdit',
-                            'postData' => [
-                                'field' => 'is_enable',
-                                'value' => '0',
-                            ],
-                            'target' => 'ajax',
-                            'ui' => [
-                                'icon' => 'el-icon-fa fa-lock',
-                                'type' => 'warning',
-                            ]
-                        ],
-                        [
-                            'label' => '删除',
-                            'task' => 'fieldEdit',
-                            'confirm' => '确认要删除么？',
-                            'target' => 'ajax',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => '1',
-                            ],
-                            'ui' => [
-                                'icon' => 'el-icon-delete',
-                                'type' => 'danger',
-                            ]
-                        ],
-                        [
                             'label' => '导出',
-                            'driver' => ToolbarItemButtonDropDown::class,
+                            'driver' => ToolbarItemDropDown::class,
                             'ui' => [
-                                'icon' => 'el-icon-fa fa-download',
+                                'icon' => 'el-icon-download',
                             ],
                             'menus' => [
                                 [
@@ -149,9 +95,6 @@ class Extract
                                         'driver' => 'csv',
                                     ],
                                     'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-text-o',
-                                    ],
                                 ],
                                 [
                                     'label' => 'EXCEL',
@@ -160,10 +103,67 @@ class Extract
                                         'driver' => 'excel',
                                     ],
                                     'target' => 'blank',
-                                    'ui' => [
-                                        'icon' => 'el-icon-fa fa-file-excel-o',
-                                    ],
                                 ],
+                            ]
+                        ],
+                    ]
+                ],
+
+                'titleRightToolbar' => [
+                    'items' => [
+                        [
+                            'label' => '新建',
+                            'url' => beAdminUrl('Etl.Extract.edit'),
+                            'target' => 'drawer', // 'ajax - ajax请求 / dialog - 对话框窗口 / drawer - 抽屉 / self - 当前页面 / blank - 新页面'
+                            'drawer' => ['width' => '80%'],
+                            'ui' => [
+                                'icon' => 'el-icon-plus',
+                                'type' => 'primary',
+                            ]
+                        ],
+                    ]
+                ],
+
+                'tableToolbar' => [
+                    'items' => [
+                        [
+                            'label' => '批量启用',
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '1',
+                            ],
+                            'target' => 'ajax',
+                            'ui' => [
+                                'icon' => 'el-icon-check',
+                                'type' => 'success',
+                            ]
+                        ],
+                        [
+                            'label' => '批量禁用',
+                            'task' => 'fieldEdit',
+                            'postData' => [
+                                'field' => 'is_enable',
+                                'value' => '0',
+                            ],
+                            'target' => 'ajax',
+                            'ui' => [
+                                'icon' => 'el-icon-close',
+                                'type' => 'warning',
+                            ]
+                        ],
+                        [
+                            'label' => '批量删除',
+                            'task' => 'fieldEdit',
+                            'target' => 'ajax',
+                            'confirm' => '确认要删除吗？',
+                            'postData' => [
+                                'field' => 'is_delete',
+                                'value' => '1',
+                            ],
+                            'ui' => [
+                                'icon' => 'el-icon-delete',
+                                'type' => 'danger'
                             ]
                         ],
                     ]
@@ -178,11 +178,6 @@ class Extract
                             'width' => '50',
                         ],
                         [
-                            'name' => 'id',
-                            'label' => 'ID',
-                            'width' => '60',
-                        ],
-                        [
                             'name' => 'name',
                             'label' => '任务名称',
                             'driver' => TableItemLink::class,
@@ -195,9 +190,9 @@ class Extract
                             'name' => 'src',
                             'label' => '输入',
                             'width' => '120',
-                            'value' => function ($row) use($dsKeyValues) {
+                            'value' => function ($row) use ($dsKeyValues) {
                                 $ds = isset($dsKeyValues[$row['src_ds_id']]) ? $dsKeyValues[$row['src_ds_id']] : '';
-                                if ($row['src_type'] == '1') {
+                                if ($row['src_type'] == 'sql') {
                                     $table = 'SQL语句';
                                 } else {
                                     $table = $row['src_table'];
@@ -209,7 +204,7 @@ class Extract
                             'name' => 'dst',
                             'label' => '输出',
                             'width' => '120',
-                            'value' => function ($row) use($dsKeyValues) {
+                            'value' => function ($row) use ($dsKeyValues) {
                                 $ds = isset($dsKeyValues[$row['dst_ds_id']]) ? $dsKeyValues[$row['dst_ds_id']] : '';
                                 $table = $row['dst_table'];
                                 return $ds . '.' . $table;
@@ -219,7 +214,7 @@ class Extract
                             'name' => 'breakpoint',
                             'label' => '断点',
                             'value' => function ($row) {
-                                if ($row['breakpoint_type']) {
+                                if ($row['breakpoint_type'] === 'breakpoint') {
                                     return $row['breakpoint_field'] . '=' . $row['breakpoint'];
                                 } else {
                                     return '全量';
@@ -243,62 +238,62 @@ class Extract
                             },
                         ],
                     ],
-                ],
 
-                'operation' => [
-                    'label' => '操作',
-                    'width' => '220',
-                    'items' => [
-                        [
-                            'label' => '编辑',
-                            'url' => beAdminUrl('Etl.Extract.edit'),
-                            'target' => 'drawer',
-                            'drawer' => ['width' => '80%'],
-                            'ui' => [
-                                'type' => 'primary',
-                            ]
-                        ],
-                        [
-                            'label' => '手动执行',
-                            'url' => beAdminUrl('Etl.Task.manualRunExtract'),
-                            'target' => 'ajax',
-                            'ui' => [
-                                'v-if' => 'scope.row.is_enable == \'1\'',
-                                'type' => 'success',
-                            ]
-                        ],
-                        [
-                            'label' => '日志',
-                            'action' => 'log',
-                            'target' => 'blank',
-                            'ui' => [
-                                'type' => 'info',
-                            ]
-                        ],
-                        [
-                            'label' => '异常',
-                            'action' => 'exception',
-                            'target' => 'blank',
-                            'ui' => [
-                                'type' => 'warning',
-                            ]
-                        ],
-                        [
-                            'label' => '删除',
-                            'task' => 'fieldEdit',
-                            'confirm' => '确认要删除么？',
-                            'target' => 'ajax',
-                            'postData' => [
-                                'field' => 'is_delete',
-                                'value' => 1,
+
+                    'operation' => [
+                        'label' => '操作',
+                        'width' => '220',
+                        'items' => [
+                            [
+                                'label' => '编辑',
+                                'url' => beAdminUrl('Etl.Extract.edit'),
+                                'target' => 'drawer',
+                                'drawer' => ['width' => '80%'],
+                                'ui' => [
+                                    'type' => 'primary',
+                                ]
                             ],
-                            'ui' => [
-                                'type' => 'danger',
-                            ]
-                        ],
-                    ]
+                            [
+                                'label' => '手动执行',
+                                'url' => beAdminUrl('Etl.Task.manualRunExtract'),
+                                'target' => 'ajax',
+                                'ui' => [
+                                    'v-if' => 'scope.row.is_enable == \'1\'',
+                                    'type' => 'success',
+                                ]
+                            ],
+                            [
+                                'label' => '日志',
+                                'action' => 'log',
+                                'target' => 'blank',
+                                'ui' => [
+                                    'type' => 'info',
+                                ]
+                            ],
+                            [
+                                'label' => '异常',
+                                'action' => 'exception',
+                                'target' => 'blank',
+                                'ui' => [
+                                    'type' => 'warning',
+                                ]
+                            ],
+                            [
+                                'label' => '删除',
+                                'task' => 'fieldEdit',
+                                'confirm' => '确认要删除么？',
+                                'target' => 'ajax',
+                                'postData' => [
+                                    'field' => 'is_delete',
+                                    'value' => 1,
+                                ],
+                                'ui' => [
+                                    'type' => 'danger',
+                                ]
+                            ],
+                        ]
+                    ],
                 ],
-
             ],
 
             'detail' => [
@@ -340,7 +335,7 @@ class Extract
                             'label' => '字段映射',
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.field_mapping_type == \'1\'',
+                                    'v-if' => 'formData.field_mapping_type == \'mapping\'',
                                 ]
                             ]
                         ],
@@ -351,7 +346,7 @@ class Extract
                             'language' => 'php',
                             'ui' => [
                                 'form-item' => [
-                                    'v-show' => 'formData.field_mapping_type == \'2\'',
+                                    'v-show' => 'formData.field_mapping_type == \'code\'',
                                 ]
                             ]
                         ],
@@ -365,7 +360,7 @@ class Extract
                             'label' => '断点字段',
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                    'v-if' => 'formData.breakpoint_type == \'breakpoint\'',
                                 ]
                             ],
                         ],
@@ -374,7 +369,7 @@ class Extract
                             'label' => '断点',
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                    'v-if' => 'formData.breakpoint_type == \'breakpoint\'',
                                 ]
                             ],
                         ],
@@ -384,7 +379,7 @@ class Extract
                             'keyValues' => $breakpointStepKeyValues,
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                    'v-if' => 'formData.breakpoint_type == \'breakpoint\'',
                                 ]
                             ],
                         ],
@@ -393,7 +388,7 @@ class Extract
                             'label' => '断点向前编移量',
                             'ui' => [
                                 'form-item' => [
-                                    'v-if' => 'formData.breakpoint_type == \'1\'',
+                                    'v-if' => 'formData.breakpoint_type == \'breakpoint\'',
                                 ]
                             ],
                         ],
@@ -424,25 +419,33 @@ class Extract
     /**
      * @BePermission("任务日志")
      */
-    public function log() {
-        $postData = Request::post('data', '', '');
+    public function log()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->post('data', '', '');
         $postData = json_decode($postData, true);
         if (!isset($postData['row']['id'])) {
             throw new ControllerException('主键（row.id）缺失！');
         }
-        Response::redirect(beAdminUrl('Etl.ExtractLog.lists', ['extractId' => $postData['row']['id']]));
+        $response->redirect(beAdminUrl('Etl.ExtractLog.lists', ['extractId' => $postData['row']['id']]));
     }
 
     /**
      * @BePermission("任务异常")
      */
-    public function exception() {
-        $postData = Request::post('data', '', '');
+    public function exception()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->post('data', '', '');
         $postData = json_decode($postData, true);
         if (!isset($postData['row']['id'])) {
             throw new ControllerException('主键（row.id）缺失！');
         }
-        Response::redirect(beAdminUrl('Etl.ExtractException.lists', ['extractId' => $postData['row']['id']]));
+        $response->redirect(beAdminUrl('Etl.ExtractException.lists', ['extractId' => $postData['row']['id']]));
     }
 
     /**
@@ -450,28 +453,32 @@ class Extract
      */
     public function edit()
     {
-        if (Request::isAjax()) {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        if ($request->isAjax()) {
 
             $db = Be::getDb();
             $db->startTransaction();
             try {
-                $postData = Request::json();
+                $postData = $request->json();
                 $formData = $postData['formData'];
 
                 $tuple = Be::getTuple('etl_extract');
                 if (isset($formData['id']) && $formData['id']) {
                     $tuple->load($formData['id']);
                 } else {
-                    $tuple->field_mapping_type = '0';
+                    $tuple->field_mapping_type = 'same';
                     $tuple->field_mapping = '';
-                    $tuple->breakpoint_type = '0';
+                    $tuple->field_mapping_code = '';
+                    $tuple->breakpoint_type = 'full';
                     $tuple->breakpoint_field = '';
-                    $tuple->breakpoint = date('Y-m-d H:i:s', 0);
-                    $tuple->breakpoint_step = '';
-                    $tuple->breakpoint_offset = '0';
+                    $tuple->breakpoint = '1970-01-02 00:00:00';
+                    $tuple->breakpoint_step = '1_DAY';
+                    $tuple->breakpoint_offset = 0;
                     $tuple->schedule = '';
-                    $tuple->is_enable = '1';
-                    $tuple->is_delete = '0';
+                    $tuple->is_enable = 1;
+                    $tuple->is_delete = 0;
                     $tuple->create_time = date('Y-m-d H:i:s');
                 }
 
@@ -484,22 +491,22 @@ class Extract
                     $tuple->src_table = $formData['src_table'];
                     $tuple->src_sql = $formData['src_sql'];
                     $tuple->dst_table = $formData['dst_table'];
-                } elseif  ($formData['step'] == '1') {
+                } elseif ($formData['step'] == '1') {
                     $tuple->field_mapping_type = $formData['field_mapping_type'];
                     $tuple->field_mapping = '';
                     $tuple->field_mapping_code = '';
-                    if ($tuple->field_mapping_type == '1') {
+                    if ($tuple->field_mapping_type == 'mapping') {
                         $tuple->field_mapping = $formData['field_mapping'];
-                    } elseif ($tuple->field_mapping_type == '2') {
+                    } elseif ($tuple->field_mapping_type == 'code') {
                         $tuple->field_mapping_code = $formData['field_mapping_code'];
                     }
-                   } elseif ($formData['step'] == '2') {
+                } elseif ($formData['step'] == '2') {
                     $tuple->breakpoint_type = $formData['breakpoint_type'];
-                    if ($tuple->breakpoint_type == '0') {
+                    if ($tuple->breakpoint_type == 'full') {
                         $tuple->breakpoint_field = '';
                         $tuple->breakpoint = date('Y-m-d H:i:s', 0);
                         $tuple->breakpoint_step = '';
-                        $tuple->breakpoint_offset = '0';
+                        $tuple->breakpoint_offset = 0;
                     } else {
                         $tuple->breakpoint_field = $formData['breakpoint_field'];
                         $tuple->breakpoint = $formData['breakpoint'];
@@ -512,54 +519,53 @@ class Extract
                 $tuple->save();
 
                 $db->commit();
-                Response::set('success', true);
-                Response::set('data', [
+                $response->set('success', true);
+                $response->set('data', [
                     'extract' => $tuple,
                 ]);
-                Response::json();
+                $response->json();
             } catch (\Exception $e) {
                 $db->rollback();
-                Response::error($e->getMessage());
+                $response->error($e->getMessage());
             }
 
         } else {
 
             try {
                 $categoryKeyValues = Be::getService('App.Etl.Admin.ExtractCategory')->getIdNameKeyValues();
-                Response::set('categoryKeyValues', $categoryKeyValues);
+                $response->set('categoryKeyValues', $categoryKeyValues);
 
                 $dsKeyValues = Be::getService('App.Etl.Admin.Ds')->getIdNameKeyValues();
-                Response::set('dsKeyValues', (object)$dsKeyValues);
+                $response->set('dsKeyValues', (object)$dsKeyValues);
 
                 $srcTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getSrcTypeKeyValues();
-                Response::set('srcTypeKeyValues', (object)$srcTypeKeyValues);
+                $response->set('srcTypeKeyValues', (object)$srcTypeKeyValues);
 
-                $tuple = Be::getTuple('etl_extract');
-                $postData = Request::post('data', '', '');
+                $extract = false;
+                $postData = $request->post('data', '', '');
                 if ($postData) {
                     $postData = json_decode($postData, true);
                     if (isset($postData['row']['id']) && $postData['row']['id']) {
+                        $tuple = Be::getTuple('etl_extract');
                         $tuple->load($postData['row']['id']);
+                        $extract = $tuple->toObject();
                     }
                 }
 
-                $tuple->field_mapping_type = (string)$tuple->field_mapping_type;
-                $tuple->breakpoint_type = (string)$tuple->breakpoint_type;
-
-                Response::set('extract', $tuple);
+                $response->set('extract', $extract);
 
                 $fieldMappingTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getFieldMappingTypeKeyValues();
-                Response::set('fieldMappingTypeKeyValues', (object)$fieldMappingTypeKeyValues);
+                $response->set('fieldMappingTypeKeyValues', (object)$fieldMappingTypeKeyValues);
 
                 $breakpointTypeKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointTypeKeyValues();
-                Response::set('breakpointTypeKeyValues', (object)$breakpointTypeKeyValues);
+                $response->set('breakpointTypeKeyValues', (object)$breakpointTypeKeyValues);
 
                 $breakpointStepKeyValues = Be::getService('App.Etl.Admin.Extract')->getBreakpointStepKeyValues();
-                Response::set('breakpointStepKeyValues', $breakpointStepKeyValues);
+                $response->set('breakpointStepKeyValues', $breakpointStepKeyValues);
 
-                Response::display('App.Etl.Extract.edit', 'Blank');
+                $response->display('App.Etl.Extract.edit', 'Blank');
             } catch (\Exception $e) {
-                Response::error($e->getMessage());
+                $response->error($e->getMessage());
             }
 
         }

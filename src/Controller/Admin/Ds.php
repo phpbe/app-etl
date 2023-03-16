@@ -17,8 +17,6 @@ use Be\AdminPlugin\Form\Item\FormItemSelect;
 use Be\AdminPlugin\Form\Item\FormItemSwitch;
 use Be\AdminPlugin\Table\Item\TableItemSelection;
 use Be\AdminPlugin\Table\Item\TableItemSwitch;
-use Be\Request;
-use Be\Response;
 
 /**
  * Class Ds
@@ -133,7 +131,7 @@ class Ds
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'icon' => 'el-icon-fa fa-check',
+                                'icon' => 'el-icon-check',
                                 'type' => 'success',
                             ]
                         ],
@@ -146,15 +144,15 @@ class Ds
                             ],
                             'target' => 'ajax',
                             'ui' => [
-                                'icon' => 'el-icon-fa fa-lock',
+                                'icon' => 'el-icon-close',
                                 'type' => 'warning',
                             ]
                         ],
                         [
                             'label' => '批量删除',
                             'task' => 'fieldEdit',
-                            'confirm' => '确认要删除么？',
                             'target' => 'ajax',
+                            'confirm' => '确认要删除吗？',
                             'postData' => [
                                 'field' => 'is_delete',
                                 'value' => '1',
@@ -422,7 +420,7 @@ class Ds
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;
-                        this.$http.post("'. beAdminUrl('Etl.Ds.testDb') .'", {
+                        this.$http.post("' . beAdminUrl('Etl.Ds.testDb') . '", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.testDbLoading = false;
@@ -549,7 +547,7 @@ class Ds
                     'testDb' => 'function() {
                         var _this = this;
                         this.testDbLoading = true;
-                        this.$http.post("'. beAdminUrl('Etl.Ds.testDb') .'", {
+                        this.$http.post("' . beAdminUrl('Etl.Ds.testDb') . '", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.testDbLoading = false;
@@ -593,19 +591,22 @@ class Ds
      */
     public function testDb()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $databases = Be::getService('App.Etl.Admin.Ds')->testDb($postData['formData']);
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'databases' => $databases,
             ]);
-            Response::json();
+            $response->json();
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::set('trace', $e->getTrace());
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->set('trace', $e->getTrace());
+            $response->json();
         }
     }
 
@@ -614,18 +615,21 @@ class Ds
      */
     public function getTableNames()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $tables = Be::getService('App.Etl.Admin.Ds')->getTableNames($postData['dsId']);
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'tables' => $tables,
             ]);
-            Response::json();
+            $response->json();
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
         }
     }
 
@@ -634,18 +638,21 @@ class Ds
      */
     public function getTableFields()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $fields = Be::getService('App.Etl.Admin.Ds')->getTableFields($postData['dsId'], $postData['table']);
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'fields' => $fields,
             ]);
-            Response::json();
+            $response->json();
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
         }
     }
 
@@ -655,18 +662,21 @@ class Ds
      */
     public function getSqlFields()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         try {
-            $postData = Request::json();
+            $postData = $request->json();
             $fields = Be::getService('App.Etl.Admin.Ds')->getSqlFields($postData['dsId'], $postData['sql']);
-            Response::set('success', true);
-            Response::set('data', [
+            $response->set('success', true);
+            $response->set('data', [
                 'fields' => $fields,
             ]);
-            Response::json();
+            $response->json();
         } catch (\Exception $e) {
-            Response::set('success', false);
-            Response::set('message', $e->getMessage());
-            Response::json();
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
         }
     }
 

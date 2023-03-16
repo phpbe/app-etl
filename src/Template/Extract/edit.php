@@ -1,22 +1,26 @@
-<be-body>
+<be-page-content>
     <?php
-    $js = [];
-    $css = [];
     $formData = [];
-    $vueData = [];
-    $vueMethods = [];
-    $vueHooks = [];
+    $uiItems = new \Be\AdminPlugin\UiItem\UiItems();
+    $rootUrl = \Be\Be::getRequest()->getRootUrl();
     ?>
     <div id="app" v-cloak>
+        <?php
+        $formData['id'] = ($this->extract ? $this->extract->id : '');
+        ?>
+
         <el-steps :active="formData.step" finish-status="success" simple>
             <el-step title="配置数据源" icon="el-icon-fa fa-database"></el-step>
             <el-step title="字段映射" icon="el-icon-fa fa-random"></el-step>
             <el-step title="任务参数" icon="el-icon-setting"></el-step>
         </el-steps>
+        <?php
+        $formData['step'] = 0;
+        ?>
 
         <div style="height: 20px;"></div>
 
-        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-show="formData.step == '0'">
+        <el-form ref="formRef-0" :model="formData" label-width="120px" size="mini" v-show="formData.step === 0">
 
             <el-form-item label="分类" prop="category_id"
                           :rules="[{required: true, message: '请选择分类', trigger: 'change' }]">
@@ -29,11 +33,17 @@
                     </el-option>
                 </el-select>
             </el-form-item>
+            <?php
+            $formData['category_id'] = ($this->extract ? $this->extract->category_id : '');
+            ?>
 
             <el-form-item label="任务名称" prop="name" :rules="[{required: true, message: '请输入任务名称', trigger: 'blur' }]"
                           style="padding-right: 60px;">
                 <el-input v-model="formData.name" placeholder="请输入任务名称"></el-input>
             </el-form-item>
+            <?php
+            $formData['name'] = ($this->extract ? $this->extract->name : '');
+            ?>
 
             <el-row :gutter="24" style="margin: 20px;">
                 <el-col :span="12">
@@ -50,7 +60,9 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-
+                        <?php
+                        $formData['src_ds_id'] = ($this->extract ? $this->extract->src_ds_id : '');
+                        ?>
 
                         <el-form-item label="输入类型"
                                       prop="src_type"
@@ -59,11 +71,14 @@
                                 <el-radio-button v-for="(v, k) in srcTypeKeyValues" :label="k">{{v}}</el-radio-button>
                             </el-radio-group>
                         </el-form-item>
+                        <?php
+                        $formData['src_type'] = ($this->extract ? $this->extract->src_type : 'table');
+                        ?>
 
                         <el-form-item label="输入数据表"
                                       prop="src_table"
-                                      :rules="[{required: formData.src_type == '0', message: '请选择输入数据表', trigger: 'change' }]"
-                                      v-show="formData.src_type == '0'">
+                                      :rules="[{required: formData.src_type === 'table', message: '请选择输入数据表', trigger: 'change' }]"
+                                      v-show="formData.src_type === 'table'">
                             <el-select v-model="formData.src_table" placeholder="请选输入数据表" v-loading="srcTablesLoading"
                                        filterable>
                                 <el-option
@@ -74,13 +89,23 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <?php
+                        $formData['src_table'] = ($this->extract ? $this->extract->src_table : '');
+                        ?>
 
-                        <el-form-item label="输入SQL语句"
-                                      prop="src_sql"
-                                      :rules="[{required: formData.src_type == '1', message: '请输入SQL语句', trigger: 'blur' }]"
-                                      v-show="formData.src_type == '1'">
-                            <textarea ref="srcSqlRef" v-model="formData.src_sql"></textarea>
-                        </el-form-item>
+                        <div v-show="formData.src_type === 'sql'">
+                            <?php
+                            $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                'name' => 'src_sql',
+                                'language' => 'sql',
+                            ]);
+                            echo $driver->getHtml();
+                            $uiItems->add($driver);
+                            ?>
+                        </div>
+                        <?php
+                        $formData['src_sql'] = ($this->extract ? $this->extract->src_sql : '');
+                        ?>
 
                     </el-card>
                 </el-col>
@@ -97,6 +122,9 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <?php
+                        $formData['dst_ds_id'] = ($this->extract ? $this->extract->dst_ds_id : '');
+                        ?>
 
                         <el-form-item label="输出数据表" prop="dst_table"
                                       :rules="[{required: true, message: '请选择输出数据表', trigger: 'change' }]">
@@ -110,6 +138,9 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <?php
+                        $formData['dst_table'] = ($this->extract ? $this->extract->dst_table : '');
+                        ?>
                     </el-card>
                 </el-col>
             </el-row>
@@ -123,7 +154,7 @@
         </el-form>
 
 
-        <el-form ref="formRef-1" :model="formData" label-width="120px" size="mini" v-show="formData.step == '1'">
+        <el-form ref="formRef-1" :model="formData" label-width="120px" size="mini" v-show="formData.step === 1">
 
             <el-form-item label="字段映射类型" prop="field_mapping_type"
                           :rules="[{required: true, message: '字段映射类型', trigger: 'change' }]">
@@ -131,16 +162,18 @@
                     <el-radio-button v-for="(v, k) in fieldMappingTypeKeyValues" :label="k">{{v}}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
+            <?php
+            $formData['field_mapping_type'] = ($this->extract ? $this->extract->field_mapping_type : 'same');
+            ?>
 
             <el-form-item label="字段映射"
                           prop="field_mapping"
-                          :rules="[{required: formData.field_mapping_type == '1', message: '请输入字段映射', trigger: 'blur' }]"
-                          v-show="formData.field_mapping_type == '1'">
+                          :rules="[{required: formData.field_mapping_type === 'mapping', message: '请输入字段映射', trigger: 'blur' }]"
+                          v-show="formData.field_mapping_type === 'mapping'">
 
                 <div v-loading="dstTableFieldsLoading" v-show="!fieldMappingInput">
 
                     <div style="padding: 5px;">
-
                         <el-button @click="fieldMappingSelectAll" size="mini">全选</el-button>
                         <el-button @click="fieldMappingSelectNone" size="mini">全不选</el-button>
                         <el-button @click="fieldMappingSelectMatched" size="mini">选中已匹配的</el-button>
@@ -193,19 +226,32 @@
                 </div>
 
             </el-form-item>
+            <?php
+            $formData['field_mapping'] = ($this->extract ? $this->extract->field_mapping : '');
+            ?>
+
 
             <el-form-item label="代码处理"
                           prop="field_mapping_code"
-                          :rules="[{required: formData.field_mapping_type == '2', message: '请输入代码', trigger: 'blur' }]"
-                          v-show="formData.field_mapping_type == '2'">
+                          :rules="[{required: formData.field_mapping_type === 'code', message: '请输入代码', trigger: 'blur' }]"
+                          v-show="formData.field_mapping_type === 'code'">
 
-                <div style="color:#999;">function ($row) {</div>
-                <textarea ref="codeRef" v-model="formData.field_mapping_code"></textarea>
-                <div style="color:#999;">}</div>
+                <pre>function (object $row, object $material) {</pre>
+                <?php
+                $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                    'name' => 'field_mapping_code',
+                    'language' => 'php',
+                ]);
+                echo $driver->getHtml();
+                $uiItems->add($driver);
+                ?>
+                <pre>}</pre>
                 <div style="color:#999;">$row：将传入输入数据源指定表的一行数据，数组格式，包含所有字段，</div>
                 <div style="color:#999;">return 需返回要写入目的的数据，</div>
             </el-form-item>
-
+            <?php
+            $formData['field_mapping_code'] = ($this->extract ? $this->extract->field_mapping_code : '');
+            ?>
 
             <el-form-item
                     style="text-align: right; border-top: #eee 1px solid; margin-top: 20px; padding-top: 20px; padding-right: 40px;">
@@ -215,17 +261,20 @@
         </el-form>
 
 
-        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-show="formData.step == '2'">
+        <el-form ref="formRef-2" :model="formData" label-width="120px" size="mini" v-show="formData.step === 2">
             <el-form-item label="断点类型" prop="breakpoint_type"
                           :rules="[{required: true, message: '请选择断点类型', trigger: 'change' }]">
                 <el-radio-group v-model="formData.breakpoint_type">
                     <el-radio-button v-for="(v, k) in breakpointTypeKeyValues" :label="k">{{v}}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
+            <?php
+            $formData['breakpoint_type'] = ($this->extract ? $this->extract->breakpoint_type : 'full');
+            ?>
 
             <el-form-item label="断点字段" prop="breakpoint_field"
-                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点字段', trigger: 'change' }]"
-                          v-if="formData.breakpoint_type=='1'">
+                          :rules="[{required: formData.breakpoint_type=='breakpoint', message: '请选择断点字段', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type === 'breakpoint'">
                 <el-select v-model="formData.breakpoint_field" placeholder="请选择断点字段">
                     <el-option v-for="item in srcTableFields"
                                :key="item.name"
@@ -234,10 +283,13 @@
                     </el-option>
                 </el-select>
             </el-form-item>
+            <?php
+            $formData['breakpoint_field'] = ($this->extract ? $this->extract->breakpoint_field : '');
+            ?>
 
             <el-form-item label="断点" prop="breakpoint"
-                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点日期时间', trigger: 'change' }]"
-                          v-if="formData.breakpoint_type=='1'">
+                          :rules="[{required: formData.breakpoint_type=='breakpoint', message: '请选择断点日期时间', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type === 'breakpoint'">
                 <el-date-picker
                         v-model="formData.breakpoint"
                         type="datetime"
@@ -245,16 +297,22 @@
                         value-format="yyyy-MM-dd HH:mm:ss">
                 </el-date-picker>
             </el-form-item>
+            <?php
+            $formData['breakpoint'] = ($this->extract ? $this->extract->breakpoint : '1970-01-02 00:00:00');
+            ?>
 
             <el-form-item label="断点递增量" prop="breakpoint_step"
-                          :rules="[{required: formData.breakpoint_type=='1', message: '请选择断点递增量', trigger: 'change' }]"
-                          v-if="formData.breakpoint_type=='1'">
+                          :rules="[{required: formData.breakpoint_type=='breakpoint', message: '请选择断点递增量', trigger: 'change' }]"
+                          v-if="formData.breakpoint_type === 'breakpoint'">
                 <el-radio-group v-model="formData.breakpoint_step">
                     <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
                 </el-radio-group>
             </el-form-item>
+            <?php
+            $formData['breakpoint_step'] = ($this->extract ? $this->extract->breakpoint_step : '1_DAY');
+            ?>
 
-            <el-form-item label="断点向前编移量" prop="breakpoint_offset" v-if="formData.breakpoint_type=='1'">
+            <el-form-item label="断点向前编移量" prop="breakpoint_offset" v-if="formData.breakpoint_type === 'breakpoint'">
                 <el-input-number v-model="formData.breakpoint_offset" :step="1"></el-input-number>
                 <div style="color:#999;">
                     此偏移量会将断点范围向前扩充指定的秒数，<br/>
@@ -264,23 +322,20 @@
                     计划任务2010-09-12执行时，断点范围为: 2020-09-10 00:00:00 (2020-09-11向前偏移86400秒) <= T < 2020-09-12 00:00:00。
                 </div>
             </el-form-item>
+            <?php
+            $formData['breakpoint_offset'] = ($this->extract ? $this->extract->breakpoint_offset : 0);
+            ?>
 
             <?php
-            $formItemSchedule = new \Be\Plugin\Form\Item\FormItemCron([
+            $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
                 'name' => 'schedule',
                 'label' => '执行计划',
             ]);
-            echo $formItemSchedule->getHtml();
-
-            $vueDataX = $formItemSchedule->getVueData();
-            if ($vueDataX) {
-                $vueData = \Be\Util\Arr::merge($vueData, $vueDataX);
-            }
-
-            $vueMethodsX = $formItemSchedule->getVueMethods();
-            if ($vueMethodsX) {
-                $vueMethods = array_merge($vueMethods, $vueMethodsX);
-            }
+            echo $driver->getHtml();
+            $uiItems->add($driver);
+            ?>
+            <?php
+            $formData['schedule'] = ($this->extract ? $this->extract->schedule : '');
             ?>
 
             <el-form-item
@@ -295,82 +350,11 @@
     </div>
 
     <?php
-    $baseUrl = \Be\Be::getProperty('Plugin.Form')->getUrl() . '/Template/codemirror-5.57.0/';
-
-    $js = [
-        'lib/codemirror.js',
-        'mode/clike/clike.js',
-        'mode/php/php.js',
-        'addon/edit/matchbrackets.js',
-
-        'mode/sql/sql.js',
-        'addon/hint/show-hint.js',
-        'addon/hint/sql-hint.js',
-    ];
-
-    $css = [
-        'lib/codemirror.css',
-        'addon/hint/show-hint.css',
-    ];
-
-    $codeMirrorOptionSrcSql = [
-        'theme' => 'default',
-        'mode' => 'text/x-sql',
-        'lineNumbers' => true,
-        'lineWrapping' => true,
-        'matchBrackets' => true,
-    ];
-
-    $codeMirrorOptionDstSql = [
-        'theme' => 'default',
-        'mode' => 'text/x-sql',
-        'lineNumbers' => true,
-        'lineWrapping' => true,
-        'matchBrackets' => true,
-    ];
-
-    $codeMirrorOptionFieldMappingCode = [
-        'theme' => 'default',
-        'mode' => 'text/x-php',
-        'lineNumbers' => true,
-        'lineWrapping' => true,
-        'matchBrackets' => true,
-    ];
-
-    if (count($js) > 0) {
-        $js = array_unique($js);
-        foreach ($js as $x) {
-            echo '<script src="' . $baseUrl . $x . '"></script>';
-        }
-    }
-
-    if (count($css) > 0) {
-        $css = array_unique($css);
-        foreach ($css as $x) {
-            echo '<link rel="stylesheet" type="text/css" href="' . $baseUrl . $x . '" />';
-        }
-    }
+    echo $uiItems->getJs();
+    echo $uiItems->getCss();
     ?>
 
-
     <script>
-        <?php
-        $formData = $this->extract->toArray();
-
-        if ($formData['category_id'] == '0') {
-            $formData['category_id'] = '';
-        }
-
-        if ($formData['src_ds_id'] == '0') {
-            $formData['src_ds_id'] = '';
-        }
-
-        if ($formData['dst_ds_id'] == '0') {
-            $formData['dst_ds_id'] = '';
-        }
-
-        $formData['step'] = 0;
-        ?>
         new Vue({
             el: '#app',
             data: {
@@ -404,12 +388,10 @@
 
                 codeMirrorSrcSql: false,
                 codeMirrorDstSql: false,
-                codeMirrorFieldMappingCode: false<?php
-                if ($vueData) {
-                    foreach ($vueData as $k => $v) {
-                        echo ',' . $k . ':' . json_encode($v);
-                    }
-                }
+                codeMirrorFieldMappingCode: false
+
+                <?php
+                echo $uiItems->getVueData();
                 ?>
             },
             methods: {
@@ -445,10 +427,10 @@
                 },
                 loadTables: function (dsId, fnSuccess, fnFail) {
                     var _this = this;
-                    _this.$http.post("<?php echo beUrl('Etl.Ds.getTableNames'); ?>", {
+                    _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableNames'); ?>", {
                         dsId: dsId
                     }).then(function (response) {
-                        if (response.status == 200) {
+                        if (response.status === 200) {
                             var responseData = response.data;
                             if (responseData.success) {
                                 _this.dsTables[dsId] = responseData.data.tables;
@@ -466,7 +448,7 @@
                     });
                 },
                 loadSrcTableFields: function () {
-                    var srcTable = this.formData.src_type == '0' ? this.formData.src_table : '_sql';
+                    var srcTable = this.formData.src_type === 'table' ? this.formData.src_table : '_sql';
 
                     if (this.tableFields[this.formData.src_ds_id] !== undefined &&
                         this.tableFields[this.formData.src_ds_id][srcTable] !== undefined) {
@@ -481,10 +463,10 @@
                             _this.updateFieldMapping();
 
                             // 生成 CODE
-                            if (_this.formData.field_mapping_code == "") {
+                            if (_this.formData.field_mapping_code === "") {
                                 var code = "$return = [];\n";
                                 for (var x in _this.fieldMapping) {
-                                    if (_this.fieldMapping[x] == "") {
+                                    if (_this.fieldMapping[x] === "") {
                                         code += "$return['" + x + "'] = '';\n";
                                     } else {
                                         code += "$return['" + x + "'] = $row['" + _this.fieldMapping[x] + "'];\n";
@@ -501,7 +483,7 @@
                             _this.srcTableFieldsLoading = false;
                         };
 
-                        if (this.formData.src_type == '0') {
+                        if (this.formData.src_type === 'table') {
                             this.loadTableFields(this.formData.src_ds_id, this.formData.src_table, fnSuccess, fnFail);
                         } else {
                             this.loadSqlFields(this.formData.src_ds_id, this.formData.src_sql, fnSuccess, fnFail);
@@ -528,14 +510,14 @@
                 },
                 loadSqlFields: function (dsId, sql, fnSuccess, fnFail) {
                     var _this = this;
-                    _this.$http.post("<?php echo beUrl('Etl.Ds.getSqlFields'); ?>", {
+                    _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getSqlFields'); ?>", {
                         dsId: dsId,
                         sql: sql
                     }).then(function (response) {
-                        if (response.status == 200) {
+                        if (response.status === 200) {
                             var responseData = response.data;
                             if (responseData.success) {
-                                if (_this.tableFields[dsId] == undefined) {
+                                if (_this.tableFields[dsId] === undefined) {
                                     _this.tableFields[dsId] = {};
                                 }
 
@@ -555,14 +537,14 @@
                 },
                 loadTableFields: function (dsId, table, fnSuccess, fnFail) {
                     var _this = this;
-                    _this.$http.post("<?php echo beUrl('Etl.Ds.getTableFields'); ?>", {
+                    _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableFields'); ?>", {
                         dsId: dsId,
                         table: table
                     }).then(function (response) {
-                        if (response.status == 200) {
+                        if (response.status === 200) {
                             var responseData = response.data;
                             if (responseData.success) {
-                                if (_this.tableFields[dsId] == undefined) {
+                                if (_this.tableFields[dsId] === undefined) {
                                     _this.tableFields[dsId] = {};
                                 }
 
@@ -587,7 +569,7 @@
                             if (hasSrcTableFields) {
                                 var srcName = '';
                                 for (var j = 0; j < this.srcTableFields.length; j++) {
-                                    if (this.dstTableFields[i].name == this.srcTableFields[j].name) {
+                                    if (this.dstTableFields[i].name === this.srcTableFields[j].name) {
                                         srcName = this.srcTableFields[j].name;
                                         break;
                                     }
@@ -606,12 +588,12 @@
                     this.$forceUpdate();
                 },
                 save: function () {
-                    if (this.formData.step == 1 && this.formData.field_mapping_type == '1' && !this.fieldMappingInput) {
+                    if (this.formData.step === 1 && this.formData.field_mapping_type === 'mapping' && !this.fieldMappingInput) {
                         var isAllMapping = true;
                         var fieldMapping = [];
                         for (var x in this.fieldMapping) {
                             if (this.fieldMappingChecked[x]) {
-                                if (this.fieldMapping[x] == "") {
+                                if (this.fieldMapping[x] === "") {
                                     isAllMapping = false;
                                     break;
                                 }
@@ -630,31 +612,31 @@
                     var _this = this;
                     this.$refs["formRef-" + _this.formData.step].validate(function (valid) {
                         if (valid) {
-                            if (_this.formData.step == 0 &&
-                                _this.formData.src_ds_id == _this.formData.dst_ds_id &&
-                                _this.formData.src_type == 0 &&
-                                _this.formData.src_table == _this.formData.dst_table) {
+                            if (_this.formData.step === 0 &&
+                                _this.formData.src_ds_id === _this.formData.dst_ds_id &&
+                                _this.formData.src_type === 'table' &&
+                                _this.formData.src_table === _this.formData.dst_table) {
                                 _this.$message.error("输入和输出不能完全一致");
                                 return false;
                             }
 
                             _this.loading = true;
-                            _this.$http.post("<?php echo beUrl('Etl.Extract.edit'); ?>", {
+                            _this.$http.post("<?php echo beAdminUrl('Etl.Extract.edit'); ?>", {
                                 formData: _this.formData
                             }).then(function (response) {
                                 _this.loading = false;
-                                if (response.status == 200) {
+                                if (response.status === 200) {
                                     var responseData = response.data;
                                     if (responseData.success) {
-                                        if (_this.formData.step == 0) {
+                                        if (_this.formData.step === 0) {
                                             _this.formData.id = responseData.data.extract.id;
                                             _this.formData.step = 1;
 
                                             _this.loadDstTableFields();
 
-                                        } else if (_this.formData.step == 1) {
+                                        } else if (_this.formData.step === 1) {
                                             _this.formData.step = 2;
-                                        } else if (_this.formData.step == 2) {
+                                        } else if (_this.formData.step === 2) {
                                             _this.formData.step = 3;
                                             parent.closeAndReload();
                                         }
@@ -688,7 +670,7 @@
                 },
                 fieldMappingSelectMatched: function () {
                     for (var x in this.fieldMapping) {
-                        this.fieldMappingChecked[x] = this.fieldMapping[x] != "";
+                        this.fieldMappingChecked[x] = this.fieldMapping[x] !== "";
                     }
                     this.forceUpdate();
                 },
@@ -697,40 +679,15 @@
                 },
                 forceUpdate: function () {
                     this.$forceUpdate();
-                }
+                },
                 <?php
-                if ($vueMethods) {
-                    foreach ($vueMethods as $k => $v) {
-                        echo ',' . $k . ':' . $v;
-                    }
-                }
+                echo $uiItems->getVueMethods();
                 ?>
-            },
-            mounted: function () {
-
-                if (this.formData.src_ds_id) {
-                    this.srcDsChange();
-                }
-
-                if (this.formData.dst_ds_id) {
-                    this.dstDsChange();
-                }
-
-                this.codeMirrorSrcSql = CodeMirror.fromTextArea(this.$refs.srcSqlRef, <?php echo json_encode($codeMirrorOptionSrcSql) ?>);
-                //this.codeMirrorDstSql = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionDstSql) ?>);
-                this.codeMirrorFieldMappingCode = CodeMirror.fromTextArea(this.$refs.codeRef, <?php echo json_encode($codeMirrorOptionFieldMappingCode) ?>);
-            },
-            updated: function () {
-                this.codeMirrorSrcSql && this.codeMirrorSrcSql.refresh();
-                //this.codeMirrorDstSql && this.codeMirrorDstSql.refresh();
-                this.codeMirrorFieldMappingCode && this.codeMirrorFieldMappingCode.refresh();
-
-                this.formData.src_sql = this.codeMirrorSrcSql.getValue();
-                //this.formData.dst_sql = this.codeMirrorDstSql.getValue();
-                this.formData.field_mapping_code = this.codeMirrorFieldMappingCode.getValue();
             }
+            <?php
+            $uiItems->setVueHook('mounted', 'if (this.formData.src_ds_id) { this.srcDsChange(); } if (this.formData.dst_ds_id) { this.dstDsChange(); }');
+            echo $uiItems->getVueHooks();
+            ?>
         })
-        ;
     </script>
-
-</be-body>
+</be-page-content>

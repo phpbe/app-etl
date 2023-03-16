@@ -5,15 +5,15 @@ namespace Be\App\Etl\Controller\Admin;
 use Be\Be;
 
 /**
- * @BeMenuGroup("配置", ordering="40")
- * @BePermissionGroup("配置", ordering="40")
+ * @BeMenuGroup("控制台", icon="el-icon-monitor", ordering="9")
+ * @BePermissionGroup("控制台", ordering="9")
  */
 class Config
 {
 
     /**
-     * @BeMenu("配置", icon="el-icon-setting", ordering="40")
-     * @BePermission("配置", ordering="40")
+     * @BeMenu("参数", icon="el-icon-setting", ordering="9.1")
+     * @BePermission("参数", ordering="9.1")
      */
     public function dashboard()
     {
