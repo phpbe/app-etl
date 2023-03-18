@@ -384,13 +384,11 @@ class Flow
                 $breakpointKeyValues = $serviceFlow->getBreakpointKeyValues();
                 $response->set('breakpointKeyValues', $breakpointKeyValues);
 
-
+                $breakpointStepKeyValues = $serviceFlow->getBreakpointStepKeyValues();
+                $response->set('breakpointStepKeyValues', $breakpointStepKeyValues);
 
                 $fieldMappingKeyValues = $serviceFlow->getFieldMappingKeyValues();
                 $response->set('fieldMappingKeyValues', $fieldMappingKeyValues);
-
-                $breakpointStepKeyValues = $serviceFlow->getBreakpointStepKeyValues();
-                $response->set('breakpointStepKeyValues', $breakpointStepKeyValues);
 
                 $response->set('title', '编辑数据流');
 
@@ -402,4 +400,27 @@ class Flow
         }
     }
 
+    /**
+     * @BePermission("验证")
+     */
+    public function test()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $index = $request->json('index', 0, 'int');
+
+            $serviceFlow = Be::getService('App.Etl.Admin.Flow');
+            $flow = $serviceFlow->test($request->json('formData'), $index);
+            $response->set('success', true);
+            $response->set('message', '验证数据流成功！');
+            $response->set('flow', $flow);
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
+        }
+    }
 }

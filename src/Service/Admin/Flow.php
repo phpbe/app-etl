@@ -79,7 +79,6 @@ class Flow
         return $tupleFlow->toObject();
 
 
-
         $db = Be::getDb();
         $db->startTransaction();
         try {
@@ -150,6 +149,84 @@ class Flow
         }
     }
 
+
+    /**
+     * 测试数据流
+     *
+     * @param array $formData 数据流数据
+     * @param int $index 节点索引
+     * @return object
+     * @throws \Throwable
+     */
+    public function test(array $formData, int $index): object
+    {
+        $flowId = $formData['id'];
+        $tupleFlow = Be::getTuple('etl_flow');
+        try {
+            $tupleFlow->load($flowId);
+        } catch (\Throwable $t) {
+            throw new ServiceException('数据流（# ' . $flowId . '）不存在！');
+        }
+
+        $flow = $tupleFlow->toObject();
+
+        if (!isset($formData['nodes']) || !is_array($formData['nodes'])) {
+            throw new ServiceException('数据流节点数据缺失！');
+        }
+
+        $nodes = [];
+        $i = 0;
+        $input = null;
+        foreach ($formData['nodes'] as $node) {
+
+            if ($i === 0) {
+                if ($node['type'] !== 'input') {
+                    throw new ServiceException('未设置理入，无法测试！');
+                }
+            }
+
+            if ($i > $index) {
+
+                // 无输入时，直接无输出
+                if ($input === false) {
+                    $node['output'] = false;
+                    $nodes[] = $node;
+                } else {
+
+                    // 当前节点之后节点，仅检测，不抛错
+                    try {
+                        $service = $this->getNodeService($node['item_type']);
+                        $output = $service->test($node, $input);
+                    } catch (\Throwable $t) {
+                        $output = false;
+                    }
+                    $input = $output;
+                    $node['output'] = $output;
+                    $nodes[] = $node;
+                }
+            } else {
+
+                $service = $this->getNodeService($node['item_type']);
+
+                if ($i === 0) {
+                    $output = $service->test($node);
+                } else {
+                    $output = $service->test($node, $input);
+                }
+
+                $input = $output;
+                $node['output'] = $output;
+                $nodes[] = $node;
+            }
+
+            $i++;
+        }
+
+        $flow->nodes = $nodes;
+
+        return $flow;
+    }
+
     /**
      * 获取数据流
      *
@@ -181,11 +258,57 @@ class Flow
             }
 
             $node->item = $tupleNodeItem->toObject();
+
+            $output = false;
+            if (isset($node->item->output) && $node->item->output !== '') {
+                $output = unserialize($node->item->output);
+            }
+
+            $node->output = $output;
         }
 
         $flow->nodes = $nodes;
 
         return $flow;
+    }
+
+    private function getNodeService($nodeItemType)
+    {
+        switch ($nodeItemType) {
+            case 'input_ds':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Input.Ds');
+                break;
+            case 'input_csv':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Input.Csv');
+                break;
+
+
+            case 'process_code':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Process.Code');
+                break;
+
+
+            case 'output_ds':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Output.Ds');
+                break;
+            case 'output_csv':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Output.Csv');
+                break;
+            case 'output_files':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Output.Files');
+                break;
+            case 'output_folders':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Output.Folders');
+                break;
+            case 'output_api':
+                $service = Be::getService('App.Etl.Admin.FlowNode.Output.Api');
+                break;
+
+            default:
+                throw new ServiceException('无法识别的数据流节点类型（# ' . $nodeItemType . '）！');
+        }
+
+        return $service;
     }
 
 

@@ -17,7 +17,7 @@
             display: inline-block;
             content: '';
             position: absolute;
-            width: 3rem;
+            width: 4rem;
             height: 0;
             left: 100%;
             top:50%;
@@ -53,6 +53,27 @@
             transform: rotate3d(0, 0, 1, -45deg)
         }
 
+        .be-page-content .field-mapping-item-header {
+            color: #666;
+            background-color: #EBEEF5;
+            height: 3rem;
+            line-height: 3rem;
+            margin-bottom: .5rem;
+        }
+
+        .be-page-content  .field-mapping-item {
+            background-color: #fff;
+            border-bottom: #EBEEF5 1px solid;
+            padding-top: .5rem;
+            padding-bottom: .5rem;
+            margin-bottom: 2px;
+        }
+
+        .be-page-content  .field-mapping-item-op {
+            width: 40px;
+            line-height: 2.5rem;
+            text-align: center;
+        }
 
     </style>
 </be-head>
@@ -174,7 +195,7 @@
                     <div class="be-col-auto">
                         <div class="nodes">
 
-                            <div class="node" v-if="formData.nodes.length === 0">
+                            <div class="node" v-if="formData.nodes.length === 0 || formData.nodes[0].type !== 'input'">
                                 <el-dropdown @command="addInputNode">
                                     <el-button type="info">
                                         输入 <i class="el-icon-arrow-down el-icon--right"></i>
@@ -189,7 +210,9 @@
                                 <template  v-if="node.type === 'input'">
                                     <div class="node">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_ds'">
-                                            <el-button @click="toggleNode(node)" type="primary">输入：数据源</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="primary">{{nodeIndex}}. 输入：数据源</el-button>
+                                            </el-badge>
                                         </div>
                                     </div>
                                 </template>
@@ -209,7 +232,9 @@
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-process" v-if="node.type === 'process'">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
-                                            <el-button @click="toggleNode(node)" type="warning">代码处理</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex}}. 代码处理</el-button>
+                                            </el-badge>
                                         </div>
                                     </div>
                                 </template>
@@ -230,23 +255,33 @@
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-output">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_ds'">
-                                            <el-button @click="toggleNode(node)" type="success">输出：数据源</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：数据源</el-button>
+                                            </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_csv'">
-                                            <el-button @click="toggleNode(node)" type="success">输出：CSV</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：CSV</el-button>
+                                            </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_files'">
-                                            <el-button @click="toggleNode(node)" type="success">输出：文件包</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：文件包</el-button>
+                                            </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_folders'">
-                                            <el-button @click="toggleNode(node)" type="success">输出：目录包</el-button>
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：目录包</el-button>
+                                            </el-badge>
                                         </div>
 
-                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_api'">
-                                            <el-button @click="toggleNode(node)" type="success">输出：API调用</el-button>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_api'">
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：API调用</el-button>
+                                            </el-badge>
                                         </div>
                                     </div>
                                 </template>
@@ -275,7 +310,7 @@
                                             <el-dropdown-item command="output_csv">CSV</el-dropdown-item>
                                             <el-dropdown-item command="output_files">文件包</el-dropdown-item>
                                             <el-dropdown-item command="output_folders">目录包</el-dropdown-item>
-                                            <el-dropdown-item command="input_api">API调用</el-dropdown-item>
+                                            <el-dropdown-item command="output_api">API调用</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
@@ -286,7 +321,7 @@
                         </div>
                     </div>
                     <div class="be-col-auto">
-                        <div class="be-pl-300 be-pt-200"></div>
+                        <div class="be-pl-400 be-pt-200"></div>
                     </div>
                     <div class="be-col-auto" v-if="currentNode">
                         <div style="width:10px; height: 100%; border: #ccc solid 2px; border-right: 0;"></div>
@@ -338,7 +373,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_table" size="medium" placeholder="请选输入数据表" filterable>
+                                        <el-select v-model="currentNode.ds_table" @change="dsTableChange" size="medium" placeholder="请选输入数据表" filterable>
                                             <el-option
                                                     v-for="table in dsTables[currentNode.ds_id]"
                                                     :key="table"
@@ -359,9 +394,12 @@
                                     <div class="be-col-24 be-md-col">
                                         <?php
                                         $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
-                                            'name' => 'ds_sql',
-                                            'v-model' => 'currentNode.ds_sql',
+                                            'name' => 'input_ds_sql',
                                             'language' => 'sql',
+                                            //'@change' => 'dsSqlChange',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.ds_sql',
+                                            ],
                                         ]);
                                         echo $driver->getHtml();
                                         $uiItems->add($driver);
@@ -383,6 +421,35 @@
                                     </div>
                                 </div>
 
+
+                                <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.breakpoint_field" v-if="currentNode.ds_type === 'table'" placeholder="请选择断点字段">
+                                            <el-option v-for="item in inputDsTableFields"
+                                                       :key="item.name"
+                                                       :label="item.name"
+                                                       :value="item.name">
+                                            </el-option>
+                                        </el-select>
+
+                                        <el-input
+                                                type="text"
+                                                placeholder="请选择断点字段"
+                                                v-model = "currentNode.breakpoint_field"
+                                                v-if="currentNode.ds_type === 'sql'"
+                                                size="medium"
+                                                style="max-width: 300px;">
+                                        </el-input>
+                                    </div>
+                                </div>
+
+
                                 <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点时间：
@@ -401,7 +468,6 @@
                                     </div>
                                 </div>
 
-
                                 <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点递增量：
@@ -415,7 +481,6 @@
                                         </el-radio-group>
                                     </div>
                                 </div>
-
 
                                 <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -436,14 +501,8 @@
                                     </div>
                                 </div>
 
-                                <div class="be-mt-200 be-bt-eee be-pt-100">
-                                    <el-button type="primary" size="medium">验证</el-button>
-                                    <el-button type="danger" size="medium" @click="deleteCurrentNode">删除节点</el-button>
-                                </div>
-
                             </div>
                             <div v-if="currentNode && currentNode.item_type === 'input_csv'">
-
 
                             </div>
 
@@ -453,14 +512,44 @@
 
 
                             </div>
-                            <div v-if="currentNode && currentNode.item_type === 'process_code'">
+                            <div v-show="currentNode && currentNode.item_type === 'process_code'">
 
 
+                                <div class="be-row">
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'process_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
 
 
-                            <div v-if="currentNode && currentNode.item_type === 'output_ds'">
+                            <div v-show="currentNode && currentNode.item_type === 'output_ds'">
 
                                 <div class="be-row">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -470,7 +559,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_id" placeholder="请选择数据源" @change="dsChange">
+                                        <el-select v-model="currentNode.ds_id" placeholder="请选择数据源" size="medium" @change="dsChange">
                                             <el-option
                                                     v-for="(name, id) in dsKeyValues"
                                                     :key="id"
@@ -489,7 +578,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_table" placeholder="请选输入数据表" filterable>
+                                        <el-select v-model="currentNode.ds_table" @change="dsTableChange" size="medium"  placeholder="请选输入数据表" filterable>
                                             <el-option
                                                     v-for="table in dsTables[currentNode.ds_id]"
                                                     :key="table"
@@ -499,27 +588,334 @@
                                         </el-select>
                                     </div>
                                 </div>
-                                
+
+
+                                <div class="be-row be-mt-100">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.field_mapping" size="medium">
+                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'mapping'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段映射：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+
+                                        <div class="be-lh-250" v-if="outputDsTableFields.length == 0">
+                                            请先选择源据源 & 数据表
+                                        </div>
+                                        <div v-show="outputDsTableFields.length > 0">
+
+                                            <div style="padding: 5px;">
+                                                <el-button @click="outputDsFieldMappingSelectAll" size="mini">全选</el-button>
+                                                <el-button @click="outputDsFieldMappingSelectNone" size="mini">全不选</el-button>
+                                                <el-button @click="outputDsFieldMappingSelectMatched" size="mini">选中已匹配的</el-button>
+                                            </div>
+
+
+                                            <div class="be-row be-mt-100 field-mapping-item-header">
+                                                <div class="be-col-auto">
+                                                    <div style="width: 50px;">
+                                                    </div>
+                                                </div>
+                                                <div class="be-col">
+                                                    <div class="be-pl-100">数据表字段名</div>
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col be-ta-center">
+                                                    取值类型
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col">
+                                                    上个节点的输出或自定义
+                                                </div>
+                                            </div>
+
+
+                                            <div class="be-row field-mapping-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+
+                                                <div class="be-col-auto">
+                                                    <div class="be-lh-250 be-ta-center" style="width: 50px;">
+                                                        <el-checkbox v-model.number="mapping.enable" :true-label="1" :false-label="0" @change="forceUpdate"></el-checkbox>
+                                                    </div>
+                                                </div>
+
+                                                <div class="be-col be-lh-250">
+                                                    {{mapping.field}}
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col be-ta-center be-lh-250">
+                                                    <el-radio v-model="mapping.type" label="input_field" :disabled="mapping.enable === 0">取用</el-radio>
+                                                    <el-radio v-model="mapping.type" label="custom" :disabled="mapping.enable === 0">自定义</el-radio>
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col">
+                                                    <div v-show="mapping.type === 'input_field'">
+                                                        <el-select
+                                                                v-model="mapping.input_field"
+                                                                @change="forceUpdate"
+                                                                :disabled="mapping.enable === 0"
+                                                                placeholder="请选择输入字段"
+                                                                size="medium"
+                                                                filterable>
+                                                            <el-option
+                                                                    v-for="(v, k) in currentNodeInput"
+                                                                    :key="k"
+                                                                    :label="k"
+                                                                    :value="k">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div v-show="mapping.type === 'custom'">
+                                                        <el-input
+                                                                type="text"
+                                                                placeholder="请输入自定义值"
+                                                                v-model = "mapping.custom"
+                                                                :disabled="mapping.enable === 0"
+                                                                size="medium">
+                                                        </el-input>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_ds_field_mapping_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.field_mapping_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
-                            <div v-if="currentNode && currentNode.item_type === 'output_csv'">
+                            <div v-show="currentNode && currentNode.item_type === 'output_csv'">
 
+                                <div class="be-row be-mt-100">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 列处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.field_mapping" size="medium">
+                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
 
+                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'mapping'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段映射：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+
+                                        <div class="be-row be-mt-100 field-mapping-item-header">
+                                            <div class="be-col">
+                                                <div class="be-pl-100">列名</div>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col be-ta-center">
+                                                取值类型
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                上个节点的输出或自定义
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-mapping-item-op">
+                                                    操作
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="be-row field-mapping-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                            <div class="be-col">
+                                                <el-input
+                                                        type="text"
+                                                        placeholder="请输入列名"
+                                                        v-model = "mapping.field"
+                                                        size="medium"
+                                                        maxlength="300"
+                                                        show-word-limit>
+                                                </el-input>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col be-ta-center be-lh-250">
+                                                <el-radio v-model="mapping.type" label="input_field" :disabled="mapping.enable === 0">取用</el-radio>
+                                                <el-radio v-model="mapping.type" label="custom" :disabled="mapping.enable === 0">自定义</el-radio>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                <div v-show="mapping.type === 'input_field'">
+                                                    <el-select
+                                                            v-model="mapping.input_field"
+                                                            @change="forceUpdate"
+                                                            :disabled="mapping.enable === 0"
+                                                            placeholder="请选择输入字段"
+                                                            size="medium"
+                                                            filterable>
+                                                        <el-option
+                                                                v-for="(v, k) in currentNodeInput"
+                                                                :key="k"
+                                                                :label="k"
+                                                                :value="k">
+                                                        </el-option>
+                                                    </el-select>
+                                                </div>
+                                                <div v-show="mapping.type === 'custom'">
+                                                    <el-input
+                                                            type="text"
+                                                            placeholder="请输入自定义值"
+                                                            v-model = "mapping.custom"
+                                                            :disabled="mapping.enable === 0"
+                                                            size="medium">
+                                                    </el-input>
+                                                </div>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-mapping-item-op">
+                                                    <el-link type="danger" icon="el-icon-delete" @click="outputCsvFieldMappingDelete(mapping)"></el-link>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <el-button class="be-mt-100" size="small" type="primary" @click="outputCsvFieldMappingAdd">新增列</el-button>
+
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_csv_field_mapping_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.field_mapping_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
                             <div v-if="currentNode && currentNode.item_type === 'output_files'">
-
 
 
                             </div>
                             <div v-if="currentNode && currentNode.item_type === 'output_folders'">
 
 
-
                             </div>
                             <div v-if="currentNode && currentNode.item_type === 'output_api'">
 
+                            </div>
 
 
+                            <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode">
+                                <el-button type="success" size="medium" @click="test">验证</el-button>
+                                <el-button type="danger" size="medium" @click="deleteCurrentNode">删除节点</el-button>
+                            </div>
+
+                            <div class="be-mt-200" v-show="currentNode.output">
+                                <el-alert title="验证通过，此节点输出如下：" type="success" :closable="false" show-icon></el-alert>
+                                <div class="be-mt-100">
+                                    <?php
+                                    $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                        'name' => 'current_node_output',
+                                        'language' => 'json',
+                                    ]);
+                                    echo $driver->getHtml();
+                                    $uiItems->add($driver);
+                                    ?>
+                                </div>
                             </div>
 
                         </div>
@@ -540,16 +936,27 @@
             data: {
                 formData: <?php echo json_encode($formData); ?>,
 
-                currentNode: false,
-
                 categoryKeyValues: <?php echo json_encode($this->categoryKeyValues); ?>,
+
+                currentNode: false,
+                currentNodeInput: false,
 
                 dsKeyValues: <?php echo json_encode($this->dsKeyValues); ?>,
                 dsTypeKeyValues: <?php echo json_encode($this->dsTypeKeyValues); ?>,
                 dsTables: {},
+                dsTableFields: {},
 
                 breakpointKeyValues: <?php echo json_encode($this->breakpointKeyValues); ?>,
                 breakpointStepKeyValues: <?php echo json_encode($this->breakpointStepKeyValues); ?>,
+                fieldMappingKeyValues: <?php echo json_encode($this->fieldMappingKeyValues); ?>,
+
+
+                // 输入 表字段
+                inputDsTableFields: [],
+
+                // 输出 表字段
+                outputDsTableFields: [],
+
 
                 loading: false,
                 t: false
@@ -561,70 +968,41 @@
 
                 toggleNode(node) {
                     this.currentNode = node;
-                    console.log(node);
-                },
 
-                // 添加节点
-                addNode(type, itemType, index) {
+                    if (node.index === 0) {
+                        this.currentNodeInput = false;
+                    } else {
+                        this.currentNodeInput = this.formData.nodes[node.index-1].output;
+                    }
 
-                    let currentNode = {
-                        type: type,
-                        item_type: itemType,
-                        index: index,
-                    };
-
-                    switch (itemType) {
+                    switch (node.item_type) {
                         case 'input_ds':
-                            currentNode.ds_id = '';
-                            currentNode.ds_type = 'table';
-                            currentNode.ds_table = '';
-                            currentNode.ds_sql = '';
-                            currentNode.output_fields = [];
-                            currentNode.breakpoint = 'full';
-                            currentNode.breakpoint_field = '';
-                            currentNode.breakpoint_time = '1970-01-02 00:00:00';
-                            currentNode.breakpoint_step = '1_DAY';
-                            currentNode.breakpoint_offset = 0;
                             break;
+
+
                         case 'process_code':
-                            currentNode.code = '';
-                            currentNode.output_fields = [];
+                            this.formItems.process_code.codeMirror.setValue(this.currentNode.code);
                             break;
+
+
                         case 'output_ds':
-                            currentNode.ds_id = '';
-                            currentNode.ds_table = '';
-                            currentNode.field_mapping = 'mapping';
-                            currentNode.field_mapping_details = [];
-                            currentNode.field_mapping_code = '';
+                            this.outputDsUpdateFieldMapping();
                             break;
                         case 'output_csv':
-                            currentNode.field_mapping = [];
-                            currentNode.path = '';
+                            this.formItems.output_csv_field_mapping_code.codeMirror.setValue(this.currentNode.field_mapping_code);
+                            this.outputCsvUpdateFieldMapping();
                             break;
                         case 'output_files':
-                            currentNode.field = '';
-                            currentNode.file_ext = '';
-                            currentNode.path = '';
+                            break;
+                        case 'output_folders':
                             break;
                         case 'output_api':
-                            currentNode.post_url = '';
-                            currentNode.post_headers = [];
-                            currentNode.post_format = 'form';
-                            currentNode.post_data_type = 'mapping';
-                            currentNode.post_data_mapping = [];
-                            currentNode.post_data_code = '';
-                            currentNode.success_mark = '';
-                            currentNode.interval = 1000;
                             break;
                     }
 
-                    this.currentNode = currentNode;
-                    this.formData.nodes.splice(currentNode.index, 0, currentNode);
-
-                    for(let i in this.formData.nodes) {
-                        this.formData.nodes[i].index = i;
-                    }
+                    this.$forceUpdate();
                 },
+
                 addInputNode: function (command) {
                     this.addNode('input', command, 0)
                 },
@@ -635,13 +1013,187 @@
                 addOutputNode: function (command) {
                     this.addNode('output', command, this.formData.nodes.length);
                 },
+
+                // 添加节点
+                addNode(type, itemType, index) {
+
+                    let currentNode = {
+                        type: type,
+                        item_type: itemType,
+                        index: Number(index),
+                    };
+
+                    switch (itemType) {
+                        case 'input_ds':
+                            currentNode.ds_id = '';
+                            currentNode.ds_type = 'table';
+                            currentNode.ds_table = '';
+                            currentNode.ds_sql = '';
+                            currentNode.breakpoint = 'full';
+                            currentNode.breakpoint_field = '';
+                            currentNode.breakpoint_time = '1970-01-02 00:00:00';
+                            currentNode.breakpoint_step = '1_DAY';
+                            currentNode.breakpoint_offset = 0;
+                            currentNode.output = false;
+                            break;
+
+
+                        case 'process_code':
+                            currentNode.code = 'return $input;';
+                            currentNode.output = false;
+                            break;
+
+
+                        case 'output_ds':
+                            currentNode.ds_id = '';
+                            currentNode.ds_table = '';
+                            currentNode.field_mapping = 'mapping';
+                            currentNode.field_mapping_details = [];
+                            currentNode.field_mapping_code = '';
+                            currentNode.output = false;
+                            break;
+                        case 'output_csv':
+                            currentNode.field_mapping = 'mapping';
+                            currentNode.field_mapping_details = [];
+                            currentNode.field_mapping_code = '';
+                            currentNode.output = false;
+                            break;
+                        case 'output_files':
+                            currentNode.name = 'template';
+                            currentNode.name_template = '';
+                            currentNode.name_code = '';
+                            currentNode.content = 'template';
+                            currentNode.content_template = '';
+                            currentNode.content_code = '';
+                            currentNode.output = false;
+                            break;
+                        case 'output_folders':
+                            currentNode.name = 'template';
+                            currentNode.name_template = '';
+                            currentNode.name_code = '';
+                            currentNode.files = [];
+                            currentNode.output = false;
+                            break;
+                        case 'output_api':
+                            currentNode.url = '';
+                            currentNode.headers = [];
+                            currentNode.format = 'form';
+                            currentNode.field_mapping = 'mapping';
+                            currentNode.field_mapping_details = [];
+                            currentNode.field_mapping_code = '';
+                            currentNode.success_mark = '';
+                            currentNode.interval = 1000;
+                            currentNode.output = false;
+                            break;
+                    }
+
+                    this.formData.nodes.splice(currentNode.index, 0, currentNode);
+
+                    // 更新节点间的输入和办理出
+                    for(let i in this.formData.nodes) {
+                        if (i < index) {
+                            continue;
+                        }
+
+                        let node = this.formData.nodes[i];
+
+                        node.index = Number(i);
+                        node.output = false;
+                    }
+
+                    this.toggleNode(currentNode);
+                },
                 deleteCurrentNode: function () {
 
+                    // 清理节点数据
+                    switch (this.currentNode.item_type) {
+                        case 'input_ds':
+                            this.inputDsTableFields = [];
+                            break;
+
+                        case 'process_code':
+                            break;
+
+                        case 'output_ds':
+                            this.outputDsTableFields = [];
+                            break;
+                        case 'output_csv':
+                            break;
+                        case 'output_files':
+                            break;
+                        case 'output_folders':
+                            break;
+                        case 'output_api':
+                            break;
+                    }
+
+                    let currentIndex = this.currentNode.index;
+
+                    this.formData.nodes.splice(this.currentNode.index, 1);
+                    this.currentNode = false;
+
+                    // 更新节点间的输入和办理出
+                    for(let i in this.formData.nodes) {
+                        if (i < currentIndex) {
+                            continue;
+                        }
+
+                        let node = this.formData.nodes[i];
+                        node.index = Number(i);
+                        node.output = false;
+                    }
+
+                    this.$forceUpdate();
                 },
 
                 // 验证
                 test: function () {
+                    let _this = this;
+                    this.$http.post("<?php echo beAdminUrl('Etl.Flow.test'); ?>", {
+                        formData: _this.formData,
+                        index: _this.currentNode.index,
+                    }).then(function (response) {
+                        _this.loading = false;
+                        vueNorth.loading = false;
+                        //console.log(response);
+                        if (response.status === 200) {
+                            var responseData = response.data;
+                            if (responseData.success) {
+                                _this.$message.success(responseData.message);
 
+                                for(let node of responseData.flow.nodes) {
+                                    _this.formData.nodes[node.index].output = node.output;
+                                }
+
+                                if (_this.currentNode.output !== false) {
+                                    _this.formItems.current_node_output.codeMirror.setValue(JSON.stringify(_this.currentNode.output, null, 4));
+                                }
+
+                                //console.log(_this.formData);
+
+                                _this.$forceUpdate();
+
+                            } else {
+
+                                // 更新节点间的输入和办理出
+                                for(let i in _this.formData.nodes) {
+                                    if (i >= _this.currentNode.index) {
+                                        _this.formData.nodes[i].output = false;
+                                    }
+                                }
+
+                                if (responseData.message) {
+                                    _this.$message.error(responseData.message);
+                                } else {
+                                    _this.$message.error("服务器返回数据异常！");
+                                }
+                            }
+                        }
+                    }).catch(function (error) {
+                        _this.loading = false;
+                        vueNorth.loading = false;
+                        _this.$message.error(error);
+                    });
                 },
 
                 save: function (command) {
@@ -694,9 +1246,7 @@
                 },
 
                 dsChange: function () {
-                    if (this.dsTables[this.currentNode.ds_id] !== undefined) {
-                        this.inputTables = this.dsTables[this.currentNode.ds_id];
-                    } else {
+                    if (this.dsTables[this.currentNode.ds_id] === undefined) {
                         var _this = this;
                         _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableNames'); ?>", {
                             dsId: _this.currentNode.ds_id
@@ -717,131 +1267,232 @@
                         });
                     }
                 },
-                loadDsTables: function (dsId, fnSuccess, fnFail) {
 
-                },
-                loadInputTableFields: function () {
-                    var inputTable = this.formData.input_type === 'table' ? this.formData.input_table : '_sql';
+                dsTableChange: function () {
+                    if (this.dsTableFields[this.currentNode.ds_id] === undefined) {
+                        this.dsTableFields[this.currentNode.ds_id] = {};
+                    }
 
-                    if (this.tableFields[this.formData.input_ds_id] !== undefined &&
-                        this.tableFields[this.formData.input_ds_id][inputTable] !== undefined) {
-                        this.inputTableFields = this.tableFields[this.formData.input_ds_id][inputTable];
-                    } else {
-                        this.inputTableFieldsLoading = true;
-
+                    if (this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table] === undefined) {
                         var _this = this;
-                        var fnSuccess = function () {
-                            _this.inputTableFieldsLoading = false;
-                            _this.inputTableFields = _this.tableFields[_this.formData.input_ds_id][inputTable];
-                            _this.updateFieldMapping();
+                        this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableFields'); ?>", {
+                            dsId: _this.currentNode.ds_id,
+                            table: _this.currentNode.ds_table
+                        }).then(function (response) {
+                            if (response.status === 200) {
+                                var responseData = response.data;
+                                if (responseData.success) {
 
-                            // 生成 CODE
-                            if (_this.formData.field_mapping_code === "") {
-                                var code = "$return = [];\n";
-                                for (var x in _this.fieldMapping) {
-                                    if (_this.fieldMapping[x] === "") {
-                                        code += "$return['" + x + "'] = '';\n";
-                                    } else {
-                                        code += "$return['" + x + "'] = $row['" + _this.fieldMapping[x] + "'];\n";
+                                    _this.dsTableFields[_this.currentNode.ds_id][_this.currentNode.ds_table] = responseData.data.fields;
+
+                                    if (_this.currentNode.type === 'input') {
+                                        _this.inputDsTableFields = responseData.data.fields;
+                                    } else if (_this.currentNode.type === 'output') {
+                                        _this.outputDsTableFields = responseData.data.fields;
+                                        _this.outputDsUpdateFieldMapping();
+                                    }
+
+                                } else {
+                                    if (responseData.message) {
+                                        _this.$message.error(responseData.message);
                                     }
                                 }
-                                code += "return $return;";
-                                _this.formData.field_mapping_code = code;
-                                _this.codeMirrorFieldMappingCode && _this.codeMirrorFieldMappingCode.setValue(code);
                             }
-
-                        };
-
-                        var fnFail = function () {
-                            _this.inputTableFieldsLoading = false;
-                        };
-
-                        if (this.formData.input_type === 'table') {
-                            this.loadTableFields(this.formData.input_ds_id, this.formData.input_table, fnSuccess, fnFail);
-                        } else {
-                            this.loadSqlFields(this.formData.input_ds_id, this.formData.input_sql, fnSuccess, fnFail);
-                        }
-                    }
-                },
-                loadOutputTableFields: function () {
-                    if (this.tableFields[this.formData.output_ds_id] !== undefined &&
-                        this.tableFields[this.formData.output_ds_id][this.formData.output_table] !== undefined) {
-                        this.outputTableFields = this.tableFields[this.formData.output_ds_id][this.formData.output_table];
-                    } else {
-                        this.outputTableFieldsLoading = true;
-                        var _this = this;
-                        this.loadTableFields(this.formData.output_ds_id, this.formData.output_table, function () {
-                            _this.outputTableFieldsLoading = false;
-                            _this.outputTableFields = _this.tableFields[_this.formData.output_ds_id][_this.formData.output_table];
-                            _this.updateFieldMapping();
-
-                            _this.loadSrcTableFields();
-                        }, function () {
-                            _this.outputTableFieldsLoading = false;
+                        }).catch(function (error) {
+                            _this.$message.error(error);
                         });
+                    } else {
+                        if (this.currentNode.type === 'input') {
+                            this.inputDsTableFields = this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table];
+                        } else if (this.currentNode.type === 'output') {
+                            this.outputDsTableFields = this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table];
+                            this.outputDsUpdateFieldMapping();
+                        }
                     }
                 },
-                loadSqlFields: function (dsId, sql, fnSuccess, fnFail) {
-                    var _this = this;
-                    _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getSqlFields'); ?>", {
-                        dsId: dsId,
-                        sql: sql
-                    }).then(function (response) {
-                        if (response.status === 200) {
-                            var responseData = response.data;
-                            if (responseData.success) {
-                                if (_this.tableFields[dsId] === undefined) {
-                                    _this.tableFields[dsId] = {};
-                                }
 
-                                _this.tableFields[dsId]['_sql'] = responseData.data.fields;
-                                fnSuccess();
-                            } else {
-                                if (responseData.message) {
-                                    _this.$message.error(responseData.message);
-                                }
-                                fnFail();
-                            }
-                        }
-                    }).catch(function (error) {
-                        _this.$message.error(error);
-                        fnFail();
-                    });
-                },
-                loadTableFields: function (dsId, table, fnSuccess, fnFail) {
-                    var _this = this;
-                    _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableFields'); ?>", {
-                        dsId: dsId,
-                        table: table
-                    }).then(function (response) {
-                        if (response.status === 200) {
-                            var responseData = response.data;
-                            if (responseData.success) {
-                                if (_this.tableFields[dsId] === undefined) {
-                                    _this.tableFields[dsId] = {};
-                                }
+                dsSqlChange: function () {
 
-                                _this.tableFields[dsId][table] = responseData.data.fields;
-                                fnSuccess();
-                            } else {
-                                if (responseData.message) {
-                                    _this.$message.error(responseData.message);
+                    if (this.dsTableFields[this.currentNode.ds_id] === undefined) {
+                        this.dsTableFields[this.currentNode.ds_id] = {};
+                    }
+
+                    if (this.dsTableFields[this.currentNode.ds_id]['_sql'] === undefined) {
+                        var _this = this;
+                        this.$http.post("<?php echo beAdminUrl('Etl.Ds.getSqlFields'); ?>", {
+                            dsId: _this.currentNode.ds_id,
+                            sql: _this.currentNode.ds_sql
+                        }).then(function (response) {
+                            if (response.status === 200) {
+                                var responseData = response.data;
+                                if (responseData.success) {
+                                    _this.dsTableFields[_this.currentNode.ds_id]['_sql'] = responseData.data.fields;
+
+                                    // 仅输入 烽据源支持 SQL
+                                    _this.inputDsTableFields = responseData.data.fields;
+                                } else {
+                                    if (responseData.message) {
+                                        _this.$message.error(responseData.message);
+                                    }
                                 }
-                                fnFail();
                             }
-                        }
-                    }).catch(function (error) {
-                        _this.$message.error(error);
-                        fnFail();
-                    });
+                        }).catch(function (error) {
+                            _this.$message.error(error);
+                        });
+                    } else {
+                        this.inputDsTableFields = this.dsTableFields[this.currentNode.ds_id]['_sql'];
+                    }
                 },
 
 
+
+                outputDsUpdateFieldMapping: function () {
+
+                    if (this.outputDsTableFields.length === 0 ) return;
+
+                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                        for (let i = 0; i < this.outputDsTableFields.length; i++) {
+                            let outputField = this.outputDsTableFields[i].name;
+                            if (this.currentNodeInput !== false) {
+
+                                if (this.currentNodeInput.hasOwnProperty(outputField)) {
+                                    this.currentNode.field_mapping_details.push({
+                                        'enable' : 1,
+                                        'field' : outputField,
+                                        'type' : 'input_field',
+                                        'input_field' : outputField,
+                                        'custom' : "",
+                                    });
+                                } else {
+                                    this.currentNode.field_mapping_details.push({
+                                        'enable' : 1,
+                                        'field' : outputField,
+                                        'type' : 'custom',
+                                        'input_field' : "",
+                                        'custom' : "",
+                                    });
+                                }
+
+                            } else {
+
+                                this.currentNode.field_mapping_details.push({
+                                    'enable' : 1,
+                                    'field' : outputField,
+                                    'type' : 'custom',
+                                    'input_field' : "",
+                                    'custom' : "",
+                                });
+
+                            }
+                        }
+                    }
+
+
+                    // 生成 CODE
+                    if (this.currentNode.field_mapping_code === "") {
+                        let code = "$output = (object)[];\n";
+
+                        for (let x of this.currentNode.field_mapping_details) {
+
+                            if (x.enable !== 1) continue;
+
+                            if (x.type === "input_field") {
+                                code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
+                            } else {
+                                code += "$output->" + x.field + " = '" + x.custom + "';\n";
+                            }
+                        }
+
+                        code += "return $output;";
+                        this.currentNode.field_mapping_code = code;
+                        this.formItems.output_ds_field_mapping_code.codeMirror.setValue(code);
+                    }
+
+                    this.$forceUpdate();
+                },
+                // 输出 数据源
+                outputDsFieldMappingSelectAll: function () {
+                    for (let x of this.currentNode.field_mapping_details) {
+                        x.enable = 1;
+                    }
+                    this.$forceUpdate();
+                },
+                outputDsFieldMappingSelectNone: function () {
+                    for (let x of this.currentNode.field_mapping_details) {
+                        x.enable = 0;
+                    }
+                    this.$forceUpdate();
+                },
+                outputDsFieldMappingSelectMatched: function () {
+                    for (let x of this.currentNode.field_mapping_details) {
+                        if (this.currentNodeInput.hasOwnProperty(x.field)) {
+                            x.enable = 1;
+                        } else {
+                            x.enable = 0;
+                        }
+                    }
+                    this.$forceUpdate();
+                },
+
+
+
+                outputCsvFieldMappingAdd: function () {
+                    this.currentNode.field_mapping_details.push({
+                        field: "",
+                        type: "custom",
+                        input_field: "",
+                        custom: "",
+                    });
+                    this.$forceUpdate();
+                },
+                outputCsvFieldMappingDelete: function (mapping) {
+                    this.currentNode.field_mapping_details.splice(this.currentNode.field_mapping_details.indexOf(mapping), 1);
+                    this.$forceUpdate();
+                },
+                outputCsvUpdateFieldMapping: function () {
+
+                    if (this.currentNodeInput === false)  return;
+
+                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                        for (let x in this.currentNodeInput) {
+                            this.currentNode.field_mapping_details.push({
+                                'field' : x,
+                                'type' : 'input_field',
+                                'input_field' : x,
+                                'custom' : "",
+                            });
+                        }
+                    }
+
+                    // 生成 CODE
+                    if (this.currentNode.field_mapping_code === "") {
+                        let code = "$output = (object)[];\n";
+
+                        for (let x of this.currentNode.field_mapping_details) {
+                            if (x.type === "input_field") {
+                                code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
+                            } else {
+                                code += "$output->" + x.field + " = '" + x.custom + "';\n";
+                            }
+                        }
+
+                        code += "return $output;";
+                        this.currentNode.field_mapping_code = code;
+                        this.formItems.output_csv_field_mapping_code.codeMirror.setValue(code);
+                    }
+
+                    this.$forceUpdate();
+                },
+
+
+
+                forceUpdate() {
+                    this.$forceUpdate();
+                }
                 <?php
                 echo $uiItems->getVueMethods();
                 ?>
             }
-
             <?php
             $uiItems->setVueHook('mounted', 'window.onbeforeunload = function(e) {e = e || window.event; if (e) { e.returnValue = ""; } return ""; };');
             echo $uiItems->getVueHooks();
