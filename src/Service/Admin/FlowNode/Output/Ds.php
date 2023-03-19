@@ -52,19 +52,19 @@ class Ds extends Output
             foreach ($formData['field_mapping_details'] as $mapping) {
 
                 if (!isset($mapping['enable']) || !is_numeric($mapping['enable'])) {
-                    throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（enable）参数无效！');
+                    throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（enable）参数无效！');
                 }
 
                 $enable = (int)$mapping['enable'];
 
                 if (!in_array($enable, [0, 1])) {
-                    throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（is_enable）参数无效！');
+                    throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（is_enable）参数无效！');
                 }
 
                 if ($enable === 0) continue;
 
                 if (!isset($mapping['field']) || !is_string($mapping['field']) || strlen($mapping['field']) === 0) {
-                    throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
+                    throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
                 }
 
                 $field = $mapping['field'];
@@ -78,23 +78,23 @@ class Ds extends Output
                 }
 
                 if (!$found) {
-                    throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（' . $field . '）不存在！');
+                    throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（' . $field . '）不存在！');
                 }
 
                 if (!isset($mapping['type']) || !is_string($mapping['type']) || !in_array($mapping['type'], ['input_field', 'custom'])) {
-                    throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
+                    throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
                 }
 
                 if ($mapping['type'] === 'input_field') {
 
                     if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || strlen($mapping['input_field']) === 0) {
-                        throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 输入段名（input_field）参数无效！');
+                        throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 输入段名（input_field）参数无效！');
                     }
 
                     $inputField = $mapping['input_field'];
 
                     if (!isset($input->$inputField)) {
-                        throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
+                        throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
                     }
 
                     $output->$field = $input->$inputField;
@@ -102,7 +102,7 @@ class Ds extends Output
                 } else {
 
                     if (!isset($mapping['custom']) || !is_string($mapping['custom']) || strlen($mapping['custom']) === 0) {
-                        throw new ServiceException('节点 ' . $mapping['index'] . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
+                        throw new ServiceException('节点 ' . $formData['index'] . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
                     }
 
                     $output->$field = $mapping['custom'];

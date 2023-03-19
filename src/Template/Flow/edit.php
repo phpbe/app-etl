@@ -53,7 +53,7 @@
             transform: rotate3d(0, 0, 1, -45deg)
         }
 
-        .be-page-content .field-mapping-item-header {
+        .be-page-content .field-item-header {
             color: #666;
             background-color: #EBEEF5;
             height: 3rem;
@@ -61,7 +61,7 @@
             margin-bottom: .5rem;
         }
 
-        .be-page-content  .field-mapping-item {
+        .be-page-content  .field-item {
             background-color: #fff;
             border-bottom: #EBEEF5 1px solid;
             padding-top: .5rem;
@@ -69,7 +69,7 @@
             margin-bottom: 2px;
         }
 
-        .be-page-content  .field-mapping-item-op {
+        .be-page-content  .field-item-op {
             width: 40px;
             line-height: 2.5rem;
             text-align: center;
@@ -145,7 +145,7 @@
                             </div>
                         </div>
 
-                        <div class="be-row be-mt-100">
+                        <div class="be-row be-mt-150">
                             <div class="be-col-24 be-md-col-auto be-lh-250">
                                 素材分类：
                             </div>
@@ -328,6 +328,10 @@
                     </div>
                     <div class="be-col">
                         <div class="be-p-100">
+
+
+
+                            <!-- input_ds -->
                             <div v-show="currentNode && currentNode.item_type === 'input_ds'">
 
                                 <div class="be-row">
@@ -350,7 +354,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100">
+                                <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 类型：
                                     </div>
@@ -365,7 +369,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100" v-show="currentNode.ds_type === 'table'">
+                                <div class="be-row be-mt-150" v-show="currentNode.ds_type === 'table'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 数据表：
                                     </div>
@@ -384,7 +388,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-show="currentNode.ds_type === 'sql'">
+                                <div class="be-row be-mt-150" v-show="currentNode.ds_type === 'sql'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> SQL：
                                     </div>
@@ -407,7 +411,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100">
+                                <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点类型：
                                     </div>
@@ -422,7 +426,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点字段：
                                     </div>
@@ -450,7 +454,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点时间：
                                     </div>
@@ -468,7 +472,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点递增量：
                                     </div>
@@ -482,7 +486,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点向前编移量：
                                     </div>
@@ -502,16 +506,27 @@
                                 </div>
 
                             </div>
+                            <!-- input_ds -->
+
+
+
+
+                            <!-- input_csv -->
                             <div v-if="currentNode && currentNode.item_type === 'input_csv'">
 
                             </div>
+                            <!-- input_csv -->
 
 
 
+                            <!-- process_clean -->
                             <div v-if="currentNode && currentNode.item_type === 'process_clean'">
-
-
                             </div>
+                            <!-- process_clean -->
+
+
+
+                            <!-- process_code -->
                             <div v-show="currentNode && currentNode.item_type === 'process_code'">
 
 
@@ -546,9 +561,13 @@
                                     </div>
                                 </div>
                             </div>
+                            <!-- process_code -->
 
 
 
+
+
+                            <!-- output_ds -->
                             <div v-show="currentNode && currentNode.item_type === 'output_ds'">
 
                                 <div class="be-row">
@@ -570,7 +589,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100">
+                                <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 数据表：
                                     </div>
@@ -590,7 +609,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100">
+                                <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段处理方式：
                                     </div>
@@ -605,7 +624,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'mapping'">
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段映射：
                                     </div>
@@ -626,7 +645,7 @@
                                             </div>
 
 
-                                            <div class="be-row be-mt-100 field-mapping-item-header">
+                                            <div class="be-row be-mt-150 field-item-header">
                                                 <div class="be-col-auto">
                                                     <div style="width: 50px;">
                                                     </div>
@@ -649,7 +668,7 @@
                                             </div>
 
 
-                                            <div class="be-row field-mapping-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                            <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
 
                                                 <div class="be-col-auto">
                                                     <div class="be-lh-250 be-ta-center" style="width: 50px;">
@@ -704,7 +723,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -739,11 +758,16 @@
                                         </div>
                                     </div>
                                 </div>
-
                             </div>
+                            <!-- output_ds -->
+
+
+
+
+                            <!-- output_csv -->
                             <div v-show="currentNode && currentNode.item_type === 'output_csv'">
 
-                                <div class="be-row be-mt-100">
+                                <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 列处理方式：
                                     </div>
@@ -757,7 +781,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'mapping'">
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段映射：
                                     </div>
@@ -766,7 +790,7 @@
                                     </div>
                                     <div class="be-col-24 be-md-col">
 
-                                        <div class="be-row be-mt-100 field-mapping-item-header">
+                                        <div class="be-row be-mt-150 field-item-header">
                                             <div class="be-col">
                                                 <div class="be-pl-100">列名</div>
                                             </div>
@@ -783,13 +807,13 @@
                                                 上个节点的输出或自定义
                                             </div>
                                             <div class="be-col-auto">
-                                                <div class="field-mapping-item-op">
+                                                <div class="field-item-op">
                                                     操作
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="be-row field-mapping-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
                                             <div class="be-col">
                                                 <el-input
                                                         type="text"
@@ -804,8 +828,8 @@
                                                 <div class="be-pl-100"></div>
                                             </div>
                                             <div class="be-col be-ta-center be-lh-250">
-                                                <el-radio v-model="mapping.type" label="input_field" :disabled="mapping.enable === 0">取用</el-radio>
-                                                <el-radio v-model="mapping.type" label="custom" :disabled="mapping.enable === 0">自定义</el-radio>
+                                                <el-radio v-model="mapping.type" label="input_field">取用</el-radio>
+                                                <el-radio v-model="mapping.type" label="custom">自定义</el-radio>
                                             </div>
                                             <div class="be-col-auto">
                                                 <div class="be-pl-100"></div>
@@ -815,7 +839,6 @@
                                                     <el-select
                                                             v-model="mapping.input_field"
                                                             @change="forceUpdate"
-                                                            :disabled="mapping.enable === 0"
                                                             placeholder="请选择输入字段"
                                                             size="medium"
                                                             filterable>
@@ -832,13 +855,12 @@
                                                             type="text"
                                                             placeholder="请输入自定义值"
                                                             v-model = "mapping.custom"
-                                                            :disabled="mapping.enable === 0"
                                                             size="medium">
                                                     </el-input>
                                                 </div>
                                             </div>
                                             <div class="be-col-auto">
-                                                <div class="field-mapping-item-op">
+                                                <div class="field-item-op">
                                                     <el-link type="danger" icon="el-icon-delete" @click="outputCsvFieldMappingDelete(mapping)"></el-link>
                                                 </div>
                                             </div>
@@ -849,7 +871,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-100" v-show="currentNode.field_mapping === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -886,17 +908,421 @@
                                 </div>
 
                             </div>
-                            <div v-if="currentNode && currentNode.item_type === 'output_files'">
+                            <!-- output_csv -->
 
 
+                            <!-- output_files -->
+                            <div v-show="currentNode && currentNode.item_type === 'output_files'">
+
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 文件名处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.name" size="medium">
+                                            <el-radio-button label="template">命名模板</el-radio-button>
+                                            <el-radio-button label="code">代码处理</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-show="currentNode.name === 'template'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 文件名称模板：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div>
+                                            <el-input
+                                                    type="text"
+                                                    placeholder="请输入文件名称模板（例:{id}.txt）"
+                                                    v-model = "currentNode.name_template"
+                                                    size="medium">
+                                            </el-input>
+                                        </div>
+                                        <div v-if="currentNodeInput !== false">
+                                            <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                            <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="outputFilesInsertNameTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取可插入标签。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.name === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：string {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_files_name_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.name_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 内容处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.content" size="medium">
+                                            <el-radio-button label="template">内容模板</el-radio-button>
+                                            <el-radio-button label="code">代码处理</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.content === 'template'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 文件内容模板：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div>
+                                            <el-input
+                                                    type="textarea"
+                                                    placeholder="请输入文件内容模板"
+                                                    v-model = "currentNode.content_template"
+                                                    size="medium">
+                                            </el-input>
+                                        </div>
+                                        <div v-if="currentNodeInput !== false">
+                                            <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                            <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="outputFilesInsertContentTag(k)" type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取可插入标签。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.content === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：string {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_files_content_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.content_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
+                            <!-- output_files -->
+
+
+
+                            <!-- output_folders -->
                             <div v-if="currentNode && currentNode.item_type === 'output_folders'">
 
 
                             </div>
-                            <div v-if="currentNode && currentNode.item_type === 'output_api'">
+                            <!-- output_folders -->
+
+
+
+                            <!-- output_api  -->
+                            <div v-show="currentNode && currentNode.item_type === 'output_api'">
+
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> API网址：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入API网址"
+                                                v-model="currentNode.url"
+                                                maxlength="300"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto be-lh-250">
+                                        请求头：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+
+                                        <div class="be-row field-item-header">
+                                            <div class="be-col">
+                                                <div class="be-pl-100">名称</div>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                值
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-item-op">
+                                                    操作
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="be-row field-item" v-for="header, headerIndex in currentNode.headers" :key="headerIndex">
+                                            <div class="be-col">
+                                                <el-input
+                                                        type="text"
+                                                        placeholder="请输入名称"
+                                                        v-model = "header.name"
+                                                        size="medium"
+                                                        maxlength="300"
+                                                        show-word-limit>
+                                                </el-input>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                <el-input
+                                                        type="text"
+                                                        placeholder="请输入值"
+                                                        v-model = "header.value"
+                                                        size="medium"
+                                                        maxlength="600"
+                                                        show-word-limit>
+                                                </el-input>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-item-op">
+                                                    <el-link type="danger" icon="el-icon-delete" @click="outputApiDeleteHeader(header)"></el-link>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <el-button class="be-mt-100" size="small" type="primary" @click="outputApiAddHeader">新增请求头</el-button>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto">
+                                        <span class="be-c-red">*</span> 请求格式：
+                                    </div>
+                                    <div class="be-col">
+                                        <el-radio v-model="currentNode.format" label="form">FORM 表单</el-radio>
+                                        <el-radio v-model="currentNode.format" label="json">JSON 数据</el-radio>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto">
+                                       <span class="be-c-red">*</span> 清求体处理：
+                                    </div>
+                                    <div class="be-col">
+                                        <el-radio v-model="currentNode.field_mapping" label="mapping">映射</el-radio>
+                                        <el-radio v-model="currentNode.field_mapping" label="code">代码处理</el-radio>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段映射：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+
+                                        <div class="be-row field-item-header">
+                                            <div class="be-col">
+                                                <div class="be-pl-100">列名</div>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col be-ta-center">
+                                                取值类型
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                上个节点的输出或自定义
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-item-op">
+                                                    操作
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                            <div class="be-col">
+                                                <el-input
+                                                        type="text"
+                                                        placeholder="请输入列名"
+                                                        v-model = "mapping.field"
+                                                        size="medium"
+                                                        maxlength="300"
+                                                        show-word-limit>
+                                                </el-input>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col be-ta-center be-lh-250">
+                                                <el-radio v-model="mapping.type" label="input_field">取用</el-radio>
+                                                <el-radio v-model="mapping.type" label="custom">自定义</el-radio>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                <div v-show="mapping.type === 'input_field'">
+                                                    <el-select
+                                                            v-model="mapping.input_field"
+                                                            @change="forceUpdate"
+                                                            placeholder="请选择输入字段"
+                                                            size="medium"
+                                                            filterable>
+                                                        <el-option
+                                                                v-for="(v, k) in currentNodeInput"
+                                                                :key="k"
+                                                                :label="k"
+                                                                :value="k">
+                                                        </el-option>
+                                                    </el-select>
+                                                </div>
+                                                <div v-show="mapping.type === 'custom'">
+                                                    <el-input
+                                                            type="text"
+                                                            placeholder="请输入自定义值"
+                                                            v-model = "mapping.custom"
+                                                            size="medium">
+                                                    </el-input>
+                                                </div>
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="field-item-op">
+                                                    <el-link type="danger" icon="el-icon-delete" @click="outputApiFieldMappingDelete(mapping)"></el-link>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <el-button class="be-mt-100" size="small" type="primary" @click="outputApiFieldMappingAdd">新增字段</el-button>
+
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_api_field_mapping_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.field_mapping_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
+                            <!-- output_api   -->
 
 
                             <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode">
@@ -993,10 +1419,14 @@
                             this.outputCsvUpdateFieldMapping();
                             break;
                         case 'output_files':
+                            this.formItems.output_files_name_code.codeMirror.setValue(this.currentNode.name_code);
+                            this.formItems.output_files_content_code.codeMirror.setValue(this.currentNode.content_code);
                             break;
                         case 'output_folders':
                             break;
                         case 'output_api':
+                            this.formItems.output_api_field_mapping_code.codeMirror.setValue(this.currentNode.field_mapping_code);
+                            this.outputApiUpdateFieldMapping();
                             break;
                     }
 
@@ -1484,6 +1914,75 @@
                     this.$forceUpdate();
                 },
 
+
+
+                outputFilesInsertNameTag: function (tag) {
+                    this.currentNode.name_template += "{"  + tag +  "}";
+                },
+                outputFilesInsertContentTag: function (tag) {
+                    this.currentNode.content_template += "{"  + tag +  "}";
+                },
+
+
+
+                outputApiAddHeader: function () {
+                    this.currentNode.headers.push({
+                        name: "",
+                        value: "",
+                    });
+                    this.$forceUpdate();
+                },
+                outputApiDeleteHeader: function (header) {
+                    this.currentNode.headers.splice(this.currentNode.headers.indexOf(header), 1);
+                    this.$forceUpdate();
+                },
+                outputApiFieldMappingAdd: function () {
+                    this.currentNode.field_mapping_details.push({
+                        field: "",
+                        type: "custom",
+                        input_field: "",
+                        custom: "",
+                    });
+                    this.$forceUpdate();
+                },
+                outputApiFieldMappingDelete: function (mapping) {
+                    this.currentNode.field_mapping_details.splice(this.currentNode.field_mapping_details.indexOf(mapping), 1);
+                    this.$forceUpdate();
+                },
+                outputApiUpdateFieldMapping: function () {
+
+                    if (this.currentNodeInput === false)  return;
+
+                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                        for (let x in this.currentNodeInput) {
+                            this.currentNode.field_mapping_details.push({
+                                'field' : x,
+                                'type' : 'input_field',
+                                'input_field' : x,
+                                'custom' : "",
+                            });
+                        }
+                    }
+
+                    // 生成 CODE
+                    if (this.currentNode.field_mapping_code === "") {
+                        let code = "$output = (object)[];\n";
+
+                        for (let x of this.currentNode.field_mapping_details) {
+                            if (x.type === "input_field") {
+                                code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
+                            } else {
+                                code += "$output->" + x.field + " = '" + x.custom + "';\n";
+                            }
+                        }
+
+                        code += "return $output;";
+                        this.currentNode.field_mapping_code = code;
+                        this.formItems.output_api_field_mapping_code.codeMirror.setValue(code);
+                    }
+
+                    this.$forceUpdate();
+                },
 
 
                 forceUpdate() {
