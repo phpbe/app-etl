@@ -315,7 +315,7 @@ class Flow
     private function getNodeItemService($nodeItemType)
     {
         $arr = explode('_', $nodeItemType);
-        $serviceName = '\\App\\Etl\\Service\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
+        $serviceName = '\\Be\\App\\Etl\\Service\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
         return new $serviceName();
     }
 
