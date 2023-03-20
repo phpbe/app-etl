@@ -51,7 +51,7 @@ class Flow extends Task
                     $flowNode->item = $flowNodeItem;
 
                     $arr = explode('_', $flowNode->item_type);
-                    $serviceName = '\\App\\Etl\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
+                    $serviceName = '\\App\\Etl\\Service\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
                     $itemServices[$flowNode->id] = new $serviceName();
                 }
 
