@@ -65,7 +65,7 @@ class Csv extends Output
 
                 } else {
 
-                    if (!isset($mapping['custom']) || !is_string($mapping['custom']) || strlen($mapping['custom']) === 0) {
+                    if (!isset($mapping['custom']) || !is_string($mapping['custom'])) {
                         throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
                     }
 
