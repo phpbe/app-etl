@@ -66,14 +66,13 @@
 
                         <div class="be-row be-mt-100">
                             <div class="be-col-24 be-md-col-auto be-lh-250">
-                                素材分类：
+                                <span class="be-c-red">*</span> 素材分类：
                             </div>
                             <div class="be-col-24 be-md-col-auto">
                                 <div class="be-pl-50 be-pt-100"></div>
                             </div>
                             <div class="be-col-24 be-md-col">
                                 <el-select v-model="formData.category_id" size="medium">
-                                    <el-option label="无分类" value=""></el-option>
                                     <?php
                                     foreach ($this->categoryKeyValues as $key => $val) {
                                         ?>

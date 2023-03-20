@@ -306,7 +306,7 @@ class Flow
         if ($request->isAjax()) {
 
             try {
-                $flow = $serviceFlow->edit($request->json('formData'));
+                $flow = $serviceFlow->create($request->json('formData'));
                 $response->set('success', true);
                 $response->set('message', '新建数据流成功！');
                 $response->set('flow', $flow);

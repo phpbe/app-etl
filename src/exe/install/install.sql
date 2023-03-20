@@ -57,7 +57,6 @@ CREATE TABLE `etl_flow_node` (
 `type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'input: 输入/process: 处理/output: 输出',
 `item_type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'input_ds: 输入数据源/process_code: 代码处理/output_ds: 输出数据源/output_csv: 输出CSV/output_files: 输出文件包/output_folders: 输出目录包/output_api: 输出API调用',
 `item_id` varchar(36) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '',
-`is_enable` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否可用',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='数据流节点';
@@ -114,6 +113,7 @@ CREATE TABLE `etl_flow_node_output_ds` (
 `field_mapping` varchar(30) NOT NULL DEFAULT 'mapping' COMMENT '字段映射类型（mapping：字段映射/code：代码处理）',
 `field_mapping_details` text NOT NULL COMMENT '字段映射',
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
+`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-数据源';
@@ -130,6 +130,7 @@ CREATE TABLE `etl_flow_node_output_csv` (
 `field_mapping` varchar(30) NOT NULL DEFAULT 'mapping' COMMENT '字段映射类型（mapping：字段映射/code：代码处理）',
 `field_mapping_details` text NOT NULL COMMENT '字段映射',
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
+`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-CSV';
@@ -145,10 +146,11 @@ CREATE TABLE `etl_flow_node_output_files` (
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `name` varchar(30) NOT NULL DEFAULT 'template' COMMENT '字件名生成方式（template：模板/code：代码处理）',
 `name_template` varchar(300) NOT NULL DEFAULT '' COMMENT '字件名模板',
-`name_code` varchar(300) NOT NULL DEFAULT '' COMMENT '文件名代码处理',
+`name_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '文件名代码处理',
 `content` varchar(30) NOT NULL DEFAULT 'template' COMMENT '文件内容生成方式（template：模板/code：代码处理）',
 `content_template` varchar(300) NOT NULL DEFAULT '' COMMENT '文件内容模板',
-`content_code` varchar(300) NOT NULL DEFAULT '' COMMENT '文件内容代码处理',
+`content_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '文件内容代码处理',
+`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-文件包';
@@ -164,8 +166,10 @@ CREATE TABLE `etl_flow_node_output_folders` (
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `name` varchar(30) NOT NULL DEFAULT 'template' COMMENT '目录生成方式（template：模板/code：代码处理）',
 `name_template` varchar(300) NOT NULL DEFAULT '' COMMENT '目录名模板',
-`name_code` varchar(300) NOT NULL DEFAULT '' COMMENT '目录代码处理',
-`files` text NOT NULL COMMENT '目录内文件明细',
+`name_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '目录代码处理',
+`files` text NOT NULL COMMENT '目录内文件列表',
+`files_code` text NOT NULL COMMENT '代码输出文件列表',
+`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-目录包';
@@ -187,6 +191,7 @@ CREATE TABLE `etl_flow_node_output_api` (
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
 `success_mark` varchar(60) NOT NULL DEFAULT '' COMMENT  '成功标识',
 `interval` int(11) NOT NULL DEFAULT '1000' COMMENT '间隔时间（毫秒）',
+`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-API调用';

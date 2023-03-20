@@ -323,7 +323,7 @@
                     <div class="be-col-auto">
                         <div class="be-pl-400 be-pt-200"></div>
                     </div>
-                    <div class="be-col-auto" v-if="currentNode">
+                    <div class="be-col-auto" v-if="currentNode.item">
                         <div style="width:10px; height: 100%; border: #ccc solid 2px; border-right: 0;"></div>
                     </div>
                     <div class="be-col">
@@ -332,7 +332,7 @@
 
 
                             <!-- input_ds -->
-                            <div v-show="currentNode && currentNode.item_type === 'input_ds'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'input_ds'">
 
                                 <div class="be-row">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -342,7 +342,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_id" placeholder="请选择数据源" size="medium" @change="dsChange">
+                                        <el-select v-model="currentNode.item.ds_id" placeholder="请选择数据源" size="medium" @change="dsChange">
                                             <el-option
                                                     v-for="(name, id) in dsKeyValues"
                                                     :key="id"
@@ -362,14 +362,14 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.ds_type" size="medium">
+                                        <el-radio-group v-model="currentNode.item.ds_type" size="medium">
                                             <el-radio-button v-for="(v, k) in dsTypeKeyValues" :label="k">{{v}}</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.ds_type === 'table'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.ds_type === 'table'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 数据表：
                                     </div>
@@ -377,9 +377,9 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_table" @change="dsTableChange" size="medium" placeholder="请选输入数据表" filterable>
+                                        <el-select v-model="currentNode.item.ds_table" @change="dsTableChange" size="medium" placeholder="请选输入数据表" filterable>
                                             <el-option
-                                                    v-for="table in dsTables[currentNode.ds_id]"
+                                                    v-for="table in dsTables[currentNode.item.ds_id]"
                                                     :key="table"
                                                     :label="table"
                                                     :value="table">
@@ -388,7 +388,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.ds_type === 'sql'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.ds_type === 'sql'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> SQL：
                                     </div>
@@ -402,7 +402,7 @@
                                             'language' => 'sql',
                                             //'@change' => 'dsSqlChange',
                                             'ui' => [
-                                                'v-model' => 'currentNode.ds_sql',
+                                                'v-model' => 'currentNode.item.ds_sql',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -419,14 +419,14 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.breakpoint" size="medium">
+                                        <el-radio-group v-model="currentNode.item.breakpoint" size="medium">
                                             <el-radio-button v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点字段：
                                     </div>
@@ -434,7 +434,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.breakpoint_field" v-if="currentNode.ds_type === 'table'" placeholder="请选择断点字段">
+                                        <el-select v-model="currentNode.item.breakpoint_field" v-if="currentNode.item.ds_type === 'table'" placeholder="请选择断点字段">
                                             <el-option v-for="item in inputDsTableFields"
                                                        :key="item.name"
                                                        :label="item.name"
@@ -445,8 +445,8 @@
                                         <el-input
                                                 type="text"
                                                 placeholder="请选择断点字段"
-                                                v-model = "currentNode.breakpoint_field"
-                                                v-if="currentNode.ds_type === 'sql'"
+                                                v-model = "currentNode.item.breakpoint_field"
+                                                v-if="currentNode.item.ds_type === 'sql'"
                                                 size="medium"
                                                 style="max-width: 300px;">
                                         </el-input>
@@ -454,7 +454,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点时间：
                                     </div>
@@ -463,7 +463,7 @@
                                     </div>
                                     <div class="be-col-24 be-md-col">
                                         <el-date-picker
-                                                v-model="currentNode.breakpoint_time"
+                                                v-model="currentNode.item.breakpoint_time"
                                                 type="datetime"
                                                 size="medium"
                                                 placeholder="请选择断点日期时间"
@@ -472,7 +472,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点递增量：
                                     </div>
@@ -480,13 +480,13 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.breakpoint_step" size="medium">
+                                        <el-radio-group v-model="currentNode.item.breakpoint_step" size="medium">
                                             <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-if="currentNode.breakpoint === 'breakpoint'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 断点向前编移量：
                                     </div>
@@ -494,7 +494,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-input-number v-model="currentNode.breakpoint_offset" size="medium" :step="1"></el-input-number>
+                                        <el-input-number v-model="currentNode.item.breakpoint_offset" size="medium" :step="1"></el-input-number>
                                         <div class="be-mt-50 be-c-999">
                                             此偏移量会将断点范围向前扩充指定的秒数，<br/>
                                             例如：断点为: 2020-09-10 00:00:00，断点递增量：一天, 断点向前编移量 86400 秒。<br/>
@@ -512,7 +512,7 @@
 
 
                             <!-- input_csv -->
-                            <div v-if="currentNode && currentNode.item_type === 'input_csv'">
+                            <div v-if="currentNode.item && currentNode.item_type === 'input_csv'">
 
                             </div>
                             <!-- input_csv -->
@@ -520,14 +520,14 @@
 
 
                             <!-- process_clean -->
-                            <div v-if="currentNode && currentNode.item_type === 'process_clean'">
+                            <div v-if="currentNode.item && currentNode.item_type === 'process_clean'">
                             </div>
                             <!-- process_clean -->
 
 
 
                             <!-- process_code -->
-                            <div v-show="currentNode && currentNode.item_type === 'process_code'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'process_code'">
 
 
                                 <div class="be-row">
@@ -538,7 +538,7 @@
                                             'name' => 'process_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.code',
+                                                'v-model' => 'currentNode.item.code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -568,7 +568,7 @@
 
 
                             <!-- output_ds -->
-                            <div v-show="currentNode && currentNode.item_type === 'output_ds'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_ds'">
 
                                 <div class="be-row">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -578,7 +578,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_id" placeholder="请选择数据源" size="medium" @change="dsChange">
+                                        <el-select v-model="currentNode.item.ds_id" placeholder="请选择数据源" size="medium" @change="dsChange">
                                             <el-option
                                                     v-for="(name, id) in dsKeyValues"
                                                     :key="id"
@@ -597,9 +597,9 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select v-model="currentNode.ds_table" @change="dsTableChange" size="medium"  placeholder="请选输入数据表" filterable>
+                                        <el-select v-model="currentNode.item.ds_table" @change="dsTableChange" size="medium"  placeholder="请选输入数据表" filterable>
                                             <el-option
-                                                    v-for="table in dsTables[currentNode.ds_id]"
+                                                    v-for="table in dsTables[currentNode.item.ds_id]"
                                                     :key="table"
                                                     :label="table"
                                                     :value="table">
@@ -617,14 +617,14 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.field_mapping" size="medium">
+                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
                                             <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'mapping'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段映射：
                                     </div>
@@ -668,7 +668,7 @@
                                             </div>
 
 
-                                            <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                            <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.item.field_mapping_details" :key="mappingIndex">
 
                                                 <div class="be-col-auto">
                                                     <div class="be-lh-250 be-ta-center" style="width: 50px;">
@@ -723,7 +723,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -737,7 +737,7 @@
                                             'name' => 'output_ds_field_mapping_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.field_mapping_code',
+                                                'v-model' => 'currentNode.item.field_mapping_code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -765,7 +765,7 @@
 
 
                             <!-- output_csv -->
-                            <div v-show="currentNode && currentNode.item_type === 'output_csv'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_csv'">
 
                                 <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -775,13 +775,13 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.field_mapping" size="medium">
+                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
                                             <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'mapping'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段映射：
                                     </div>
@@ -813,7 +813,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.item.field_mapping_details" :key="mappingIndex">
                                             <div class="be-col">
                                                 <el-input
                                                         type="text"
@@ -871,7 +871,7 @@
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -885,7 +885,7 @@
                                             'name' => 'output_csv_field_mapping_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.field_mapping_code',
+                                                'v-model' => 'currentNode.item.field_mapping_code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -912,7 +912,7 @@
 
 
                             <!-- output_files -->
-                            <div v-show="currentNode && currentNode.item_type === 'output_files'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_files'">
 
                                 <div class="be-row">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -922,14 +922,14 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.name" size="medium">
+                                        <el-radio-group v-model="currentNode.item.name" size="medium">
                                             <el-radio-button label="template">命名模板</el-radio-button>
                                             <el-radio-button label="code">代码处理</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.name === 'template'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.name === 'template'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 文件名称模板：
                                     </div>
@@ -941,14 +941,14 @@
                                             <el-input
                                                     type="text"
                                                     placeholder="请输入文件名称模板（例:{id}.txt）"
-                                                    v-model = "currentNode.name_template"
+                                                    v-model = "currentNode.item.name_template"
                                                     size="medium">
                                             </el-input>
                                         </div>
                                         <div v-if="currentNodeInput !== false">
                                             <span class="be-d-inline-block be-mt-50">插入标签：</span>
                                             <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
-                                                <el-button @click="outputFilesInsertNameTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                <el-button @click="outputFilesNameInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
                                             </span>
                                         </div>
                                         <div class="be-mt-50" v-else>
@@ -958,7 +958,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.name === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.name === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -972,7 +972,7 @@
                                             'name' => 'output_files_name_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.name_code',
+                                                'v-model' => 'currentNode.item.name_code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -1003,7 +1003,7 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.content" size="medium">
+                                        <el-radio-group v-model="currentNode.item.content" size="medium">
                                             <el-radio-button label="template">内容模板</el-radio-button>
                                             <el-radio-button label="code">代码处理</el-radio-button>
                                         </el-radio-group>
@@ -1011,7 +1011,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.content === 'template'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.content === 'template'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 文件内容模板：
                                     </div>
@@ -1023,14 +1023,14 @@
                                             <el-input
                                                     type="textarea"
                                                     placeholder="请输入文件内容模板"
-                                                    v-model = "currentNode.content_template"
+                                                    v-model = "currentNode.item.content_template"
                                                     size="medium">
                                             </el-input>
                                         </div>
                                         <div v-if="currentNodeInput !== false">
                                             <span class="be-d-inline-block be-mt-50">插入标签：</span>
                                             <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
-                                                <el-button @click="outputFilesInsertContentTag(k)" type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                <el-button @click="outputFilesContentInsertTag(k)" type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
                                             </span>
                                         </div>
                                         <div class="be-mt-50" v-else>
@@ -1040,7 +1040,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.content === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.content === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -1054,7 +1054,7 @@
                                             'name' => 'output_files_content_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.content_code',
+                                                'v-model' => 'currentNode.item.content_code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -1081,8 +1081,196 @@
 
 
                             <!-- output_folders -->
-                            <div v-if="currentNode && currentNode.item_type === 'output_folders'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_folders'">
 
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 目录名处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.item.name" size="medium">
+                                            <el-radio-button label="template">命名模板</el-radio-button>
+                                            <el-radio-button label="code">代码处理</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-show="currentNode.item.name === 'template'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 目录名模板：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div>
+                                            <el-input
+                                                    type="text"
+                                                    placeholder="请输入文件名称模板（例:{id}）"
+                                                    v-model = "currentNode.item.name_template"
+                                                    size="medium">
+                                            </el-input>
+                                        </div>
+                                        <div v-if="currentNodeInput !== false">
+                                            <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                            <span class="be-d-inline-block be-mt-50" v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="outputFoldersNameInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取可插入标签。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.item.name === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：string {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_folders_name_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.item.name_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="be-mt-200 be-fw-bold be-bb-eee be-pb-50 be-mb-100">文件列表</div>
+
+                                <div class="be-row be-mb-300" v-for="file, fileIndex in currentNode.item.files" :key="fileIndex">
+                                    <div class="be-col-auto be-lh-250">
+                                       文件 {{fileIndex+1}}：
+                                    </div>
+                                    <div class="be-col">
+
+                                        <div class="be-row">
+                                            <div class="be-col-auto be-lh-250">
+                                                <span class="be-c-red">*</span> 文件名称模板：
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-50 be-pt-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                <div>
+                                                    <el-input
+                                                            type="text"
+                                                            placeholder="请输入文件名称模板（例:{id}.txt）"
+                                                            v-model = "file.name_template"
+                                                            size="medium">
+                                                    </el-input>
+                                                </div>
+                                                <div v-if="currentNodeInput !== false">
+                                                    <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                                    <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="outputFoldersFileNameInsertTag(k, fileIndex)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                                </div>
+                                                <div class="be-mt-50" v-else>
+                                                    请先验证上个结点，获取可插入标签。
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                                        <div class="be-row be-mt-150">
+                                            <div class="be-col-auto be-lh-250">
+                                                <span class="be-c-red">*</span> 文件内容模板：
+                                            </div>
+                                            <div class="be-col-auto">
+                                                <div class="be-pl-50 be-pt-100"></div>
+                                            </div>
+                                            <div class="be-col">
+                                                <div>
+                                                    <el-input
+                                                            type="textarea"
+                                                            placeholder="请输入文件内容模板"
+                                                            v-model = "file.content_template"
+                                                            size="medium">
+                                                    </el-input>
+                                                </div>
+                                                <div v-if="currentNodeInput !== false">
+                                                    <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                                    <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                        <el-button @click="outputFoldersFileContentInsertTag(k, fileIndex)" type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                    </span>
+                                                </div>
+                                                <div class="be-mt-50" v-else>
+                                                    请先验证上个结点，获取可插入标签。
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-p-50">
+                                            <el-link type="danger" icon="el-icon-delete" @click="outputFoldersFilesDelete(file)"></el-link>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <el-button class="be-mt-100" size="small" type="primary" @click="outputFoldersFilesAdd">新增文件</el-button>
+
+                                <div class="be-mt-200 be-bb-eee be-pb-50 be-mb-100"><span class="be-fw-bold">代码输出文件列表</span><span class="be-c-999">（键值对，键名 - 文件名，键值 - 文件内容）</span></div>
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：array {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_folders_files_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.item.files_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
                             <!-- output_folders -->
@@ -1090,7 +1278,7 @@
 
 
                             <!-- output_api  -->
-                            <div v-show="currentNode && currentNode.item_type === 'output_api'">
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_api'">
 
                                 <div class="be-row">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
@@ -1103,7 +1291,7 @@
                                         <el-input
                                                 type="text"
                                                 placeholder="请输入API网址"
-                                                v-model="currentNode.url"
+                                                v-model="currentNode.item.url"
                                                 maxlength="300"
                                                 show-word-limit>
                                         </el-input>
@@ -1137,7 +1325,7 @@
                                         </div>
 
 
-                                        <div class="be-row field-item" v-for="header, headerIndex in currentNode.headers" :key="headerIndex">
+                                        <div class="be-row field-item" v-for="header, headerIndex in currentNode.item.headers" :key="headerIndex">
                                             <div class="be-col">
                                                 <el-input
                                                         type="text"
@@ -1179,22 +1367,22 @@
                                         <span class="be-c-red">*</span> 请求格式：
                                     </div>
                                     <div class="be-col">
-                                        <el-radio v-model="currentNode.format" label="form">FORM 表单</el-radio>
-                                        <el-radio v-model="currentNode.format" label="json">JSON 数据</el-radio>
+                                        <el-radio v-model="currentNode.item.format" label="form">FORM 表单</el-radio>
+                                        <el-radio v-model="currentNode.item.format" label="json">JSON 数据</el-radio>
                                     </div>
                                 </div>
 
                                 <div class="be-row be-mt-150">
                                     <div class="be-col-auto">
-                                       <span class="be-c-red">*</span> 清求体处理：
+                                        <span class="be-c-red">*</span> 清求体处理：
                                     </div>
                                     <div class="be-col">
-                                        <el-radio v-model="currentNode.field_mapping" label="mapping">映射</el-radio>
-                                        <el-radio v-model="currentNode.field_mapping" label="code">代码处理</el-radio>
+                                        <el-radio v-model="currentNode.item.field_mapping" label="mapping">映射</el-radio>
+                                        <el-radio v-model="currentNode.item.field_mapping" label="code">代码处理</el-radio>
                                     </div>
                                 </div>
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'mapping'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'mapping'">
                                     <div class="be-col-24 be-md-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 字段映射：
                                     </div>
@@ -1226,7 +1414,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.field_mapping_details" :key="mappingIndex">
+                                        <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.item.field_mapping_details" :key="mappingIndex">
                                             <div class="be-col">
                                                 <el-input
                                                         type="text"
@@ -1285,7 +1473,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-show="currentNode.field_mapping === 'code'">
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'code'">
                                     <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 代码处理：
                                     </div>
@@ -1299,7 +1487,7 @@
                                             'name' => 'output_api_field_mapping_code',
                                             'language' => 'php',
                                             'ui' => [
-                                                'v-model' => 'currentNode.field_mapping_code',
+                                                'v-model' => 'currentNode.item.field_mapping_code',
                                             ],
                                         ]);
                                         echo $driver->getHtml();
@@ -1321,16 +1509,48 @@
                                     </div>
                                 </div>
 
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 间隔时间（毫秒）：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input-number v-model="currentNode.item.interval"></el-input-number>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 成功标记：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入成功标记"
+                                                v-model = "currentNode.item.success_mark"
+                                                size="medium"
+                                                maxlength="60"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                </div>
+
                             </div>
                             <!-- output_api   -->
 
 
-                            <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode">
+                            <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode.item">
                                 <el-button type="success" size="medium" @click="test">验证</el-button>
                                 <el-button type="danger" size="medium" @click="deleteCurrentNode">删除节点</el-button>
                             </div>
 
-                            <div class="be-mt-200" v-show="currentNode.output">
+                            <div class="be-mt-200" v-show="currentNode.item && currentNode.item.output">
                                 <el-alert title="验证通过，此节点输出如下：" type="success" :closable="false" show-icon></el-alert>
                                 <div class="be-mt-100">
                                     <?php
@@ -1364,7 +1584,7 @@
 
                 categoryKeyValues: <?php echo json_encode($this->categoryKeyValues); ?>,
 
-                currentNode: false,
+                currentNode: {item: false,},
                 currentNodeInput: false,
 
                 dsKeyValues: <?php echo json_encode($this->dsKeyValues); ?>,
@@ -1393,12 +1613,15 @@
             methods: {
 
                 toggleNode(node) {
+
                     this.currentNode = node;
+
+                    //console.log(this.currentNode);
 
                     if (node.index === 0) {
                         this.currentNodeInput = false;
                     } else {
-                        this.currentNodeInput = this.formData.nodes[node.index-1].output;
+                        this.currentNodeInput = this.formData.nodes[node.index-1].item.output;
                     }
 
                     switch (node.item_type) {
@@ -1407,7 +1630,7 @@
 
 
                         case 'process_code':
-                            this.formItems.process_code.codeMirror.setValue(this.currentNode.code);
+                            this.formItems.process_code.codeMirror.setValue(this.currentNode.item.code);
                             break;
 
 
@@ -1415,19 +1638,27 @@
                             this.outputDsUpdateFieldMapping();
                             break;
                         case 'output_csv':
-                            this.formItems.output_csv_field_mapping_code.codeMirror.setValue(this.currentNode.field_mapping_code);
+                            this.formItems.output_csv_field_mapping_code.codeMirror.setValue(this.currentNode.item.field_mapping_code);
                             this.outputCsvUpdateFieldMapping();
                             break;
                         case 'output_files':
-                            this.formItems.output_files_name_code.codeMirror.setValue(this.currentNode.name_code);
-                            this.formItems.output_files_content_code.codeMirror.setValue(this.currentNode.content_code);
+                            this.formItems.output_files_name_code.codeMirror.setValue(this.currentNode.item.name_code);
+                            this.formItems.output_files_content_code.codeMirror.setValue(this.currentNode.item.content_code);
                             break;
                         case 'output_folders':
+                            this.formItems.output_folders_name_code.codeMirror.setValue(this.currentNode.item.name_code);
+                            this.formItems.output_folders_files_code.codeMirror.setValue(this.currentNode.item.files_code);
                             break;
                         case 'output_api':
-                            this.formItems.output_api_field_mapping_code.codeMirror.setValue(this.currentNode.field_mapping_code);
+                            this.formItems.output_api_field_mapping_code.codeMirror.setValue(this.currentNode.item.field_mapping_code);
                             this.outputApiUpdateFieldMapping();
                             break;
+                    }
+
+                    //console.log(this.currentNode);
+
+                    if (this.currentNode.item.output !== false) {
+                        this.formItems.current_node_output.codeMirror.setValue(JSON.stringify(this.currentNode.item.output, null, 4));
                     }
 
                     this.$forceUpdate();
@@ -1453,69 +1684,74 @@
                         index: Number(index),
                     };
 
+                    let item = {};
+
                     switch (itemType) {
                         case 'input_ds':
-                            currentNode.ds_id = '';
-                            currentNode.ds_type = 'table';
-                            currentNode.ds_table = '';
-                            currentNode.ds_sql = '';
-                            currentNode.breakpoint = 'full';
-                            currentNode.breakpoint_field = '';
-                            currentNode.breakpoint_time = '1970-01-02 00:00:00';
-                            currentNode.breakpoint_step = '1_DAY';
-                            currentNode.breakpoint_offset = 0;
-                            currentNode.output = false;
+                            item.ds_id = '';
+                            item.ds_type = 'table';
+                            item.ds_table = '';
+                            item.ds_sql = '';
+                            item.breakpoint = 'full';
+                            item.breakpoint_field = '';
+                            item.breakpoint_time = '1970-01-02 00:00:00';
+                            item.breakpoint_step = '1_DAY';
+                            item.breakpoint_offset = 0;
+                            item.output = false;
                             break;
 
 
                         case 'process_code':
-                            currentNode.code = 'return $input;';
-                            currentNode.output = false;
+                            item.code = 'return $input;';
+                            item.output = false;
                             break;
 
 
                         case 'output_ds':
-                            currentNode.ds_id = '';
-                            currentNode.ds_table = '';
-                            currentNode.field_mapping = 'mapping';
-                            currentNode.field_mapping_details = [];
-                            currentNode.field_mapping_code = '';
-                            currentNode.output = false;
+                            item.ds_id = '';
+                            item.ds_table = '';
+                            item.field_mapping = 'mapping';
+                            item.field_mapping_details = [];
+                            item.field_mapping_code = '';
+                            item.output = false;
                             break;
                         case 'output_csv':
-                            currentNode.field_mapping = 'mapping';
-                            currentNode.field_mapping_details = [];
-                            currentNode.field_mapping_code = '';
-                            currentNode.output = false;
+                            item.field_mapping = 'mapping';
+                            item.field_mapping_details = [];
+                            item.field_mapping_code = '';
+                            item.output = false;
                             break;
                         case 'output_files':
-                            currentNode.name = 'template';
-                            currentNode.name_template = '';
-                            currentNode.name_code = '';
-                            currentNode.content = 'template';
-                            currentNode.content_template = '';
-                            currentNode.content_code = '';
-                            currentNode.output = false;
+                            item.name = 'template';
+                            item.name_template = '';
+                            item.name_code = '';
+                            item.content = 'template';
+                            item.content_template = '';
+                            item.content_code = '';
+                            item.output = false;
                             break;
                         case 'output_folders':
-                            currentNode.name = 'template';
-                            currentNode.name_template = '';
-                            currentNode.name_code = '';
-                            currentNode.files = [];
-                            currentNode.output = false;
+                            item.name = 'template';
+                            item.name_template = '';
+                            item.name_code = '';
+                            item.files = [];
+                            item.files_code = '';
+                            item.output = false;
                             break;
                         case 'output_api':
-                            currentNode.url = '';
-                            currentNode.headers = [];
-                            currentNode.format = 'form';
-                            currentNode.field_mapping = 'mapping';
-                            currentNode.field_mapping_details = [];
-                            currentNode.field_mapping_code = '';
-                            currentNode.success_mark = '';
-                            currentNode.interval = 1000;
-                            currentNode.output = false;
+                            item.url = '';
+                            item.headers = [];
+                            item.format = 'form';
+                            item.field_mapping = 'mapping';
+                            item.field_mapping_details = [];
+                            item.field_mapping_code = '';
+                            item.interval = 1000;
+                            item.success_mark = '';
+                            item.output = false;
                             break;
                     }
+
+                    currentNode.item = item;
 
                     this.formData.nodes.splice(currentNode.index, 0, currentNode);
 
@@ -1528,7 +1764,7 @@
                         let node = this.formData.nodes[i];
 
                         node.index = Number(i);
-                        node.output = false;
+                        node.item.output = false;
                     }
 
                     this.toggleNode(currentNode);
@@ -1560,7 +1796,7 @@
                     let currentIndex = this.currentNode.index;
 
                     this.formData.nodes.splice(this.currentNode.index, 1);
-                    this.currentNode = false;
+                    this.currentNode = {item: false};
 
                     // 更新节点间的输入和办理出
                     for(let i in this.formData.nodes) {
@@ -1570,7 +1806,7 @@
 
                         let node = this.formData.nodes[i];
                         node.index = Number(i);
-                        node.output = false;
+                        node.item.output = false;
                     }
 
                     this.$forceUpdate();
@@ -1592,11 +1828,11 @@
                                 _this.$message.success(responseData.message);
 
                                 for(let node of responseData.flow.nodes) {
-                                    _this.formData.nodes[node.index].output = node.output;
+                                    _this.formData.nodes[node.index].item.output = node.item.output;
                                 }
 
-                                if (_this.currentNode.output !== false) {
-                                    _this.formItems.current_node_output.codeMirror.setValue(JSON.stringify(_this.currentNode.output, null, 4));
+                                if (_this.currentNode.item.output !== false) {
+                                    _this.formItems.current_node_output.codeMirror.setValue(JSON.stringify(_this.currentNode.item.output, null, 4));
                                 }
 
                                 //console.log(_this.formData);
@@ -1608,7 +1844,7 @@
                                 // 更新节点间的输入和办理出
                                 for(let i in _this.formData.nodes) {
                                     if (i >= _this.currentNode.index) {
-                                        _this.formData.nodes[i].output = false;
+                                        _this.formData.nodes[i].item.output = false;
                                     }
                                 }
 
@@ -1644,7 +1880,7 @@
                                         _this.$message.success(responseData.message);
 
                                         if (command === 'stay') {
-                                            _this.formData.id = responseData.process.id;
+                                            //_this.formData.id = responseData.process.id;
                                         } else {
                                             setTimeout(function () {
                                                 window.onbeforeunload = null;
@@ -1676,15 +1912,15 @@
                 },
 
                 dsChange: function () {
-                    if (this.dsTables[this.currentNode.ds_id] === undefined) {
+                    if (this.dsTables[this.currentNode.item.ds_id] === undefined) {
                         var _this = this;
                         _this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableNames'); ?>", {
-                            dsId: _this.currentNode.ds_id
+                            dsId: _this.currentNode.item.ds_id
                         }).then(function (response) {
                             if (response.status === 200) {
                                 var responseData = response.data;
                                 if (responseData.success) {
-                                    _this.dsTables[_this.currentNode.ds_id] = responseData.data.tables;
+                                    _this.dsTables[_this.currentNode.item.ds_id] = responseData.data.tables;
                                     _this.$forceUpdate();
                                 } else {
                                     if (responseData.message) {
@@ -1699,21 +1935,21 @@
                 },
 
                 dsTableChange: function () {
-                    if (this.dsTableFields[this.currentNode.ds_id] === undefined) {
-                        this.dsTableFields[this.currentNode.ds_id] = {};
+                    if (this.dsTableFields[this.currentNode.item.ds_id] === undefined) {
+                        this.dsTableFields[this.currentNode.item.ds_id] = {};
                     }
 
-                    if (this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table] === undefined) {
+                    if (this.dsTableFields[this.currentNode.item.ds_id][this.currentNode.item.ds_table] === undefined) {
                         var _this = this;
                         this.$http.post("<?php echo beAdminUrl('Etl.Ds.getTableFields'); ?>", {
-                            dsId: _this.currentNode.ds_id,
-                            table: _this.currentNode.ds_table
+                            dsId: _this.currentNode.item.ds_id,
+                            table: _this.currentNode.item.ds_table
                         }).then(function (response) {
                             if (response.status === 200) {
                                 var responseData = response.data;
                                 if (responseData.success) {
 
-                                    _this.dsTableFields[_this.currentNode.ds_id][_this.currentNode.ds_table] = responseData.data.fields;
+                                    _this.dsTableFields[_this.currentNode.item.ds_id][_this.currentNode.item.ds_table] = responseData.data.fields;
 
                                     if (_this.currentNode.type === 'input') {
                                         _this.inputDsTableFields = responseData.data.fields;
@@ -1733,9 +1969,9 @@
                         });
                     } else {
                         if (this.currentNode.type === 'input') {
-                            this.inputDsTableFields = this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table];
+                            this.inputDsTableFields = this.dsTableFields[this.currentNode.item.ds_id][this.currentNode.item.ds_table];
                         } else if (this.currentNode.type === 'output') {
-                            this.outputDsTableFields = this.dsTableFields[this.currentNode.ds_id][this.currentNode.ds_table];
+                            this.outputDsTableFields = this.dsTableFields[this.currentNode.item.ds_id][this.currentNode.item.ds_table];
                             this.outputDsUpdateFieldMapping();
                         }
                     }
@@ -1743,20 +1979,20 @@
 
                 dsSqlChange: function () {
 
-                    if (this.dsTableFields[this.currentNode.ds_id] === undefined) {
-                        this.dsTableFields[this.currentNode.ds_id] = {};
+                    if (this.dsTableFields[this.currentNode.item.ds_id] === undefined) {
+                        this.dsTableFields[this.currentNode.item.ds_id] = {};
                     }
 
-                    if (this.dsTableFields[this.currentNode.ds_id]['_sql'] === undefined) {
+                    if (this.dsTableFields[this.currentNode.item.ds_id]['_sql'] === undefined) {
                         var _this = this;
                         this.$http.post("<?php echo beAdminUrl('Etl.Ds.getSqlFields'); ?>", {
-                            dsId: _this.currentNode.ds_id,
-                            sql: _this.currentNode.ds_sql
+                            dsId: _this.currentNode.item.ds_id,
+                            sql: _this.currentNode.item.ds_sql
                         }).then(function (response) {
                             if (response.status === 200) {
                                 var responseData = response.data;
                                 if (responseData.success) {
-                                    _this.dsTableFields[_this.currentNode.ds_id]['_sql'] = responseData.data.fields;
+                                    _this.dsTableFields[_this.currentNode.item.ds_id]['_sql'] = responseData.data.fields;
 
                                     // 仅输入 烽据源支持 SQL
                                     _this.inputDsTableFields = responseData.data.fields;
@@ -1770,7 +2006,7 @@
                             _this.$message.error(error);
                         });
                     } else {
-                        this.inputDsTableFields = this.dsTableFields[this.currentNode.ds_id]['_sql'];
+                        this.inputDsTableFields = this.dsTableFields[this.currentNode.item.ds_id]['_sql'];
                     }
                 },
 
@@ -1780,13 +2016,13 @@
 
                     if (this.outputDsTableFields.length === 0 ) return;
 
-                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                    if (this.currentNode.item.field_mapping_details.length === 0 ) {
                         for (let i = 0; i < this.outputDsTableFields.length; i++) {
                             let outputField = this.outputDsTableFields[i].name;
                             if (this.currentNodeInput !== false) {
 
                                 if (this.currentNodeInput.hasOwnProperty(outputField)) {
-                                    this.currentNode.field_mapping_details.push({
+                                    this.currentNode.item.field_mapping_details.push({
                                         'enable' : 1,
                                         'field' : outputField,
                                         'type' : 'input_field',
@@ -1794,7 +2030,7 @@
                                         'custom' : "",
                                     });
                                 } else {
-                                    this.currentNode.field_mapping_details.push({
+                                    this.currentNode.item.field_mapping_details.push({
                                         'enable' : 1,
                                         'field' : outputField,
                                         'type' : 'custom',
@@ -1805,7 +2041,7 @@
 
                             } else {
 
-                                this.currentNode.field_mapping_details.push({
+                                this.currentNode.item.field_mapping_details.push({
                                     'enable' : 1,
                                     'field' : outputField,
                                     'type' : 'custom',
@@ -1819,10 +2055,10 @@
 
 
                     // 生成 CODE
-                    if (this.currentNode.field_mapping_code === "") {
+                    if (this.currentNode.item.field_mapping_code === "") {
                         let code = "$output = (object)[];\n";
 
-                        for (let x of this.currentNode.field_mapping_details) {
+                        for (let x of this.currentNode.item.field_mapping_details) {
 
                             if (x.enable !== 1) continue;
 
@@ -1834,7 +2070,7 @@
                         }
 
                         code += "return $output;";
-                        this.currentNode.field_mapping_code = code;
+                        this.currentNode.item.field_mapping_code = code;
                         this.formItems.output_ds_field_mapping_code.codeMirror.setValue(code);
                     }
 
@@ -1842,19 +2078,19 @@
                 },
                 // 输出 数据源
                 outputDsFieldMappingSelectAll: function () {
-                    for (let x of this.currentNode.field_mapping_details) {
+                    for (let x of this.currentNode.item.field_mapping_details) {
                         x.enable = 1;
                     }
                     this.$forceUpdate();
                 },
                 outputDsFieldMappingSelectNone: function () {
-                    for (let x of this.currentNode.field_mapping_details) {
+                    for (let x of this.currentNode.item.field_mapping_details) {
                         x.enable = 0;
                     }
                     this.$forceUpdate();
                 },
                 outputDsFieldMappingSelectMatched: function () {
-                    for (let x of this.currentNode.field_mapping_details) {
+                    for (let x of this.currentNode.item.field_mapping_details) {
                         if (this.currentNodeInput.hasOwnProperty(x.field)) {
                             x.enable = 1;
                         } else {
@@ -1867,7 +2103,7 @@
 
 
                 outputCsvFieldMappingAdd: function () {
-                    this.currentNode.field_mapping_details.push({
+                    this.currentNode.item.field_mapping_details.push({
                         field: "",
                         type: "custom",
                         input_field: "",
@@ -1876,16 +2112,16 @@
                     this.$forceUpdate();
                 },
                 outputCsvFieldMappingDelete: function (mapping) {
-                    this.currentNode.field_mapping_details.splice(this.currentNode.field_mapping_details.indexOf(mapping), 1);
+                    this.currentNode.item.field_mapping_details.splice(this.currentNode.item.field_mapping_details.indexOf(mapping), 1);
                     this.$forceUpdate();
                 },
                 outputCsvUpdateFieldMapping: function () {
 
                     if (this.currentNodeInput === false)  return;
 
-                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                    if (this.currentNode.item.field_mapping_details.length === 0 ) {
                         for (let x in this.currentNodeInput) {
-                            this.currentNode.field_mapping_details.push({
+                            this.currentNode.item.field_mapping_details.push({
                                 'field' : x,
                                 'type' : 'input_field',
                                 'input_field' : x,
@@ -1895,10 +2131,10 @@
                     }
 
                     // 生成 CODE
-                    if (this.currentNode.field_mapping_code === "") {
+                    if (this.currentNode.item.field_mapping_code === "") {
                         let code = "$output = (object)[];\n";
 
-                        for (let x of this.currentNode.field_mapping_details) {
+                        for (let x of this.currentNode.item.field_mapping_details) {
                             if (x.type === "input_field") {
                                 code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
                             } else {
@@ -1907,7 +2143,7 @@
                         }
 
                         code += "return $output;";
-                        this.currentNode.field_mapping_code = code;
+                        this.currentNode.item.field_mapping_code = code;
                         this.formItems.output_csv_field_mapping_code.codeMirror.setValue(code);
                     }
 
@@ -1916,28 +2152,51 @@
 
 
 
-                outputFilesInsertNameTag: function (tag) {
-                    this.currentNode.name_template += "{"  + tag +  "}";
+                outputFilesNameInsertTag: function (tag) {
+                    this.currentNode.item.name_template += "{"  + tag +  "}";
                 },
-                outputFilesInsertContentTag: function (tag) {
-                    this.currentNode.content_template += "{"  + tag +  "}";
+                outputFilesContentInsertTag: function (tag) {
+                    this.currentNode.item.content_template += "{"  + tag +  "}";
+                },
+
+
+
+                outputFoldersNameInsertTag: function (tag) {
+                    this.currentNode.item.name_template += "{"  + tag +  "}";
+                },
+                outputFoldersFileNameInsertTag: function (tag, fileIndex) {
+                    this.currentNode.item.files[fileIndex].name_template += "{"  + tag +  "}";
+                },
+                outputFoldersFileContentInsertTag: function (tag, fileIndex) {
+                    this.currentNode.item.files[fileIndex].content_template += "{"  + tag +  "}";
+                },
+                outputFoldersFilesAdd: function () {
+                    this.currentNode.item.files.push({
+                        name_template: "",
+                        content_template: "",
+                    });
+                    this.$forceUpdate();
+                },
+                outputFoldersFilesDelete: function (file) {
+                    this.currentNode.item.files.splice(this.currentNode.item.files.indexOf(file), 1);
+                    this.$forceUpdate();
                 },
 
 
 
                 outputApiAddHeader: function () {
-                    this.currentNode.headers.push({
+                    this.currentNode.item.headers.push({
                         name: "",
                         value: "",
                     });
                     this.$forceUpdate();
                 },
                 outputApiDeleteHeader: function (header) {
-                    this.currentNode.headers.splice(this.currentNode.headers.indexOf(header), 1);
+                    this.currentNode.item.headers.splice(this.currentNode.item.headers.indexOf(header), 1);
                     this.$forceUpdate();
                 },
                 outputApiFieldMappingAdd: function () {
-                    this.currentNode.field_mapping_details.push({
+                    this.currentNode.item.field_mapping_details.push({
                         field: "",
                         type: "custom",
                         input_field: "",
@@ -1946,16 +2205,16 @@
                     this.$forceUpdate();
                 },
                 outputApiFieldMappingDelete: function (mapping) {
-                    this.currentNode.field_mapping_details.splice(this.currentNode.field_mapping_details.indexOf(mapping), 1);
+                    this.currentNode.item.field_mapping_details.splice(this.currentNode.item.field_mapping_details.indexOf(mapping), 1);
                     this.$forceUpdate();
                 },
                 outputApiUpdateFieldMapping: function () {
 
                     if (this.currentNodeInput === false)  return;
 
-                    if (this.currentNode.field_mapping_details.length === 0 ) {
+                    if (this.currentNode.item.field_mapping_details.length === 0 ) {
                         for (let x in this.currentNodeInput) {
-                            this.currentNode.field_mapping_details.push({
+                            this.currentNode.item.field_mapping_details.push({
                                 'field' : x,
                                 'type' : 'input_field',
                                 'input_field' : x,
@@ -1965,10 +2224,10 @@
                     }
 
                     // 生成 CODE
-                    if (this.currentNode.field_mapping_code === "") {
+                    if (this.currentNode.item.field_mapping_code === "") {
                         let code = "$output = (object)[];\n";
 
-                        for (let x of this.currentNode.field_mapping_details) {
+                        for (let x of this.currentNode.item.field_mapping_details) {
                             if (x.type === "input_field") {
                                 code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
                             } else {
@@ -1977,7 +2236,7 @@
                         }
 
                         code += "return $output;";
-                        this.currentNode.field_mapping_code = code;
+                        this.currentNode.item.field_mapping_code = code;
                         this.formItems.output_api_field_mapping_code.codeMirror.setValue(code);
                     }
 
