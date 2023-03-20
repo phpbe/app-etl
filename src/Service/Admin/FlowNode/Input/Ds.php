@@ -33,12 +33,12 @@ class Ds extends Input
         }
 
         if ($formDataNode['item']['ds_type'] === 'table') {
-            if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || strlen($formDataNode['item']['ds_table']) === 0) {
+            if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || $formDataNode['item']['ds_table'] !== '') {
                 throw new ServiceException('节点 ' .$formDataNode['index'] . ' 数据表（ds_table）参数无效！');
             }
             $formDataNode['item']['ds_sql'] = '';
         } else {
-            if (!isset($formDataNode['item']['ds_sql']) || !is_string($formDataNode['item']['ds_sql']) || strlen($formDataNode['item']['ds_sql']) === 0) {
+            if (!isset($formDataNode['item']['ds_sql']) || !is_string($formDataNode['item']['ds_sql']) || $formDataNode['item']['ds_sql'] !== '') {
                 throw new ServiceException('节点 ' .$formDataNode['index'] . ' SQL（ds_sql）参数无效！');
             }
             $formDataNode['item']['ds_table'] = '';
@@ -50,7 +50,7 @@ class Ds extends Input
 
         if ($formDataNode['item']['breakpoint'] === 'breakpoint') {
 
-            if (!isset($formDataNode['item']['breakpoint_field']) || !is_string($formDataNode['item']['breakpoint_field']) || strlen($formDataNode['item']['breakpoint_field']) === 0) {
+            if (!isset($formDataNode['item']['breakpoint_field']) || !is_string($formDataNode['item']['breakpoint_field']) || $formDataNode['item']['breakpoint_field'] !== '') {
                 throw new ServiceException('节点 ' .$formDataNode['index'] . ' 断点字段（breakpoint_field）参数无效！');
             }
 

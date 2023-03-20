@@ -6,6 +6,8 @@ namespace Be\App\Etl\Service\Admin\FlowNode\Output;
 use Be\App\Etl\Service\Admin\FlowNode\Output;
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Db\Driver;
+use Be\Util\Net\Curl;
 
 class Api extends Output
 {
@@ -27,7 +29,7 @@ class Api extends Output
 
         $output = new \stdClass();
 
-        if (!isset($formDataNode['item']['url']) || !is_string($formDataNode['item']['url']) || strlen($formDataNode['item']['url']) === 0) {
+        if (!isset($formDataNode['item']['url']) || !is_string($formDataNode['item']['url']) || $formDataNode['item']['url'] !== '') {
             throw new ServiceException('节点 ' . $formDataNode['index'] . ' API网址（url）参数无效！');
         }
 
@@ -43,11 +45,11 @@ class Api extends Output
             $i = 1;
             foreach ($formDataNode['item']['headers'] as $header) {
 
-                if (!isset($header['name']) || !is_string($header['name']) || strlen($header['name']) === 0) {
+                if (!isset($header['name']) || !is_string($header['name']) || $header['name'] !== '') {
                     throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求头第 ' . $i . ' 行 名称（name）参数无效！');
                 }
 
-                if (!isset($header['value']) || !is_string($header['value']) || strlen($header['value']) === 0) {
+                if (!isset($header['value']) || !is_string($header['value']) || $header['value'] !== '') {
                     throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求头第 ' . $i . ' 行 值（value）参数无效！');
                 }
 
@@ -82,7 +84,7 @@ class Api extends Output
             $i = 1;
             foreach ($formDataNode['item']['field_mapping_details'] as $mapping) {
 
-                if (!isset($mapping['field']) || !is_string($mapping['field']) || strlen($mapping['field']) === 0) {
+                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
                     throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 列名（field）参数无效！');
                 }
 
@@ -94,7 +96,7 @@ class Api extends Output
 
                 if ($mapping['type'] === 'input_field') {
 
-                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || strlen($mapping['input_field']) === 0) {
+                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
                         throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（input_field）参数无效！');
                     }
 
@@ -122,7 +124,7 @@ class Api extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || strlen($formDataNode['item']['field_mapping_code']) === 0) {
+            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）参数无效！');
             }
 
@@ -150,7 +152,7 @@ class Api extends Output
 
         $output->interval = $formDataNode['item']['interval'];
 
-        if (!isset($formDataNode['item']['success_mark']) || !is_string($formDataNode['item']['success_mark']) || strlen($formDataNode['item']['success_mark']) === 0) {
+        if (!isset($formDataNode['item']['success_mark']) || !is_string($formDataNode['item']['success_mark']) || $formDataNode['item']['success_mark'] !== '') {
             throw new ServiceException('节点 ' . $formDataNode['index'] . ' 成功标记（success_mark）参数无效！');
         }
 
@@ -208,6 +210,30 @@ class Api extends Output
     }
 
 
+    private ?array $headers = null;
+    private ?array $fieldMappingDetails = null;
+    private ?\Closure $fieldMappingFn = null;
+
+    /**
+     * 开如处理处理
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
+    {
+        $this->headers = unserialize($flowNode->item->headers);
+
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
+        } else {
+            try {
+                $this->fieldMappingFn = eval('return function(object $input): object {' . $flowNode->item->field_mapping_code . '};');
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+            }
+        }
+    }
+
     /**
      * 计划任务处理数据
      *
@@ -218,9 +244,57 @@ class Api extends Output
      */
     public function process(object $flowNode, object $input): object
     {
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $postData = [];
+            foreach ($this->fieldMappingDetails as $mapping) {
+                $field = $mapping['field'];
+                if ($mapping['type'] === 'input_field') {
+                    $inputField = $mapping['input_field'];
+                    $postData[$field] = $input->$inputField;
+                } else {
+                    $postData[$field] = $mapping['custom'];
+                }
+            }
+        } else {
+            $fn = $this->fieldMappingFn;
+            $postData = $fn($input);
 
+            if ($flowNode->item->format === 'form') {
+                $postData = (array) $postData;
+            }
+        }
+
+        if ($flowNode->item->format === 'form') {
+            $response = Curl::post($flowNode->item->url, $postData, $this->headers);
+        } else {
+            $response = Curl::postJson($flowNode->item->url, $postData, $this->headers);
+        }
+
+        $isSuccess = 0;
+        if (strpos($response, $flowNode->item->success_mark) !== false) {
+            $isSuccess = 1;
+        }
+
+        $output = new \stdClass();
+        $output->headers = $this->headers;
+        $output->postData = $postData;
+        $output->response = $response;
+        $output->success = $isSuccess;
+
+        return $output;
     }
 
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+        $this->headers = null;
+        $this->fieldMappingDetails = null;
+        $this->fieldMappingFn = null;
+    }
 
 }
 

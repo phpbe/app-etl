@@ -39,7 +39,7 @@ class Csv extends Output
             $i = 1;
             foreach ($formDataNode['item']['field_mapping_details'] as $mapping) {
 
-                if (!isset($mapping['field']) || !is_string($mapping['field']) || strlen($mapping['field']) === 0) {
+                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
                     throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 列名（field）参数无效！');
                 }
 
@@ -51,7 +51,7 @@ class Csv extends Output
 
                 if ($mapping['type'] === 'input_field') {
 
-                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || strlen($mapping['input_field']) === 0) {
+                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
                         throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（input_field）参数无效！');
                     }
 
@@ -77,7 +77,7 @@ class Csv extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || strlen($formDataNode['item']['field_mapping_code']) === 0) {
+            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）参数无效！');
             }
 
@@ -135,6 +135,49 @@ class Csv extends Output
         return $nodeItem;
     }
 
+    private ?array $fieldMappingDetails = null;
+    private ?\Closure $fieldMappingFn = null;
+    private $handler = null;
+
+    /**
+     * 开如处理处理
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
+    {
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
+        } else {
+            try {
+                $this->fieldMappingFn = eval('return function(object $input): object {' . $flowNode->item->field_mapping_code . '};');
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+        $this->handler = fopen($this->outputFileNameOrPath, 'w');
+
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $cols = array_keys($this->fieldMappingDetails);
+        } else {
+            $output = unserialize($flowNode->item->output);
+            if ($output && is_array($output)) {
+                $cols = array_keys($output);
+            }
+        }
+
+        foreach ($cols as &$col) {
+            if (strpos($col, '"') !== false) {
+                $col = str_replace('"', '""', $col);
+            }
+            $col = '"' . $col . '"';
+        }
+        unset($col);
+
+        $line = implode(',', $cols) . "\r\n";
+        fwrite($this->handler, $line);
+    }
 
     /**
      * 计划任务处理数据
@@ -146,8 +189,80 @@ class Csv extends Output
      */
     public function process(object $flowNode, object $input): object
     {
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $output = new \stdClass();
+            foreach ($this->fieldMappingDetails as $mapping) {
+                if ($mapping['enable'] === 0) continue;
 
+                $field = $mapping['field'];
+                if ($mapping['type'] === 'input_field') {
+                    $inputField = $mapping['input_field'];
+                    $output->$field = $input->$inputField;
+                } else {
+                    $output->$field = $mapping['custom'];
+                }
+            }
+
+        } else {
+            try {
+                $fn = $this->fieldMappingFn;
+                $output = $fn($input);
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+
+        $row = get_object_vars($output);
+        foreach ($row as &$x) {
+            if (is_numeric($x)) {
+                // 大数字防止展示成科学计数法
+                $len = strlen($x);
+                $dotPos = strpos($x, '.');
+                if ($dotPos === false) {
+                    if ($len >= 12) {
+                        $x .= "\t";
+                    }
+                } else {
+                    if ($len >= 16) {
+                        $x .= "\t";
+                    } else {
+                        if ($dotPos >= 12) {
+                            $x .= "\t";
+                        }
+                    }
+                }
+
+            } else {
+                if (strpos($x, '"') !== false) {
+                    $x = str_replace('"', '""', $x);
+                }
+            }
+            $x = '"' . $x . '"';
+        }
+        unset($x);
+
+        $line = implode(',', $row) . "\r\n";
+        fwrite($this->handler, $line);
+
+        return $output;
     }
+
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+        $this->fieldMappingDetails = null;
+        $this->fieldMappingFn = null;
+
+        if (is_resource($this->handler)) {
+            fclose($this->handler);
+        }
+    }
+
 
 
 }

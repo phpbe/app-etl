@@ -33,7 +33,7 @@ class Files extends Output
 
         if ($formDataNode['item']['name'] === 'template') {
 
-            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || strlen($formDataNode['item']['name_template']) === 0) {
+            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件名称模板（name_template）参数无效！');
             }
 
@@ -45,7 +45,7 @@ class Files extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || strlen($formDataNode['item']['name_code']) === 0) {
+            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件名代码处理（name_code）参数无效！');
             }
 
@@ -63,7 +63,7 @@ class Files extends Output
 
         if ($formDataNode['item']['content'] === 'template') {
 
-            if (!isset($formDataNode['item']['content_template']) || !is_string($formDataNode['item']['content_template']) || strlen($formDataNode['item']['content_template']) === 0) {
+            if (!isset($formDataNode['item']['content_template']) || !is_string($formDataNode['item']['content_template']) || $formDataNode['item']['content_template'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件内容模板（content_template）参数无效！');
             }
 
@@ -75,7 +75,7 @@ class Files extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['content_code']) || !is_string($formDataNode['item']['content_code']) || strlen($formDataNode['item']['content_code']) === 0) {
+            if (!isset($formDataNode['item']['content_code']) || !is_string($formDataNode['item']['content_code']) || $formDataNode['item']['content_code'] !== '') {
                 throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件内容代码处理（content_code）参数无效！');
             }
 
@@ -133,6 +133,33 @@ class Files extends Output
         return $nodeItem;
     }
 
+    private $dir = null;
+    private ?\Closure $nameCodeFn = null;
+    private ?\Closure $contentCodeFn = null;
+
+    /**
+     * 开如处理处理
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
+    {
+        if ($flowNode->item->name === 'code') {
+            try {
+                $this->nameCodeFn = eval('return function(object $input): string {' . $flowNode->item->name_code . '};');
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+        if ($flowNode->item->content === 'code') {
+            try {
+                $this->contentCodeFn = eval('return function(object $input): string {' . $flowNode->item->content_code . '};');
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
+            }
+        }
+    }
 
     /**
      * 计划任务处理数据
@@ -144,7 +171,56 @@ class Files extends Output
      */
     public function process(object $flowNode, object $input): object
     {
+        $output = new \stdClass();
 
+        if ($flowNode->item->name === 'template') {
+
+            $name = $flowNode->item->name_template;
+            foreach ((array)$input as $k => $v) {
+                $name = str_replace('{' . $k . '}', $v, $name);
+            }
+            $output->name = $name;
+
+        } else {
+            try {
+                $fn = $this->nameCodeFn;
+                $output->name = $fn($input);
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+        if ($flowNode->item->content === 'template') {
+            $content = $flowNode->item->content_template;
+            foreach ((array)$input as $k => $v) {
+                $content = str_replace('{' . $k . '}', $v, $content);
+            }
+            $output->content = $content;
+
+        } else {
+            try {
+                $fn = $this->contentCodeFn;
+                $output->content = $fn($input);
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 文件内容代码处理（content_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+        $path = $this->dir . '/' . $output->name;
+        file_put_contents($path, $output->content);
+
+        return $output;
+    }
+
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+        $this->nameCodeFn = null;
+        $this->contentCodeFn = null;
     }
 
 

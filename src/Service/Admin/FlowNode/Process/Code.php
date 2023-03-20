@@ -24,7 +24,7 @@ class Code extends Process
             throw new ServiceException('节点参数（index）无效！');
         }
 
-        if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || strlen($formDataNode['item']['code']) === 0) {
+        if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || $formDataNode['item']['code'] !== '') {
             throw new ServiceException('节点 ' .$formDataNode['index'] . ' 代码（code）参数无效！');
         }
 
