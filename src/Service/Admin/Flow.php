@@ -28,7 +28,6 @@ class Flow
             throw new ServiceException('分类未填写！');
         }
 
-
         if (!isset($formData['is_enable']) || !is_numeric($formData['is_enable'])) {
             $formData['is_enable'] = 0;
         }
@@ -91,7 +90,6 @@ class Flow
         if (!isset($formData['category_id']) || !is_string($formData['category_id'])) {
             throw new ServiceException('分类未填写！');
         }
-
 
         if (!isset($formData['is_enable']) || !is_numeric($formData['is_enable'])) {
             $formData['is_enable'] = 0;
@@ -317,8 +315,8 @@ class Flow
     private function getNodeItemService($nodeItemType)
     {
         $arr = explode('_', $nodeItemType);
-        $name = 'App.Etl.Admin.FlowNode.' . ucfirst($arr[0]) . '.' . ucfirst($arr[1]);
-        return Be::getService($name);
+        $serviceName = '\\App\\Etl\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
+        return new $serviceName();
     }
 
     public function getIdNameKeyValues()

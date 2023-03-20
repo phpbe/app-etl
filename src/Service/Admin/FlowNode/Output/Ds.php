@@ -6,6 +6,7 @@ namespace Be\App\Etl\Service\Admin\FlowNode\Output;
 use Be\App\Etl\Service\Admin\FlowNode\Output;
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Db\Driver;
 
 class Ds extends Output
 {
@@ -125,7 +126,7 @@ class Ds extends Output
             }
         }
 
-        if (count( (array) $output ) === 0) {
+        if (count((array)$output) === 0) {
             throw new ServiceException('节点 ' . $formDataNode['index'] . ' 输出数据为空！');
         }
 
@@ -175,15 +176,80 @@ class Ds extends Output
     }
 
 
+    private ?array $fieldMappingDetails = null;
+    private ?\Closure $fieldMappingFn = null;
+    private ?Driver $db = null;
+
     /**
-     * 计划任务数据
+     * 开如处理处理
      *
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
+    {
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
+        } else {
+            try {
+                $this->fieldMappingFn = eval('return function(object $input): object {' . $flowNode->item->field_mapping_code . '};');
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+        $this->db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+    }
+
+    /**
+     * 计划任务处理数据
+     *
+     * @param object $flowNode 数据流节点
      * @param object $input 输入
-     * @return array 输出
+     * @return object 输出
      * @throws \Throwable
      */
-    public function handle(object $input): array
+    public function process(object $flowNode, object $input): object
     {
-        // TODO: Implement handle() method.
+        if ($flowNode->item->field_mapping === 'mapping') {
+            $output = new \stdClass();
+            foreach ($this->fieldMappingDetails as $mapping) {
+                if ($mapping['enable'] === 0) continue;
+
+                $field = $mapping['field'];
+                if ($mapping['type'] === 'input_field') {
+                    $inputField = $mapping['input_field'];
+                    $output->$field = $input->$inputField;
+                } else {
+                    $output->$field = $mapping['custom'];
+                }
+            }
+
+        } else {
+            try {
+                $fn = $this->fieldMappingFn;
+                $output = $fn($input);
+            } catch (\Throwable $t) {
+                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+            }
+        }
+
+
+        $this->db->insert($flowNode->item->ds_table, $output);
+
+        return $output;
     }
+
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+        $this->fieldMappingDetails = null;
+        $this->fieldMappingFn = null;
+        $this->db = null;
+    }
+
+
 }

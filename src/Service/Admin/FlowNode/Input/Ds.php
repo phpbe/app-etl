@@ -197,9 +197,107 @@ class Ds extends Input
     }
 
 
-    public function handle(object $input): array
+
+    private $breakpointStart = null;
+    private $breakpointEnd = null;
+
+    /**
+     * 开如处理处理
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
     {
+        $t = time();
 
+        if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
+            $breakpointStart = $flowNode->item->breakpoint_time;
+            $tBreakpointStart = strtotime($breakpointStart);
 
+            if ($tBreakpointStart > $t) {
+                throw new ServiceException( '节点 ' .$flowNode->index . '断点设置已超过当前时间，程序中止！');
+            }
+
+            switch ($flowNode->item->breakpoint_step) {
+                case '1_HOUR':
+                    $tBreakpointEnd = $tBreakpointStart + 3600;
+                    if ($tBreakpointEnd > $t) {
+                        $tBreakpointEnd = $t;
+                    }
+                    $breakpointEnd = date('Y-m-d H:i:s', $tBreakpointEnd);
+                    break;
+                case '1_DAY':
+                    $tBreakpointEnd = $tBreakpointStart + 86400;
+                    if ($tBreakpointEnd > $t) {
+                        $tBreakpointEnd = $t;
+                    }
+                    $breakpointEnd = date('Y-m-d H:i:s', $tBreakpointEnd);
+                    break;
+                case '1_MONTH':
+                    $breakpointEnd = Datetime::getNextMonth($breakpointStart);
+                    $tBreakpointEnd = strtotime($breakpointEnd);
+                    if ($tBreakpointEnd > $t) {
+                        $tBreakpointEnd = $t;
+                        $breakpointEnd = date('Y-m-d H:i:s', $tBreakpointEnd);
+                    }
+                    break;
+            }
+
+            if ($flowNode->item->breakpoint_offset > 0) {
+                $tBreakpointStart -= $flowNode->item->breakpoint_offset;
+                $breakpointStart = date('Y-m-d H:i:s', $tBreakpointStart);
+            }
+
+            $this->breakpointStart = $breakpointStart;
+            $this->breakpointEnd = $breakpointEnd;
+        }
     }
+
+
+    public function process(object $flowNode): \Generator
+    {
+        $db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+
+        $where = '';
+        if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
+            if ($db instanceof \Be\Db\Driver\Oracle) {
+                $where = ' WHERE ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '>=to_timestamp(\'' . $this->breakpointStart . '\', \'yyyy-mm-dd hh24:mi:ss\')';
+                $where .= ' AND ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '<to_timestamp(\'' . $this->breakpointEnd . '\', \'yyyy-mm-dd hh24:mi:ss\')';
+            } else {
+                $where = ' WHERE ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '>=' . $db->quoteValue($this->breakpointStart);
+                $where .= ' AND ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '<' . $db->quoteValue($this->breakpointEnd);
+            }
+        }
+
+        if ($flowNode->item->ds_type === 'table') {
+            $sql = 'SELECT * FROM ' . $db->quoteKey($flowNode->item->ds_table) . $where;
+        } else {
+            $sql = 'SELECT * FROM (' . $flowNode->item->ds_sql  . ' ) t ' . $where;
+        }
+
+        return $db->getYieldObjects($sql);
+    }
+
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+        if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
+            $obj = new \stdClass();
+            $obj->id = $flowNode->item->id;
+            $obj->breakpoint_time = $this->breakpointEnd;
+            $obj->update_time = date('Y-m-d H:i:s');
+
+            $db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+            $db->update('etl_flow_node_input_ds', $obj);
+        }
+    }
+
 }

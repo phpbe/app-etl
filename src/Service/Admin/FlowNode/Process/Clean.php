@@ -7,7 +7,7 @@ use Be\App\Etl\Service\Admin\FlowNode\Process;
 use Be\App\ServiceException;
 use Be\Be;
 
-class Code extends Process
+class Clean extends Process
 {
 
     /**
@@ -47,7 +47,7 @@ class Code extends Process
      */
     public function insert(string $flowNodeId, array $formDataNode): object
     {
-        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_process_code');
+        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_process_clean');
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->code = $formDataNode['item']['code'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);

@@ -34,12 +34,31 @@ abstract class Input
     abstract public function format(object $nodeItem): object;
 
     /**
-     * 计划任务数据
+     * 开如处理处理
      *
-     * @param object $input 输入
-     * @return array 输出
+     * @param object $flowNode 数据流节点
+     */
+    public function start(object $flowNode)
+    {
+    }
+
+
+    /**
+     * 计划任务处理数据
+     *
+     * @param object $flowNode 数据流节点
+     * @return \Generator 输出
      * @throws \Throwable
      */
-    abstract public function handle(object $input): array;
+    abstract public function process(object $flowNode): \Generator;
+
+    /**
+     * 处理完成
+     *
+     * @param object $flowNode 数据流节点
+     */
+    public function finish(object $flowNode)
+    {
+    }
 
 }

@@ -16,15 +16,15 @@ use Be\AdminPlugin\Table\Item\TableItemSwitch;
  * Class Extract
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("数据流", icon="bi-box-arrow-right", ordering="2")
- * @BePermissionGroup("数据流", ordering="2.1")
+ * @BeMenuGroup("数据流")
+ * @BePermissionGroup("数据流")
  */
 class Flow
 {
     /**
      * 任务管理
      *
-     * @BeMenu("数据流", icon="bi-arrow-left-right", ordering="2.1")
+     * @BeMenu("数据流", icon="bi-arrow-left-right", ordering="2.2")
      * @BePermission("数据流")
      */
     public function index()

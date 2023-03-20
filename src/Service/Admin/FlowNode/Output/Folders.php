@@ -169,14 +169,16 @@ class Folders extends Output
     }
 
     /**
-     * 计划任务数据
+     * 计划任务处理数据
      *
+     * @param object $flowNode 数据流节点
      * @param object $input 输入
-     * @return array 输出
+     * @return object 输出
      * @throws \Throwable
      */
-    public function handle(object $input): array
+    public function process(object $flowNode, object $input): object
     {
-        // TODO: Implement handle() method.
+
     }
+
 }
