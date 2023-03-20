@@ -75,6 +75,10 @@
             text-align: center;
         }
 
+        .be-page-content  .input-json pre {
+            white-space: pre-wrap;
+        }
+
     </style>
 </be-head>
 
@@ -551,7 +555,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -749,7 +753,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -897,7 +901,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -984,7 +988,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -1066,7 +1070,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -1153,7 +1157,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -1262,7 +1266,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
@@ -1499,7 +1503,7 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col">
-                                        <div v-if="currentNodeInput !== false">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
                                             <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
