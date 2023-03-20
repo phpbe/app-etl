@@ -1630,6 +1630,15 @@
 
                     switch (node.item_type) {
                         case 'input_ds':
+
+                            if (this.currentNode.item.ds_id !== "" && !this.dsTables.hasOwnProperty(this.currentNode.item.ds_id)) {
+                                this.dsChange();
+                            }
+
+                            if (this.currentNode.item.ds_table !== "" && !this.dsTableFields.hasOwnProperty(this.currentNode.item.ds_table)) {
+                                this.dsTableChange();
+                            }
+
                             break;
 
 
@@ -1639,6 +1648,15 @@
 
 
                         case 'output_ds':
+
+                            if (this.currentNode.item.ds_id !== "" && !this.dsTables.hasOwnProperty(this.currentNode.item.ds_id)) {
+                                this.dsChange();
+                            }
+
+                            if (this.currentNode.item.ds_table !== "" && !this.dsTableFields.hasOwnProperty(this.currentNode.item.ds_table)) {
+                                this.dsTableChange();
+                            }
+
                             this.outputDsUpdateFieldMapping();
                             break;
                         case 'output_csv':
