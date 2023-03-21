@@ -32,6 +32,12 @@ class Flow extends Task
 
         foreach ($flows as $flow) {
 
+            $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY `index` ASC';
+            $flowNodes = $db->getObjects($sql, [$flow->id]);
+            if (count($flowNodes) === 0) {
+                continue;
+            }
+
             $flowLog = new \stdClass();
             $flowLog->id = $db->uuid();
             $flowLog->flow_id = $flow->id;
@@ -45,12 +51,6 @@ class Flow extends Task
             $db->insert('etl_flow_log', $flowLog);
 
             try {
-
-                $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY `index` ASC';
-                $flowNodes = $db->getObjects($sql, [$flow->id]);
-                if (count($flowNodes) === 0) {
-                    throw new ServiceException('未配置有效处理节点，任务中止！');
-                }
 
                 $flowNodeLogs = [];
 
@@ -119,7 +119,7 @@ class Flow extends Task
                             continue;
                         }
 
-                        $serviceFlowNodeItem = $serviceFlow->getNodeItemService($flowNode->item_type);
+                        $serviceFlowNodeItem = $itemServices[$flowNode->id];
                         $flowNodeLog = $flowNodeLogs[$flowNode->id];
 
                         try {

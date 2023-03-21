@@ -152,7 +152,7 @@ class FlowLog
 
                     'operation' => [
                         'label' => '操作',
-                        'width' => '240',
+                        'width' => '160',
                         'items' => [
                             [
                                 'label' => '查看',
@@ -197,6 +197,15 @@ class FlowLog
             if (isset($postData['row']['id']) && $postData['row']['id']) {
 
                 $flowLog = Be::getService('App.Etl.Admin.FlowLog')->getFlowLog($postData['row']['id']);
+
+                $statusKeyValues = [
+                    'create' => '创建',
+                    'running' => '运行中',
+                    'finish' => '执行完成',
+                    'error' => '出错',
+                ];
+                $flowLog->status = $statusKeyValues[$flowLog->status] ?? '';
+
                 $response->set('flowLog', $flowLog);
 
                 $response->display(null, 'Blank');
