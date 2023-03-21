@@ -95,7 +95,7 @@
 
                 <?php if ($nodeLog->output_file !== '') { ?>
                 <div class="be-mt-100">
-                    <a class="be-link-major" href="<?php echo beAdminUrl('Etl.FlowLog.downloadOutputFile', ['flow_node_log_id' => $nodeLog->id]); ?>" target="_blank">下载输出特</a>
+                    <a class="be-link-major" href="<?php echo beAdminUrl('Etl.FlowLog.downloadOutputFile', ['flow_node_log_id' => $nodeLog->id]); ?>" target="_blank">下载输出文件</a>
                 </div>
                 <?php } ?>
 
