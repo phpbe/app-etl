@@ -61,7 +61,7 @@
             <div class="be-row be-mt-100 be-mb-300">
                 <div class="be-col-auto" style="width: 200px">
                     <?php
-                    echo $nodeLog->index;
+                    echo $nodeLog->index + 1;
                     echo '&nbsp;';
                     echo $nodeLog->node->itemTypeName;
                     echo '&nbsp;';

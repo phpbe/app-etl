@@ -30,7 +30,7 @@ class Folders extends Output
         }
 
         if (!isset($formDataNode['item']['name']) || !is_string($formDataNode['item']['name']) || !in_array($formDataNode['item']['name'], ['template', 'code'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 目录名处理方式（name）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录名处理方式（name）参数无效！');
         }
 
 
@@ -39,7 +39,7 @@ class Folders extends Output
         if ($formDataNode['item']['name'] === 'template') {
 
             if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] !== '') {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 目录名模板（name_template）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录名模板（name_template）参数无效！');
             }
 
             $name = $formDataNode['item']['name_template'];
@@ -51,20 +51,20 @@ class Folders extends Output
         } else {
 
             if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] !== '') {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 目录代码处理（name_code）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录代码处理（name_code）参数无效！');
             }
 
             try {
                 $fn = eval('return function(object $input): string {' . $formDataNode['item']['name_code'] . '};');
                 $output->name = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 目录代码处理（name_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录代码处理（name_code）执行出错：' . $t->getMessage());
             }
 
         }
 
         if (!isset($formDataNode['item']['files']) || !is_array($formDataNode['item']['files'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件列表（files）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件列表（files）参数无效！');
         }
 
         if (count($formDataNode['item']['files']) > 0) {
@@ -75,7 +75,7 @@ class Folders extends Output
             foreach ($formDataNode['item']['files'] as $file) {
 
                 if (!isset($file['name_template']) || !is_string($file['name_template']) || $file['name_template'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件 ' . $i . ' 文件名称模板（name_template）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件 ' . $i . ' 文件名称模板（name_template）参数无效！');
                 }
 
                 $name = $file['name_template'];
@@ -84,7 +84,7 @@ class Folders extends Output
                 }
 
                 if (!isset($file['content_template']) || !is_string($file['content_template']) || $file['content_template'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 文件 ' . $i . ' 文件内容模板（content_template）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件 ' . $i . ' 文件内容模板（content_template）参数无效！');
                 }
 
                 $content = $file['content_template'];
@@ -101,7 +101,7 @@ class Folders extends Output
         }
 
         if (!isset($formDataNode['item']['files_code']) || !is_string($formDataNode['item']['files_code'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码输出文件列表（files_code）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码输出文件列表（files_code）参数无效！');
         }
 
         if ($formDataNode['item']['files_code'] !== '') {
@@ -109,7 +109,7 @@ class Folders extends Output
                 $fn = eval('return function(object $input): array {' . $formDataNode['item']['files_code'] . '};');
                 $output->files_code = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
             }
         }
 
@@ -123,11 +123,11 @@ class Folders extends Output
         }
 
         if ($filesCount === 0) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 输出文件列表为空！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出文件列表为空！');
         }
 
         if (count((array)$output) === 0) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 输出数据为空！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出数据为空！');
         }
 
         return $output;
@@ -191,7 +191,7 @@ class Folders extends Output
             try {
                 $this->nameCodeFn = eval('return function(object $input): string {' . $flowNode->item->name_code . '};');
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
             }
         }
 
@@ -201,7 +201,7 @@ class Folders extends Output
             try {
                 $this->filesCodeFn = eval('return function(object $input): array {' . $flowNode->item->files_code . '};');
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
             }
         }
     }
@@ -224,13 +224,13 @@ class Folders extends Output
                 $fn = $this->nameCodeFn;
                 $output->name = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 文件名代码处理（name_code）执行出错：' . $t->getMessage());
             }
         }
 
         $dir = $this->dir . '/' . $output->name;
         if (is_dir($dir)) {
-            throw new ServiceException('节点 ' . $flowNode->index . ' 文件名代码处理（name_code）目录（' . $dir . '）已存在：');
+            throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 文件名代码处理（name_code）目录（' . $dir . '）已存在：');
         }
 
         mkdir($dir, 0777, true);
@@ -276,7 +276,7 @@ class Folders extends Output
                 }
 
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
             }
         }
 

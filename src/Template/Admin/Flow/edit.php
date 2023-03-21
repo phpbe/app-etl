@@ -215,7 +215,7 @@
                                     <div class="node">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_ds'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="primary">{{nodeIndex}}. 输入：数据源</el-button>
+                                                <el-button @click="toggleNode(node)" type="primary">{{nodeIndex + 1}}. 输入：数据源</el-button>
                                             </el-badge>
                                         </div>
                                     </div>

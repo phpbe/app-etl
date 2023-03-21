@@ -31,15 +31,15 @@ class Ds extends Output
         }
 
         if (!isset($formDataNode['item']['ds_id']) || !is_string($formDataNode['item']['ds_id']) || strlen($formDataNode['item']['ds_id']) !== 36) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 数据源（ds_id）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据源（ds_id）参数无效！');
         }
 
         if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || $formDataNode['item']['ds_table'] !== '') {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 数据表（ds_table）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据表（ds_table）参数无效！');
         }
 
         if (!isset($formDataNode['item']['field_mapping']) || !is_string($formDataNode['item']['field_mapping']) || !in_array($formDataNode['item']['field_mapping'], ['mapping', 'code'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射类型（field_mapping）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射类型（field_mapping）参数无效！');
         }
 
         $serviceDs = Be::getService('App.Etl.Admin.Ds');
@@ -49,7 +49,7 @@ class Ds extends Output
         if ($formDataNode['item']['field_mapping'] === 'mapping') {
 
             if (!isset($formDataNode['item']['field_mapping_details']) || !is_array($formDataNode['item']['field_mapping_details'])) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射（field_mapping_details）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射（field_mapping_details）参数无效！');
             }
 
             $output = new \stdClass();
@@ -58,19 +58,19 @@ class Ds extends Output
             foreach ($formDataNode['item']['field_mapping_details'] as $mapping) {
 
                 if (!isset($mapping['enable']) || !is_numeric($mapping['enable'])) {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（enable）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 是否有效（enable）参数无效！');
                 }
 
                 $enable = (int)$mapping['enable'];
 
                 if (!in_array($enable, [0, 1])) {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 是否有效（is_enable）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 是否有效（is_enable）参数无效！');
                 }
 
                 if ($enable === 0) continue;
 
                 if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
                 }
 
                 $field = $mapping['field'];
@@ -84,23 +84,23 @@ class Ds extends Output
                 }
 
                 if (!$found) {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 数据表字段名（' . $field . '）不存在！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 数据表字段名（' . $field . '）不存在！');
                 }
 
                 if (!isset($mapping['type']) || !is_string($mapping['type']) || !in_array($mapping['type'], ['input_field', 'custom'])) {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
                 }
 
                 if ($mapping['type'] === 'input_field') {
 
                     if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入段名（input_field）参数无效！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入段名（input_field）参数无效！');
                     }
 
                     $inputField = $mapping['input_field'];
 
                     if (!isset($input->$inputField)) {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
                     }
 
                     $output->$field = $input->$inputField;
@@ -108,7 +108,7 @@ class Ds extends Output
                 } else {
 
                     if (!isset($mapping['custom']) || !is_string($mapping['custom'])) {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
                     }
 
                     $output->$field = $mapping['custom'];
@@ -120,19 +120,19 @@ class Ds extends Output
         } else {
 
             if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）参数无效！');
             }
 
             try {
                 $fn = eval('return function(object $input): object {' . $formDataNode['item']['field_mapping_code'] . '};');
                 $output = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
             }
         }
 
         if (count((array)$output) === 0) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 输出数据为空！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出数据为空！');
         }
 
         return $output;
@@ -194,7 +194,7 @@ class Ds extends Output
             try {
                 $this->fieldMappingFn = eval('return function(object $input): object {' . $flowNode->item->field_mapping_code . '};');
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
             }
         }
 
@@ -223,7 +223,7 @@ class Ds extends Output
                 $fn = $this->fieldMappingFn;
                 $output = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
             }
         }
 

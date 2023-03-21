@@ -31,14 +31,14 @@ class ChatGPT extends Process
         }
 
         if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || $formDataNode['item']['code'] !== '') {
-            throw new ServiceException('节点 ' .$formDataNode['index'] . ' 代码（code）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）参数无效！');
         }
 
         try {
             $fn = eval('return function(object $input): object {' . $formDataNode['item']['code'] . '};');
             $output = $fn($input);
         } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' .$formDataNode['index'] . ' 代码（code）执行出错：' . $t->getMessage());
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）执行出错：' . $t->getMessage());
         }
 
         return $output;

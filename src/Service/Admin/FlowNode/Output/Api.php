@@ -36,13 +36,13 @@ class Api extends Output
         $output = new \stdClass();
 
         if (!isset($formDataNode['item']['url']) || !is_string($formDataNode['item']['url']) || $formDataNode['item']['url'] !== '') {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' API网址（url）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' API网址（url）参数无效！');
         }
 
         $output->url = $formDataNode['item']['url'];
 
         if (!isset($formDataNode['item']['headers']) || !is_array($formDataNode['item']['headers'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求头（headers）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 请求头（headers）参数无效！');
         }
 
         if (count($formDataNode['item']['headers']) > 0) {
@@ -52,11 +52,11 @@ class Api extends Output
             foreach ($formDataNode['item']['headers'] as $header) {
 
                 if (!isset($header['name']) || !is_string($header['name']) || $header['name'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求头第 ' . $i . ' 行 名称（name）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 请求头第 ' . $i . ' 行 名称（name）参数无效！');
                 }
 
                 if (!isset($header['value']) || !is_string($header['value']) || $header['value'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求头第 ' . $i . ' 行 值（value）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 请求头第 ' . $i . ' 行 值（value）参数无效！');
                 }
 
                 $i++;
@@ -66,14 +66,14 @@ class Api extends Output
         }
 
         if (!isset($formDataNode['item']['format']) || !is_string($formDataNode['item']['format']) || !in_array($formDataNode['item']['format'], ['form', 'json'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 请求格式（format）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 请求格式（format）参数无效！');
         }
 
         $output->format = $formDataNode['item']['format'];
 
 
         if (!isset($formDataNode['item']['field_mapping']) || !is_string($formDataNode['item']['field_mapping']) || !in_array($formDataNode['item']['field_mapping'], ['mapping', 'code'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射类型（field_mapping）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射类型（field_mapping）参数无效！');
         }
 
         $output->field_mapping = $formDataNode['item']['field_mapping'];
@@ -82,7 +82,7 @@ class Api extends Output
         if ($formDataNode['item']['field_mapping'] === 'mapping') {
 
             if (!isset($formDataNode['item']['field_mapping_details']) || !is_array($formDataNode['item']['field_mapping_details'])) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射（field_mapping_details）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射（field_mapping_details）参数无效！');
             }
 
             $fields = new \stdClass();
@@ -91,25 +91,25 @@ class Api extends Output
             foreach ($formDataNode['item']['field_mapping_details'] as $mapping) {
 
                 if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 列名（field）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 列名（field）参数无效！');
                 }
 
                 $field = $mapping['field'];
 
                 if (!isset($mapping['type']) || !is_string($mapping['type']) || !in_array($mapping['type'], ['input_field', 'custom'])) {
-                    throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 取值类型（type）参数无效！');
                 }
 
                 if ($mapping['type'] === 'input_field') {
 
                     if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（input_field）参数无效！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入字段名（input_field）参数无效！');
                     }
 
                     $inputField = $mapping['input_field'];
 
                     if (!isset($input->$inputField)) {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入字段名（' . $inputField . '）在输入数据中不存在！');
                     }
 
                     $fields->$field = $input->$inputField;
@@ -117,7 +117,7 @@ class Api extends Output
                 } else {
 
                     if (!isset($mapping['custom']) || !is_string($mapping['custom'])) {
-                        throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
+                        throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 自定义值（custom）参数无效！');
                     }
 
                     $fields->$field = $mapping['custom'];
@@ -131,35 +131,35 @@ class Api extends Output
         } else {
 
             if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）参数无效！');
             }
 
             try {
                 $fn = eval('return function(object $input): object {' . $formDataNode['item']['field_mapping_code'] . '};');
                 $output->fields = $fn($input);
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $formDataNode['index'] . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
             }
         }
 
         if (count( (array) $output->fields ) === 0) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 字段列表为空！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段列表为空！');
         }
 
         if (!isset($formDataNode['item']['interval']) || !is_numeric($formDataNode['item']['interval'])) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 间隔时间（毫秒）（interval）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 间隔时间（毫秒）（interval）参数无效！');
         }
 
         $formDataNode['item']['interval'] = (int) $formDataNode['item']['interval'];
 
         if ($formDataNode['item']['interval'] < 0) {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 间隔时间（毫秒）（interval）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 间隔时间（毫秒）（interval）参数无效！');
         }
 
         $output->interval = $formDataNode['item']['interval'];
 
         if (!isset($formDataNode['item']['success_mark']) || !is_string($formDataNode['item']['success_mark']) || $formDataNode['item']['success_mark'] !== '') {
-            throw new ServiceException('节点 ' . $formDataNode['index'] . ' 成功标记（success_mark）参数无效！');
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 成功标记（success_mark）参数无效！');
         }
 
         $output->success_mark = $formDataNode['item']['success_mark'];
@@ -231,7 +231,7 @@ class Api extends Output
             try {
                 $this->fieldMappingFn = eval('return function(object $input): object {' . $flowNode->item->field_mapping_code . '};');
             } catch (\Throwable $t) {
-                throw new ServiceException('节点 ' . $flowNode->index . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码处理（field_mapping_code）执行出错：' . $t->getMessage());
             }
         }
     }

@@ -29,9 +29,13 @@ class FlowLog
      */
     public function index()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $flowId = $request->get('flow_id', 'all');
+
         $flowKeyValues = Be::getService('App.Etl.Admin.Flow')->getIdNameKeyValues();
         $statusKeyValues = [
-            '' => '不限',
             'create' => '创建',
             'running' => '运行中',
             'finish' => '执行完成',
@@ -54,13 +58,22 @@ class FlowLog
                             'name' => 'flow_id',
                             'label' => '数据流',
                             'driver' => FormItemSelect::class,
-                            'keyValues' => $flowKeyValues
+                            'keyValues' => \Be\Util\Arr::merge([
+                                'all' => '全部',
+                            ], $flowKeyValues),
+                            'nullValue' => 'all',
+                            'defaultValue' => 'all',
+                            'value' => $flowId,
                         ],
                         [
                             'name' => 'status',
                             'label' => '状态',
                             'driver' => FormItemSelect::class,
-                            'keyValues' => $statusKeyValues,
+                            'keyValues' => \Be\Util\Arr::merge([
+                                'all' => '全部',
+                            ], $statusKeyValues),
+                            'nullValue' => 'all',
+                            'defaultValue' => 'all',
                         ],
                     ],
                 ],
@@ -186,7 +199,7 @@ class FlowLog
                 $flowLog = Be::getService('App.Etl.Admin.FlowLog')->getFlowLog($postData['row']['id']);
                 $response->set('flowLog', $flowLog);
 
-                $response->display('App.Etl.FlowLog.detail', 'Blank');
+                $response->display(null, 'Blank');
             }
         }
     }

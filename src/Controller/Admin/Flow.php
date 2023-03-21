@@ -217,7 +217,7 @@ class Flow
                             ],
                             [
                                 'label' => '运行记录',
-                                'url' => beAdminUrl('Etl.FlowLog.index'),
+                                'action' => 'goFlowLogs',
                                 'target' => 'self',
                                 'ui' => [
                                     'type' => 'success',
@@ -410,4 +410,25 @@ class Flow
             $response->json();
         }
     }
+
+
+    /**
+     * 跳转到运行记录页面
+     *
+     * @BePermission("*")
+     */
+    public function goFlowLogs()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        $postData = $request->post('data', '', '');
+        if ($postData) {
+            $postData = json_decode($postData, true);
+            if (isset($postData['row']['id']) && $postData['row']['id']) {
+                $response->redirect(beAdminUrl('Etl.FlowLog.index', ['flow_id' => $postData['row']['id']]));
+            }
+        }
+    }
+
 }
