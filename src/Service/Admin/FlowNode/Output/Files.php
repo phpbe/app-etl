@@ -38,7 +38,7 @@ class Files extends Output
 
         if ($formDataNode['item']['name'] === 'template') {
 
-            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] !== '') {
+            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件名称模板（name_template）参数无效！');
             }
 
@@ -50,7 +50,7 @@ class Files extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] !== '') {
+            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件名代码处理（name_code）参数无效！');
             }
 
@@ -68,7 +68,7 @@ class Files extends Output
 
         if ($formDataNode['item']['content'] === 'template') {
 
-            if (!isset($formDataNode['item']['content_template']) || !is_string($formDataNode['item']['content_template']) || $formDataNode['item']['content_template'] !== '') {
+            if (!isset($formDataNode['item']['content_template']) || !is_string($formDataNode['item']['content_template']) || $formDataNode['item']['content_template'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件内容模板（content_template）参数无效！');
             }
 
@@ -80,7 +80,7 @@ class Files extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['content_code']) || !is_string($formDataNode['item']['content_code']) || $formDataNode['item']['content_code'] !== '') {
+            if (!isset($formDataNode['item']['content_code']) || !is_string($formDataNode['item']['content_code']) || $formDataNode['item']['content_code'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件内容代码处理（content_code）参数无效！');
             }
 

@@ -45,7 +45,7 @@ class Csv extends Output
             $i = 1;
             foreach ($formDataNode['item']['field_mapping_details'] as $mapping) {
 
-                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
+                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] === '') {
                     throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 列名（field）参数无效！');
                 }
 
@@ -57,7 +57,7 @@ class Csv extends Output
 
                 if ($mapping['type'] === 'input_field') {
 
-                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
+                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] === '') {
                         throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入字段名（input_field）参数无效！');
                     }
 
@@ -83,7 +83,7 @@ class Csv extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
+            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）参数无效！');
             }
 

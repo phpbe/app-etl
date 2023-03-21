@@ -38,7 +38,7 @@ class Folders extends Output
 
         if ($formDataNode['item']['name'] === 'template') {
 
-            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] !== '') {
+            if (!isset($formDataNode['item']['name_template']) || !is_string($formDataNode['item']['name_template']) || $formDataNode['item']['name_template'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录名模板（name_template）参数无效！');
             }
 
@@ -50,7 +50,7 @@ class Folders extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] !== '') {
+            if (!isset($formDataNode['item']['name_code']) || !is_string($formDataNode['item']['name_code']) || $formDataNode['item']['name_code'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 目录代码处理（name_code）参数无效！');
             }
 
@@ -74,7 +74,7 @@ class Folders extends Output
             $i = 1;
             foreach ($formDataNode['item']['files'] as $file) {
 
-                if (!isset($file['name_template']) || !is_string($file['name_template']) || $file['name_template'] !== '') {
+                if (!isset($file['name_template']) || !is_string($file['name_template']) || $file['name_template'] === '') {
                     throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件 ' . $i . ' 文件名称模板（name_template）参数无效！');
                 }
 
@@ -83,7 +83,7 @@ class Folders extends Output
                     $name = str_replace('{' . $k . '}', $v, $name);
                 }
 
-                if (!isset($file['content_template']) || !is_string($file['content_template']) || $file['content_template'] !== '') {
+                if (!isset($file['content_template']) || !is_string($file['content_template']) || $file['content_template'] === '') {
                     throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件 ' . $i . ' 文件内容模板（content_template）参数无效！');
                 }
 

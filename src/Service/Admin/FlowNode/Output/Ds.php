@@ -34,7 +34,7 @@ class Ds extends Output
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据源（ds_id）参数无效！');
         }
 
-        if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || $formDataNode['item']['ds_table'] !== '') {
+        if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || $formDataNode['item']['ds_table'] === '') {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据表（ds_table）参数无效！');
         }
 
@@ -69,7 +69,7 @@ class Ds extends Output
 
                 if ($enable === 0) continue;
 
-                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] !== '') {
+                if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] === '') {
                     throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
                 }
 
@@ -93,7 +93,7 @@ class Ds extends Output
 
                 if ($mapping['type'] === 'input_field') {
 
-                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] !== '') {
+                    if (!isset($mapping['input_field']) || !is_string($mapping['input_field']) || $mapping['input_field'] === '') {
                         throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 输入段名（input_field）参数无效！');
                     }
 
@@ -119,7 +119,7 @@ class Ds extends Output
 
         } else {
 
-            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] !== '') {
+            if (!isset($formDataNode['item']['field_mapping_code']) || !is_string($formDataNode['item']['field_mapping_code']) || $formDataNode['item']['field_mapping_code'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码处理（field_mapping_code）参数无效！');
             }
 
