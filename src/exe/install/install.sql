@@ -221,6 +221,8 @@ CREATE TABLE `etl_flow_node_log` (
 `flow_log_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流日志ID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `index` tinyint(4) NOT NULL DEFAULT '0' COMMENT '编号',
+`type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'input: 输入/process: 处理/output: 输出',
+`item_type` varchar(30) COLLATE utf8mb4_general_ci NOT NULL DEFAULT '' COMMENT 'input_ds: 输入数据源/process_code: 代码处理/output_ds: 输出数据源/output_csv: 输出CSV/output_files: 输出文件包/output_folders: 输出目录包/output_api: 输出API调用',
 `config` text NOT NULL COMMENT '配置数据 序列化',
 `output_file` varchar(600) NOT NULL DEFAULT '' COMMENT '最终输出的文件',
 `total_success` int(11) NOT NULL DEFAULT '1000' COMMENT '总成功数据数',

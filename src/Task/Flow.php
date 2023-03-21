@@ -28,8 +28,6 @@ class Flow extends Task
         $flows = $db->getObjects($sql);
         if (count($flows) === 0) return;
 
-        $serviceFlow = Be::getService('App.Etl.Admin.Flow');
-
         foreach ($flows as $flow) {
 
             $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY `index` ASC';
@@ -72,6 +70,8 @@ class Flow extends Task
                     $flowNodeLog->flow_log_id = $flowLog->id;
                     $flowNodeLog->flow_node_id = $flowNode->id;
                     $flowNodeLog->index = $flowNode->index;
+                    $flowNodeLog->type = $flowNode->type;
+                    $flowNodeLog->item_type = $flowNode->item_type;
                     $flowNodeLog->config = serialize($flowNode);
                     $flowNodeLog->output_file = '';
                     $flowNodeLog->total_success = 0;

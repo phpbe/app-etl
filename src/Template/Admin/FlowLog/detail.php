@@ -5,7 +5,7 @@
     </div>
 
     <div class="be-mt-100">
-        数据流：<?php echo $this->flowLog->flow->name; ?>（#<?php echo $this->flowLog->flow->id; ?>）
+        数据流：<?php echo isset($this->flowLog->flow) ? $this->flowLog->flow->name : '' ?>（#<?php echo $this->flowLog->flow_id; ?>）
     </div>
 
     <div class="be-mt-100">
@@ -56,7 +56,7 @@
             <div class="be-col-auto" style="width: 200px">
                 <?php
                 echo '<span class="be-d-inline-block be-mt-50 be-c-fff be-px-100 be-py-50 ';
-                switch ($nodeLog->node->type) {
+                switch ($nodeLog->type) {
                     case 'input':
                         echo 'be-bc-major';
                         break;
@@ -71,9 +71,10 @@
 
                 echo $nodeLog->index + 1;
                 echo '&nbsp;';
-                echo $nodeLog->node->itemTypeName;
+
+                echo $nodeLog->itemTypeName;
                 echo '&nbsp;';
-                echo $nodeLog->node->itemName;
+                echo $nodeLog->itemName;
 
                 echo '</span>';
                 ?>
