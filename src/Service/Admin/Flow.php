@@ -40,14 +40,13 @@ class Flow
 
         $db->startTransaction();
         try {
-            $now = date('Y-m-d H:i:s');
 
             $tupleFlow = Be::getTuple('etl_flow');
             $tupleFlow->name = $formData['name'];
             $tupleFlow->category_id = $formData['category_id'];
             $tupleFlow->is_enable = $formData['is_enable'];
-            $tupleFlow->create_time = $now;
-            $tupleFlow->update_time = $now;
+            $tupleFlow->create_time = date('Y-m-d H:i:s');;
+            $tupleFlow->update_time = date('Y-m-d H:i:s');;
             $tupleFlow->insert();
 
             $db->commit();
@@ -134,39 +133,75 @@ class Flow
         $db = Be::getDb();
         $db->startTransaction();
         try {
-            $now = date('Y-m-d H:i:s');
+
             $tupleFlow->name = $formData['name'];
             $tupleFlow->category_id = $formData['category_id'];
             $tupleFlow->is_enable = $formData['is_enable'];
-            $tupleFlow->update_time = $now;
+            $tupleFlow->update_time = date('Y-m-d H:i:s');;
             $tupleFlow->update();
+
 
             $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ?';
             $existsNodes = $db->getObjects($sql, [$flowId]);
             if (count($existsNodes) > 0) {
-                foreach ($existsNodes as $existsNode) {
-                    $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ?';
-                    $db->query($sql, [$existsNode->id]);
+
+                $keepFlowNodeIds = [];
+                $keepFlowNodeItemIds = [];
+                foreach ($formData['nodes'] as $formDataNode) {
+                    if (isset($formDataNode['id']) && is_string($formDataNode['id']) && strlen($formDataNode['id']) === 36) {
+                        $keepFlowNodeIds[] = $formDataNode['id'];
+                    }
+
+                    if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
+                        $keepFlowNodeItemIds[] = $formDataNode['item']['id'];
+                    }
                 }
 
-                $sql = 'DELETE FROM etl_flow_node WHERE flow_id = ?';
-                $db->query($sql, [$flowId]);
+                foreach ($existsNodes as $existsNode) {
+                    if (count($keepFlowNodeItemIds) > 0) {
+                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeItemIds)) .')';
+                        $db->query($sql);
+                    } else {
+                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ?';
+                        $db->query($sql, [$existsNode->id]);
+                    }
+                }
+
+                if (count($keepFlowNodeIds) > 0) {
+                    $sql = 'DELETE FROM etl_flow_node WHERE id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeIds)) .')';
+                    $db->query($sql);
+                } else {
+                    $sql = 'DELETE FROM etl_flow_node WHERE flow_id = ?';
+                    $db->query($sql, [$flowId]);
+                }
             }
 
             foreach ($formData['nodes'] as $formDataNode) {
                 $tupleFlowNode = Be::getTuple('etl_flow_node');
+
+                if (isset($formDataNode['id']) && is_string($formDataNode['id']) && strlen($formDataNode['id']) === 36) {
+                    try {
+                        $tupleFlowNode->load($formDataNode['id']);
+                    } catch (\Throwable $t) {
+                    }
+                }
+
                 $tupleFlowNode->flow_id = $flowId;
                 $tupleFlowNode->index = $formDataNode['index'];
                 $tupleFlowNode->type = $formDataNode['type'];
                 $tupleFlowNode->item_type = $formDataNode['item_type'];
                 $tupleFlowNode->item_id = '';
-                $tupleFlowNode->create_time = $now;
-                $tupleFlowNode->update_time = $now;
-                $tupleFlowNode->insert();
+                $tupleFlowNode->update_time = date('Y-m-d H:i:s');;
+                if ($tupleFlowNode->isLoaded()) {
+                    $tupleFlowNode->update();
+                } else {
+                    $tupleFlowNode->create_time = date('Y-m-d H:i:s');;
+                    $tupleFlowNode->insert();
+                }
 
                 $service = $this->getNodeItemService($formDataNode['item_type']);
 
-                $tupleFlowNodeItem = $service->insert($tupleFlowNode->id, $formDataNode);
+                $tupleFlowNodeItem = $service->edit($tupleFlowNode->id, $formDataNode);
 
                 $tupleFlowNode->item_id = $tupleFlowNodeItem->id;
                 $tupleFlowNode->update();

@@ -16,14 +16,7 @@ class ChatGPT extends Process
         return 'ChatGPT';
     }
 
-    /**
-     * 编辑数据流
-     *
-     * @param array $formDataNode 表单数据
-     * @param object $input 输入数据
-     * @return array 
-     * @throws \Throwable
-     */
+
     public function test(array $formDataNode, object $input): object
     {
         if (!isset($formDataNode['index']) || !is_numeric($formDataNode['index'])) {
@@ -45,21 +38,30 @@ class ChatGPT extends Process
     }
 
 
-    /**
-     * 插入数据库
-     * @param string $flowNodeId
-     * @param array $formDataNode
-     * @return object
-     */
-    public function insert(string $flowNodeId, array $formDataNode): object
+    public function edit(string $flowNodeId, array $formDataNode): object
     {
         $tupleFlowNodeItem = Be::getTuple('etl_flow_node_process_chatgpt');
+
+        if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
+            try {
+                $tupleFlowNodeItem->load($formDataNode['item']['id']);
+            } catch (\Throwable $t) {
+            }
+        }
+
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->code = $formDataNode['item']['code'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
-        $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
-        $tupleFlowNodeItem->insert();
+
+        if ($tupleFlowNodeItem->isLoaded()) {
+            $tupleFlowNodeItem->update();
+        } else {
+            $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+            $tupleFlowNodeItem->insert();
+        }
+
         return $tupleFlowNodeItem->toObject();
     }
 

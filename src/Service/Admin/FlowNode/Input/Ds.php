@@ -160,15 +160,17 @@ class Ds extends Input
         return $output;
     }
 
-    /**
-     * 插入数据库
-     * @param string $flowNodeId
-     * @param array $formDataNode
-     * @return object
-     */
-    public function insert(string $flowNodeId, array $formDataNode): object
+    public function edit(string $flowNodeId, array $formDataNode): object
     {
         $tupleFlowNodeItem = Be::getTuple('etl_flow_node_input_ds');
+
+        if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
+            try {
+                $tupleFlowNodeItem->load($formDataNode['item']['id']);
+            } catch (\Throwable $t) {
+            }
+        }
+
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->ds_id = $formDataNode['item']['ds_id'];
         $tupleFlowNodeItem->ds_type = $formDataNode['item']['ds_type'];
@@ -180,9 +182,16 @@ class Ds extends Input
         $tupleFlowNodeItem->breakpoint_step = $formDataNode['item']['breakpoint_step'];
         $tupleFlowNodeItem->breakpoint_offset = $formDataNode['item']['breakpoint_offset'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
-        $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
-        $tupleFlowNodeItem->insert();
+
+        if ($tupleFlowNodeItem->isLoaded()) {
+            $tupleFlowNodeItem->update();
+        } else {
+            $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+            $tupleFlowNodeItem->insert();
+        }
+
         return $tupleFlowNodeItem->toObject();
     }
 

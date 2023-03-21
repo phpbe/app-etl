@@ -167,15 +167,18 @@ class Api extends Output
         return $output;
     }
 
-    /**
-     * 插入数据库
-     * @param string $flowNodeId
-     * @param array $formData
-     * @return object
-     */
-    public function insert(string $flowNodeId, array $formDataNode): object
+
+    public function edit(string $flowNodeId, array $formDataNode): object
     {
         $tupleFlowNodeItem = Be::getTuple('etl_flow_node_output_api');
+
+        if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
+            try {
+                $tupleFlowNodeItem->load($formDataNode['item']['id']);
+            } catch (\Throwable $t) {
+            }
+        }
+
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->url = $formDataNode['item']['url'];
         $tupleFlowNodeItem->headers = serialize($formDataNode['item']['headers']);
@@ -186,9 +189,16 @@ class Api extends Output
         $tupleFlowNodeItem->success_mark = $formDataNode['item']['success_mark'];
         $tupleFlowNodeItem->interval = $formDataNode['item']['interval'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
-        $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
-        $tupleFlowNodeItem->insert();
+
+        if ($tupleFlowNodeItem->isLoaded()) {
+            $tupleFlowNodeItem->update();
+        } else {
+            $tupleFlowNodeItem->create_time = date('Y-m-d H:i:s');
+            $tupleFlowNodeItem->insert();
+        }
+
         return $tupleFlowNodeItem->toObject();
     }
 

@@ -21,12 +21,12 @@ abstract class FlowNode
     abstract public function getItemName(): string;
 
     /**
-     * 插入数据库
+     * 编辑
      * @param string $flowNodeId
      * @param array $formDataNode
      * @return object
      */
-    abstract public function insert(string $flowNodeId, array $formDataNode): object;
+    abstract public function edit(string $flowNodeId, array $formDataNode): object;
 
     /**
      * 格式化数据库中读取出来的数据
