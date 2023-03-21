@@ -123,7 +123,7 @@ class FlowLog
                         ],
                         [
                             'name' => 'total_success',
-                            'label' => '成功数',
+                            'label' => '已处理',
                             'width' => '90',
                         ],
                         [
@@ -333,7 +333,7 @@ class FlowLog
                         [
                             'name' => 'id',
                             'label' => 'ID',
-                            'width' => '200',
+                            'width' => '400',
                         ],
                         [
                             'name' => 'success',

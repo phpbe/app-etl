@@ -159,21 +159,19 @@ class Flow
 
                 foreach ($existsNodes as $existsNode) {
                     if (count($keepFlowNodeItemIds) > 0) {
-                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeItemIds)) .')';
-                        $db->query($sql);
+                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ? id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeItemIds)) .')';
                     } else {
                         $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ?';
-                        $db->query($sql, [$existsNode->id]);
                     }
+                    $db->query($sql, [$existsNode->id]);
                 }
 
                 if (count($keepFlowNodeIds) > 0) {
-                    $sql = 'DELETE FROM etl_flow_node WHERE id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeIds)) .')';
-                    $db->query($sql);
+                    $sql = 'DELETE FROM etl_flow_node WHERE flow_id = ? AND id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeIds)) .')';
                 } else {
                     $sql = 'DELETE FROM etl_flow_node WHERE flow_id = ?';
-                    $db->query($sql, [$flowId]);
                 }
+                $db->query($sql, [$flowId]);
             }
 
             foreach ($formData['nodes'] as $formDataNode) {
