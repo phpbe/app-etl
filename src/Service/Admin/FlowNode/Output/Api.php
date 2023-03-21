@@ -214,12 +214,8 @@ class Api extends Output
     private ?array $fieldMappingDetails = null;
     private ?\Closure $fieldMappingFn = null;
 
-    /**
-     * 开如处理处理
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function start(object $flowNode)
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $this->headers = unserialize($flowNode->item->headers);
 
@@ -234,15 +230,8 @@ class Api extends Output
         }
     }
 
-    /**
-     * 计划任务处理数据
-     *
-     * @param object $flowNode 数据流节点
-     * @param object $input 输入
-     * @return object 输出
-     * @throws \Throwable
-     */
-    public function process(object $flowNode, object $input): object
+
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
         if ($flowNode->item->field_mapping === 'mapping') {
             $postData = [];
@@ -284,12 +273,8 @@ class Api extends Output
         return $output;
     }
 
-    /**
-     * 处理完成
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function finish(object $flowNode)
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $this->headers = null;
         $this->fieldMappingDetails = null;

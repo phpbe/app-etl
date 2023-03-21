@@ -48,7 +48,7 @@ class Csv extends Input
     }
 
 
-    public function process(object $flowNode): \Generator
+    public function process(object $flowNode, object $flowLog, object $flowNodeLog): \Generator
     {
 
     }

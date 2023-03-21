@@ -170,17 +170,18 @@ class Folders extends Output
 
     private $dir = null;
     private ?\Closure $nameCodeFn = null;
-
     private ?array $files = null;
     private ?\Closure $filesCodeFn = null;
 
-    /**
-     * 开如处理处理
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function start(object $flowNode)
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/Output/Folders/' . $flowNodeLog->id . '/folders';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+        $this->dir = $dir;
+
         if ($flowNode->item->name === 'code') {
             try {
                 $this->nameCodeFn = eval('return function(object $input): string {' . $flowNode->item->name_code . '};');
@@ -200,15 +201,8 @@ class Folders extends Output
         }
     }
 
-    /**
-     * 计划任务处理数据
-     *
-     * @param object $flowNode 数据流节点
-     * @param object $input 输入
-     * @return object 输出
-     * @throws \Throwable
-     */
-    public function process(object $flowNode, object $input): object
+
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
         $output = new \stdClass();
 
@@ -284,13 +278,34 @@ class Folders extends Output
         return $output;
     }
 
-    /**
-     * 处理完成
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function finish(object $flowNode)
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+        $outputFile = '/data/App/Etl/Output/Folders/' . $flowNodeLog->id . '/folders.zip';
+
+        $zip = new \ZipArchive();
+        $zip->open(Be::getRuntime()->getRootPath() . $outputFile, \ZipArchive::CREATE);   //打开压缩包
+
+        $handler = opendir($this->dir);
+        while (($dir = readdir($handler)) !== false) {
+            if ($dir !== '.' && $dir != '.' && is_dir($this->dir . '/' . $dir)) {
+                $files = scandir($this->dir . '/' . $dir);
+                foreach ($files as $file) {
+                    if ($file !== '.' && $file !== '..' && is_file($this->dir . '/' . $dir . '/' . $file)) {
+                        $zip->addFile($this->dir . '/' . $dir . '/' . $file, '/' . $dir . '/' . $file);
+                    }
+                }
+            }
+        }
+        @closedir($handler);
+
+        $zip->close();
+
+        $flowNodeLog->output_file = $outputFile;
+        $flowNodeLog->update_time = date('Y-m-d H:i:s');
+        Be::getDb()->update('etl_flow_node_log', $flowNodeLog);
+
+
         $this->nameCodeFn = null;
         $this->filesCodeFn = null;
     }

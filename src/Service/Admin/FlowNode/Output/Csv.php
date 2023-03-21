@@ -139,12 +139,8 @@ class Csv extends Output
     private ?\Closure $fieldMappingFn = null;
     private $handler = null;
 
-    /**
-     * 开如处理处理
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function start(object $flowNode)
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         if ($flowNode->item->field_mapping === 'mapping') {
             $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
@@ -156,7 +152,12 @@ class Csv extends Output
             }
         }
 
-        $this->handler = fopen($this->outputFileNameOrPath, 'w');
+        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/Output/Csv/' . $flowNodeLog->id;
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777, true);
+        }
+
+        $this->handler = fopen($dir . '/output.csv', 'w');
 
         if ($flowNode->item->field_mapping === 'mapping') {
             $cols = array_keys($this->fieldMappingDetails);
@@ -179,15 +180,8 @@ class Csv extends Output
         fwrite($this->handler, $line);
     }
 
-    /**
-     * 计划任务处理数据
-     *
-     * @param object $flowNode 数据流节点
-     * @param object $input 输入
-     * @return object 输出
-     * @throws \Throwable
-     */
-    public function process(object $flowNode, object $input): object
+
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
         if ($flowNode->item->field_mapping === 'mapping') {
             $output = new \stdClass();
@@ -248,12 +242,8 @@ class Csv extends Output
         return $output;
     }
 
-    /**
-     * 处理完成
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function finish(object $flowNode)
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $this->fieldMappingDetails = null;
         $this->fieldMappingFn = null;

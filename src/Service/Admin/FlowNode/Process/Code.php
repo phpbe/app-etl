@@ -81,7 +81,7 @@ class Code extends Process
      * @return object 输出
      * @throws \Throwable
      */
-    public function process(object $flowNode, object $input): object
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
         try {
             $fn = eval('return function(object $input): object {' . $flowNode->item->code . '};');

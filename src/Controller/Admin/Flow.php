@@ -179,6 +179,10 @@ class Flow
                             'name' => 'node_qty',
                             'label' => '节点数',
                             'width' => '90',
+                            'value' => function($row) {
+                                $sql = 'SELECT COUNT(*) FROM etl_flow_node WHERE flow_id = ?';
+                                return \Be\Be::getDb()->getValue($sql, [$row['id']]);
+                            },
                         ],
                         [
                             'name' => 'schedule',
@@ -212,28 +216,11 @@ class Flow
                                 ]
                             ],
                             [
-                                'label' => '手动执行',
-                                'url' => beAdminUrl('Etl.Task.manualRunExtract'),
-                                'target' => 'ajax',
+                                'label' => '运行记录',
+                                'url' => beAdminUrl('Etl.FlowLog.index'),
+                                'target' => 'self',
                                 'ui' => [
-                                    'v-if' => 'scope.row.is_enable == \'1\'',
                                     'type' => 'success',
-                                ]
-                            ],
-                            [
-                                'label' => '日志',
-                                'action' => 'log',
-                                'target' => 'blank',
-                                'ui' => [
-                                    'type' => 'info',
-                                ]
-                            ],
-                            [
-                                'label' => '异常',
-                                'action' => 'exception',
-                                'target' => 'blank',
-                                'ui' => [
-                                    'type' => 'warning',
                                 ]
                             ],
                             [
@@ -269,10 +256,10 @@ class Flow
                             'name' => 'node_qty',
                             'label' => '节点数',
                             'width' => '90',
-                        ],
-                        [
-                            'name' => 'schedule',
-                            'label' => '执行计划',
+                            'value' => function($row) {
+                                $sql = 'SELECT COUNT(*) FROM etl_flow_node WHERE flow_id = ?';
+                                return \Be\Be::getDb()->getValue($sql, [$row['id']]);
+                            },
                         ],
                         [
                             'name' => 'is_enable',

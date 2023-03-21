@@ -6,6 +6,7 @@ namespace Be\App\Etl\Service\Admin\FlowNode\Input;
 use Be\App\Etl\Service\Admin\FlowNode\Input;
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Db\Driver;
 use Be\Util\Time\Datetime;
 
 class Ds extends Input
@@ -200,13 +201,10 @@ class Ds extends Input
 
     private $breakpointStart = null;
     private $breakpointEnd = null;
+    private ?Driver $db = null;
 
-    /**
-     * 开如处理处理
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function start(object $flowNode)
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $t = time();
 
@@ -251,12 +249,41 @@ class Ds extends Input
             $this->breakpointStart = $breakpointStart;
             $this->breakpointEnd = $breakpointEnd;
         }
+
+        $this->db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
     }
 
-
-    public function process(object $flowNode): \Generator
+    public function getTotal(object $flowNode): int
     {
-        $db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+        $db = $this->db;
+
+        $where = '';
+        if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
+            if ($db instanceof \Be\Db\Driver\Oracle) {
+                $where = ' WHERE ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '>=to_timestamp(\'' . $this->breakpointStart . '\', \'yyyy-mm-dd hh24:mi:ss\')';
+                $where .= ' AND ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '<to_timestamp(\'' . $this->breakpointEnd . '\', \'yyyy-mm-dd hh24:mi:ss\')';
+            } else {
+                $where = ' WHERE ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '>=' . $db->quoteValue($this->breakpointStart);
+                $where .= ' AND ';
+                $where .= $db->quoteKey($flowNode->item->breakpoint_field) . '<' . $db->quoteValue($this->breakpointEnd);
+            }
+        }
+
+        if ($flowNode->item->ds_type === 'table') {
+            $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey($flowNode->item->ds_table) . $where;
+        } else {
+            $sql = 'SELECT COUNT(*) FROM (' . $flowNode->item->ds_sql  . ' ) t ' . $where;
+        }
+
+        return (int) $db->getValue($sql);
+    }
+
+    public function process(object $flowNode, object $flowLog, object $flowNodeLog): \Generator
+    {
+        $db = $this->db;
 
         $where = '';
         if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
@@ -282,12 +309,8 @@ class Ds extends Input
         return $db->getYieldObjects($sql);
     }
 
-    /**
-     * 处理完成
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function finish(object $flowNode)
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步
             $obj = new \stdClass();

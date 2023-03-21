@@ -5,7 +5,6 @@ namespace Be\App\Etl\Task;
 use Be\App\ServiceException;
 use Be\Be;
 use Be\Task\Task;
-use Be\Task\TaskException;
 
 /**
  * 加工
@@ -33,6 +32,18 @@ class Flow extends Task
 
         foreach ($flows as $flow) {
 
+            $flowLog = new \stdClass();
+            $flowLog->id = $db->uuid();
+            $flowLog->flow_id = $flow->id;
+            $flowLog->status = 'create';
+            $flowLog->message = '';
+            $flowLog->complete_time = '1970-01-02 00:00:00';
+            $flowLog->total = 0;
+            $flowLog->total_success = 0;
+            $flowLog->create_time = date('Y-m-d H:i:s');
+            $flowLog->update_time = date('Y-m-d H:i:s');
+            $db->insert('etl_flow_log', $flowLog);
+
             try {
 
                 $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY index ASC';
@@ -40,6 +51,8 @@ class Flow extends Task
                 if (count($flowNodes) === 0) {
                     throw new ServiceException('未配置有效处理节点，任务中止！');
                 }
+
+                $flowNodeLogs = [];
 
                 $itemServices = [];
                 foreach ($flowNodes as $flowNode) {
@@ -53,15 +66,27 @@ class Flow extends Task
                     $arr = explode('_', $flowNode->item_type);
                     $serviceName = '\\Be\\App\\Etl\\Service\\Admin\\FlowNode\\' . ucfirst($arr[0]) . '\\' . ucfirst($arr[1]);
                     $itemServices[$flowNode->id] = new $serviceName();
-                }
 
+                    $flowNodeLog = new \stdClass();
+                    $flowNodeLog->id = $db->uuid();
+                    $flowNodeLog->flow_log_id = $flowLog->id;
+                    $flowNodeLog->flow_node_id = $flowNode->id;
+                    $flowNodeLog->config = serialize($flowNode);
+                    $flowNodeLog->output_file = '';
+                    $flowNodeLog->total_success = 0;
+                    $flowNodeLog->create_time = date('Y-m-d H:i:s');
+                    $flowNodeLog->update_time = date('Y-m-d H:i:s');
+                    $db->insert('etl_flow_node_log', $flowNodeLog);
+
+                    $flowNodeLogs[$flowNode->id] = $flowNodeLog;
+                }
 
                 // 开始和䁣
                 foreach ($flowNodes as $flowNode) {
                     $serviceFlowNodeItem = $itemServices[$flowNode->id];
-                    $serviceFlowNodeItem->start($flowNode);
+                    $flowNodeLog = $flowNodeLogs[$flowNode->id];
+                    $serviceFlowNodeItem->start($flowNode, $flowLog, $flowNodeLog);
                 }
-
 
                 $flowNode = $flowNodes[0];
                 if ($flowNode->type !== 'input') {
@@ -69,38 +94,98 @@ class Flow extends Task
                 }
 
                 $serviceFlowNodeItem = $itemServices[$flowNode->id];
-                $inputs = $serviceFlowNodeItem->process($flowNode);
+
+                // 输入的总数据数
+                $total = $serviceFlowNodeItem->getTotal($flowNode);
+                $flowLog->total = $total;
+
+                // 状态标记为运行中
+                $flowLog->status = 'running';
+                $flowLog->update_time = date('Y-m-d H:i:s');
+                $db->update('etl_flow_log', $flowLog);
+
+                $flowNodeLog = $flowNodeLogs[$flowNode->id];
+                $inputs = $serviceFlowNodeItem->process($flowNode, $flowLog, $flowNodeLog);
 
                 foreach ($inputs as $input) {
+
                     $i = 0;
                     $lastOutput = $input;
                     foreach ($flowNodes as $flowNode) {
 
                         if ($i === 0) {
+                            $i++;
                             continue;
                         }
 
                         $serviceFlowNodeItem = $serviceFlow->getNodeItemService($flowNode->item_type);
+                        $flowNodeLog = $flowNodeLogs[$flowNode->id];
 
-                        $output = $serviceFlowNodeItem->process($flowNode, $lastOutput);
+                        try {
+                            $output = $serviceFlowNodeItem->process($flowNode, $lastOutput, $flowLog, $flowNodeLog);
+
+                            $flowNodeItemLog = new \stdClass();
+                            $flowNodeItemLog->id = $db->uuid();
+                            $flowNodeItemLog->flow_node_log_id = $flowNodeLog->id;
+                            $flowNodeItemLog->input = serialize($lastOutput);
+                            $flowNodeItemLog->output = serialize($output);
+                            $flowNodeItemLog->success = 1;
+                            $flowNodeItemLog->message = '';
+                            $flowNodeItemLog->create_time = date('Y-m-d H:i:s');
+                            $db->insert('etl_flow_node_item_log', $flowNodeItemLog);
+
+                        } catch (\Throwable $t) {
+
+                            $flowNodeItemLog = new \stdClass();
+                            $flowNodeItemLog->id = $db->uuid();
+                            $flowNodeItemLog->flow_node_log_id = $flowNodeLog->id;
+                            $flowNodeItemLog->input = serialize($lastOutput);
+                            $flowNodeItemLog->output = '';
+                            $flowNodeItemLog->success = 0;
+                            $flowNodeItemLog->message = $t->getMessage();
+                            $flowNodeItemLog->create_time = date('Y-m-d H:i:s');
+                            $db->insert('etl_flow_node_item_log', $flowNodeItemLog);
+
+                            break;
+                        }
+
+                        $flowNodeLog->total_success++;
+                        if ($flowNodeLog->total_success % 100 === 0) {
+                            $flowNodeLog->update_time = date('Y-m-d H:i:s');
+                            $db->update('etl_flow_node_log', $flowNodeLog);
+                        }
 
                         $lastOutput = $output;
+                    }
 
-                        $i++;
+                    $flowLog->total_success++;
+                    if ($flowLog->total_success % 100 === 0) {
+                        $flowLog->update_time = date('Y-m-d H:i:s');
+                        $db->update('etl_flow_log', $flowLog);
                     }
                 }
 
                 // 处理完成
                 foreach ($flowNodes as $flowNode) {
                     $serviceFlowNodeItem = $itemServices[$flowNode->id];
-                    $serviceFlowNodeItem->finish($flowNode);
+                    $flowNodeLog = $flowNodeLogs[$flowNode->id];
+                    $serviceFlowNodeItem->finish($flowNode, $flowLog, $flowNodeLog);
+
+                    $flowNodeLog->update_time = date('Y-m-d H:i:s');
+                    $db->update('etl_flow_node_log', $flowNodeLog);
                 }
 
+                $flowLog->status = 'finish';
+                $flowLog->complete_time = date('Y-m-d H:i:s');
+                $flowLog->update_time = date('Y-m-d H:i:s');
+                $db->update('etl_flow_log', $flowLog);
+
             } catch (\Throwable $t) {
-
+                $flowLog->status = 'error';
+                $flowLog->message = $t->getMessage();
+                $flowLog->update_time = date('Y-m-d H:i:s');
+                $db->update('etl_flow_log', $flowLog);
             }
-
-
         }
 
     }

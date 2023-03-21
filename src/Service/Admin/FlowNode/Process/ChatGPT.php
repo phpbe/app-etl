@@ -6,6 +6,7 @@ namespace Be\App\Etl\Service\Admin\FlowNode\Process;
 use Be\App\Etl\Service\Admin\FlowNode\Process;
 use Be\App\ServiceException;
 use Be\Be;
+use Be\Task\TaskException;
 
 class ChatGPT extends Process
 {
@@ -73,24 +74,61 @@ class ChatGPT extends Process
         return $nodeItem;
     }
 
-    /**
-     * 计划任务处理数据
-     *
-     * @param object $flowNode 数据流节点
-     * @param object $input 输入
-     * @return object 输出
-     * @throws \Throwable
-     */
-    public function process(object $flowNode, object $input): object
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
-        try {
-            $fn = eval('return function(object $input): object {' . $flowNode->item->code . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' .$flowNode->index . ' 代码（code）执行出错：' . $t->getMessage());
+
+        $messages = [];
+        $summary = $this->chatCompletion($messages);
+
+        return $summary;
+    }
+
+
+
+    /**
+     * 文本应签
+     *
+     * @param string $prompt
+     * @return string
+     * @throws TaskException
+     */
+    private function chatCompletion(array $messages): string
+    {
+        $serviceApi = Be::getService('App.Openai.Api');
+
+        $err = null;
+
+        $times = 1;
+        do {
+
+            $hasError = false;
+            try {
+                $answer = $serviceApi->chatCompletion($messages);
+            } catch (\Throwable $t) {
+                $hasError = true;
+
+                $err = $t;
+            }
+
+            if (Be::getRuntime()->isSwooleMode()) {
+                \Swoole\Coroutine::sleep(5);
+            } else {
+                sleep(5);
+            }
+
+            if (!$hasError) {
+                break;
+            }
+
+            $times++;
+
+        } while ($times < 5);
+
+        if ($hasError) {
+            throw new TaskException('调用OpenAi接口重试出错超过5次：' . $err->getMessage());
         }
 
-        return $output;
+        return $answer;
     }
 
 }

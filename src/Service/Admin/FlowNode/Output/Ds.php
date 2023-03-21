@@ -180,12 +180,8 @@ class Ds extends Output
     private ?\Closure $fieldMappingFn = null;
     private ?Driver $db = null;
 
-    /**
-     * 开如处理处理
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function start(object $flowNode)
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         if ($flowNode->item->field_mapping === 'mapping') {
             $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
@@ -200,15 +196,8 @@ class Ds extends Output
         $this->db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
     }
 
-    /**
-     * 计划任务处理数据
-     *
-     * @param object $flowNode 数据流节点
-     * @param object $input 输入
-     * @return object 输出
-     * @throws \Throwable
-     */
-    public function process(object $flowNode, object $input): object
+
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
         if ($flowNode->item->field_mapping === 'mapping') {
             $output = new \stdClass();
@@ -239,12 +228,8 @@ class Ds extends Output
         return $output;
     }
 
-    /**
-     * 处理完成
-     *
-     * @param object $flowNode 数据流节点
-     */
-    public function finish(object $flowNode)
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $this->fieldMappingDetails = null;
         $this->fieldMappingFn = null;
