@@ -158,7 +158,7 @@ class Csv extends Output
             }
         }
 
-        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/Output/Csv/' . $flowNodeLog->id;
+        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/output_files/' . $flowNodeLog->id;
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }

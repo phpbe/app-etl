@@ -181,7 +181,7 @@ class Folders extends Output
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
-        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/Output/Folders/' . $flowNodeLog->id . '/folders';
+        $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/output_files/' . $flowNodeLog->id . '/folders';
         if (!is_dir($dir)) {
             mkdir($dir, 0777, true);
         }
@@ -286,7 +286,7 @@ class Folders extends Output
 
     public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
-        $outputFile = '/data/App/Etl/Output/Folders/' . $flowNodeLog->id . '/folders.zip';
+        $outputFile = '/data/App/Etl/output_files/' . $flowNodeLog->id . '/folders.zip';
 
         $zip = new \ZipArchive();
         $zip->open(Be::getRuntime()->getRootPath() . $outputFile, \ZipArchive::CREATE);   //打开压缩包

@@ -44,10 +44,10 @@ class FlowLog
             if (!$node) {
                 throw new ServiceException('数据流节点（# ' . $nodeLog->flow_node_id . '）不存在！');
             }
-            $node->index = (int) $node->index;
+            $node->index = (int)$node->index;
 
 
-            $sql = 'SELECT * FROM etl_flow_node_'.$node->item_type.' WHERE id = ?';
+            $sql = 'SELECT * FROM etl_flow_node_' . $node->item_type . ' WHERE id = ?';
             $nodeItem = $db->getObject($sql, [$node->item_id]);
             if (!$nodeItem) {
                 throw new ServiceException('数据流节点子项（# ' . $node->item_id . '）不存在！');
@@ -70,5 +70,51 @@ class FlowLog
         return $flowLog;
     }
 
+
+    /**
+     * 删除运行日志
+     *
+     * @param array $flowLogIds
+     * @return void
+     */
+    public function deleteFlowLogs(array $flowLogIds)
+    {
+        $db = Be::getDb();
+
+        $sql = 'SELECT * FROM etl_flow_log WHERE id IN (' . implode(',', array_fill(0, count($flowLogIds), '?')) . ')';
+        $flowLogs = $db->getObjects($sql, $flowLogIds);
+        if (count($flowLogs) === 0) {
+            return;
+        }
+
+        // 删除相关文件
+        foreach ($flowLogs as $flowLog) {
+            $sql = 'SELECT * FROM etl_flow_node_log WHERE flow_log_id = ?';
+            $flowNodeLogs = $db->getObjects($sql, [$flowLog->id]);
+            foreach ($flowNodeLogs as $flowNodeLog) {
+                $dir = Be::getRuntime()->getRootPath() . '/data/App/Etl/output_files/' . $flowNodeLog->id;
+                if (is_dir($dir)) {
+                    \Be\Util\File\Dir::rm($dir);
+                }
+            }
+        }
+
+        // 删除数据库记录
+        foreach ($flowLogs as $flowLog) {
+            $sql = 'SELECT * FROM etl_flow_node_log WHERE flow_log_id = ?';
+            $flowNodeLogs = $db->getObjects($sql, [$flowLog->id]);
+            foreach ($flowNodeLogs as $flowNodeLog) {
+                $sql = 'DELETE FROM etl_flow_node_item_log WHERE flow_node_log_id = ?';
+                $db->query($sql, [$flowNodeLog->id]);
+            }
+
+            $sql = 'DELETE FROM etl_flow_node_log WHERE flow_log_id = ?';
+            $db->query($sql, [$flowLog->id]);
+        }
+
+        $sql = 'DELETE FROM etl_flow_log WHERE id IN (' . implode(',', array_fill(0, count($flowLogIds), '?')) . ')';
+        $db->query($sql, $flowLogIds);
+
+    }
 
 }

@@ -214,6 +214,32 @@ class FlowLog
     {
         $request = Be::getRequest();
         $response = Be::getResponse();
+        try {
+            $flowLogIds = [];
+            $postData = $request->json();
+            if (isset($postData['selectedRows'])) {
+                if (is_array($postData['selectedRows']) && count($postData['selectedRows']) > 0) {
+                    foreach ($postData['selectedRows'] as $selectedRow) {
+                        $flowLogIds[] = $selectedRow['id'];
+                    }
+                }
+            } elseif (isset($postData['row'])) {
+                $flowLogIds[] = $postData['row']['id'];
+            }
+
+            if (count($flowLogIds) == 0) {
+                throw new ControllerException('请选择运行记录！');
+            }
+
+            Be::getService('App.Etl.Admin.FlowLog')->deleteFlowLogs( $flowLogIds);
+            $response->set('success', true);
+            $response->set('message', '删除运行记录成功！');
+            $response->json();
+        } catch (\Throwable $t) {
+            $response->set('success', false);
+            $response->set('message', $t->getMessage());
+            $response->json();
+        }
 
     }
 
