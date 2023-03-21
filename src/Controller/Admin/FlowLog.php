@@ -91,7 +91,7 @@ class FlowLog
                             'name' => 'flow_name',
                             'label' => '数据流',
                             'algin' => 'left',
-                            'value' => function($row) {
+                            'value' => function ($row) {
                                 $sql = 'SELECT name FROM etl_flow WHERE id = ?';
                                 return \Be\Be::getDb()->getValue($sql, [$row['flow_id']]);
                             },
@@ -116,12 +116,12 @@ class FlowLog
                             'name' => 'finish_time',
                             'label' => '完成时间',
                             'width' => '180',
-                            'value' => function($row) {
-                               if ($row['finish_time'] === '1970-01-02 00:00:00') {
-                                   return '-';
-                               } else {
-                                   return $row['finish_time'];
-                               }
+                            'value' => function ($row) {
+                                if ($row['finish_time'] === '1970-01-02 00:00:00') {
+                                    return '-';
+                                } else {
+                                    return $row['finish_time'];
+                                }
                             },
                         ],
                         [
@@ -167,7 +167,6 @@ class FlowLog
     }
 
 
-
     /**
      * 运行记录
      *
@@ -199,6 +198,8 @@ class FlowLog
      */
     public function delete()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
     }
 
@@ -210,7 +211,40 @@ class FlowLog
      */
     public function downloadOutputFile()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
 
+        $flowNodeLogId = $request->get('flow_node_log_id', '');
+
+        $tuple = Be::getTuple('etl_flow_node_log');
+        try {
+            $tuple->load($flowNodeLogId);
+        } catch (\Throwable $t) {
+            throw new ControllerException('数据流节点日志（#' . $flowNodeLogId . '）不存在！');
+        }
+
+        if (!$tuple->output_file) {
+            throw new ControllerException('数据流节点日志（#' . $flowNodeLogId . '）无有效输出物！');
+        }
+
+        $path = Be::getRuntime()->getRootPath() . $tuple->output_file;
+        if (!file_exists($path)) {
+            throw new ControllerException('输出物文件已删除！');
+        }
+
+        session_write_close();
+        set_time_limit(3600);
+
+        $response->header('Content-Type', 'application/octet stream');
+        $response->header('Content-Transfer-Encoding', 'binary');
+        $response->header('Content-Disposition', 'attachment; filename=etl-output-' . $flowNodeLogId . strrchr($tuple->output_file, '.'));
+        $response->header('Pragma', 'no-cache');
+
+        $f = fopen($path, 'r');
+        while (!feof($f)) {
+            $response->write(fread($f, 8192));
+        }
+        fclose($f);
     }
 
 

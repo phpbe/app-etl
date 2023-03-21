@@ -233,6 +233,8 @@ class Files extends Output
         $flowNodeLog->update_time = date('Y-m-d H:i:s');
         Be::getDb()->update('etl_flow_node_log', $flowNodeLog);
 
+        \Be\Util\File\Dir::rm($this->dir);
+
         $this->nameCodeFn = null;
         $this->contentCodeFn = null;
     }
