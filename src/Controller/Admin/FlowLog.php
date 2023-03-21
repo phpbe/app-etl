@@ -30,6 +30,13 @@ class FlowLog
     public function index()
     {
         $flowKeyValues = Be::getService('App.Etl.Admin.Flow')->getIdNameKeyValues();
+        $statusKeyValues = [
+            '' => '不限',
+            'create' => '创建',
+            'running' => '运行中',
+            'finish' => '执行完成',
+            'error' => '出错',
+        ];
 
         Be::getAdminPlugin('Curd')->setting([
 
@@ -53,13 +60,7 @@ class FlowLog
                             'name' => 'status',
                             'label' => '状态',
                             'driver' => FormItemSelect::class,
-                            'keyValues' => [
-                                '' => '不限',
-                                'create' => '创建',
-                                'running' => '运行中',
-                                'finish' => '执行完成',
-                                'error' => '出错',
-                            ]
+                            'keyValues' => $statusKeyValues,
                         ],
                     ],
                 ],
@@ -90,7 +91,7 @@ class FlowLog
                         [
                             'name' => 'flow_name',
                             'label' => '数据流',
-                            'algin' => 'left',
+                            'align' => 'left',
                             'value' => function ($row) {
                                 $sql = 'SELECT name FROM etl_flow WHERE id = ?';
                                 return \Be\Be::getDb()->getValue($sql, [$row['flow_id']]);
@@ -100,7 +101,7 @@ class FlowLog
                             'name' => 'status',
                             'label' => '状态',
                             'width' => '90',
-                            'keyValues' => $flowKeyValues
+                            'keyValues' => $statusKeyValues,
                         ],
                         [
                             'name' => 'total',
@@ -141,12 +142,12 @@ class FlowLog
                         'width' => '240',
                         'items' => [
                             [
-                                'label' => '查看明细',
+                                'label' => '查看',
                                 'url' => beAdminUrl('Etl.FlowLog.detail'),
                                 'target' => 'drawer',
                                 'drawer' => ['width' => '80%'],
                                 'ui' => [
-                                    'type' => 'info',
+                                    'type' => 'primary',
                                 ]
                             ],
                             [
@@ -182,10 +183,10 @@ class FlowLog
             $postData = json_decode($postData, true);
             if (isset($postData['row']['id']) && $postData['row']['id']) {
 
-                $flowLog = Be::getService('App.Etl.Service.Admin.FlowLog')->getFlowLog($postData['row']['id']);
+                $flowLog = Be::getService('App.Etl.Admin.FlowLog')->getFlowLog($postData['row']['id']);
                 $response->set('flowLog', $flowLog);
 
-                $response->display(null, 'Blank');
+                $response->display('App.Etl.FlowLog.detail', 'Blank');
             }
         }
     }

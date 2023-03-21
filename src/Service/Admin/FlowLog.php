@@ -34,7 +34,7 @@ class FlowLog
         $flowLog->flow = $flow;
 
 
-        $sql = 'SELECT * FROM etl_flow_node_log WHERE flow_log_id = ? ORDER BY index ASC';
+        $sql = 'SELECT * FROM etl_flow_node_log WHERE flow_log_id = ? ORDER BY `index` ASC';
         $nodeLogs = $db->getObjects($sql, [$flowLogId]);
         foreach ($nodeLogs as $nodeLog) {
             $nodeLog->config = unserialize($nodeLog->config);

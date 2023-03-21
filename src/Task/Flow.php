@@ -46,7 +46,7 @@ class Flow extends Task
 
             try {
 
-                $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY index ASC';
+                $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ? ORDER BY `index` ASC';
                 $flowNodes = $db->getObjects($sql, [$flow->id]);
                 if (count($flowNodes) === 0) {
                     throw new ServiceException('未配置有效处理节点，任务中止！');
