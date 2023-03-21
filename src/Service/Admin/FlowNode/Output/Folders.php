@@ -10,6 +10,11 @@ use Be\Be;
 class Folders extends Output
 {
 
+    public function getItemName(): string
+    {
+        return '目录包';
+    }
+
     /**
      * 编辑数据流
      *

@@ -10,6 +10,12 @@ use Be\Be;
 class Csv extends Output
 {
 
+
+    public function getItemName(): string
+    {
+        return 'CSV';
+    }
+
     /**
      * 编辑数据流
      *

@@ -9,6 +9,15 @@ abstract class Input extends FlowNode
 {
 
     /**
+     * 获取类型
+     *
+     * @return string
+     */
+    public function getItemTypeName(): string {
+        return '输入';
+    }
+
+    /**
      * 编辑数据流
      *
      * @param array $formDataNode 表单数据

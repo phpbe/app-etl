@@ -12,6 +12,12 @@ use Be\Util\Time\Datetime;
 class Ds extends Input
 {
 
+
+    public function getItemName(): string
+    {
+        return '数据源';
+    }
+
     /**
      * 编辑数据流
      *

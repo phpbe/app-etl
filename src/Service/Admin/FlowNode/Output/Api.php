@@ -12,6 +12,12 @@ use Be\Util\Net\Curl;
 class Api extends Output
 {
 
+
+    public function getItemName(): string
+    {
+        return 'API调用';
+    }
+
     /**
      * 编辑数据流
      *

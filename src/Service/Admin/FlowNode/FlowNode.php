@@ -7,6 +7,20 @@ abstract class FlowNode
 {
 
     /**
+     * 获取类型
+     *
+     * @return string
+     */
+    abstract public function getItemTypeName(): string;
+
+    /**
+     * 获取子项名称
+     *
+     * @return string
+     */
+    abstract public function getItemName(): string;
+
+    /**
      * 插入数据库
      * @param string $flowNodeId
      * @param array $formDataNode

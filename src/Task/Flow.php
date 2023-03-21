@@ -37,7 +37,7 @@ class Flow extends Task
             $flowLog->flow_id = $flow->id;
             $flowLog->status = 'create';
             $flowLog->message = '';
-            $flowLog->complete_time = '1970-01-02 00:00:00';
+            $flowLog->finish_time = '1970-01-02 00:00:00';
             $flowLog->total = 0;
             $flowLog->total_success = 0;
             $flowLog->create_time = date('Y-m-d H:i:s');
@@ -71,6 +71,7 @@ class Flow extends Task
                     $flowNodeLog->id = $db->uuid();
                     $flowNodeLog->flow_log_id = $flowLog->id;
                     $flowNodeLog->flow_node_id = $flowNode->id;
+                    $flowNodeLog->index = $flowNode->index;
                     $flowNodeLog->config = serialize($flowNode);
                     $flowNodeLog->output_file = '';
                     $flowNodeLog->total_success = 0;
@@ -176,7 +177,7 @@ class Flow extends Task
                 }
 
                 $flowLog->status = 'finish';
-                $flowLog->complete_time = date('Y-m-d H:i:s');
+                $flowLog->finish_time = date('Y-m-d H:i:s');
                 $flowLog->update_time = date('Y-m-d H:i:s');
                 $db->update('etl_flow_log', $flowLog);
 

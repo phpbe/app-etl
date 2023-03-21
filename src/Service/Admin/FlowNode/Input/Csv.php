@@ -9,6 +9,10 @@ use Be\Be;
 class Csv extends Input
 {
 
+    public function getItemName(): string
+    {
+        return 'CSV';
+    }
 
     public function test(array $formDataNode): object
     {
@@ -53,4 +57,13 @@ class Csv extends Input
 
     }
 
+    /**
+     * 获取总数据数
+     * @param object $flowNode
+     * @return int
+     */
+    public function getTotal(object $flowNode): int
+    {
+        // TODO: Implement getTotal() method.
+    }
 }

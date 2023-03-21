@@ -11,6 +11,11 @@ use Be\Task\TaskException;
 class ChatGPT extends Process
 {
 
+    public function getItemName(): string
+    {
+        return 'ChatGPT';
+    }
+
     /**
      * 编辑数据流
      *

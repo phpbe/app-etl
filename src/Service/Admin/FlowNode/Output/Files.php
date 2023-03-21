@@ -10,6 +10,11 @@ use Be\Be;
 class Files extends Output
 {
 
+    public function getItemName(): string
+    {
+        return '文件包';
+    }
+
     /**
      * 编辑数据流
      *

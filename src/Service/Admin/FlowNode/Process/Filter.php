@@ -7,12 +7,12 @@ use Be\App\Etl\Service\Admin\FlowNode\Process;
 use Be\App\ServiceException;
 use Be\Be;
 
-class Clean extends Process
+class Filter extends Process
 {
 
     public function getItemName(): string
     {
-        return '清洗';
+        return '过滤';
     }
 
     /**

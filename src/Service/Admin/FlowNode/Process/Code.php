@@ -10,6 +10,11 @@ use Be\Be;
 class Code extends Process
 {
 
+    public function getItemName(): string
+    {
+        return '代理';
+    }
+
     /**
      * 编辑数据流
      *

@@ -201,10 +201,10 @@ ADD KEY `flow_node_id` (`flow_node_id`);
 
 CREATE TABLE `etl_flow_log` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
-`flow_id` varchar(36) NOT NULL DEFAULT '' COMMENT '抽取任务ID',
+`flow_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流ID',
 `status` varchar(30) NOT NULL DEFAULT 'create' COMMENT '状态（create：创建/running：运行中/finish：执行完成/error：出错）',
 `message` varchar(600) NOT NULL DEFAULT '' COMMENT '异常信息',
-`complete_time` TIMESTAMP NULL DEFAULT '1970-01-02 00:00:00' COMMENT '完成时间',
+`finish_time` TIMESTAMP NULL DEFAULT '1970-01-02 00:00:00' COMMENT '完成时间',
 `total` int(11) NOT NULL DEFAULT '1000' COMMENT '总数据数',
 `total_success` int(11) NOT NULL DEFAULT '1000' COMMENT '总成功数据数',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -220,6 +220,7 @@ CREATE TABLE `etl_flow_node_log` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_log_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流日志ID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
+`index` tinyint(4) NOT NULL DEFAULT '0' COMMENT '编号',
 `config` text NOT NULL COMMENT '配置数据 序列化',
 `output_file` varchar(600) NOT NULL DEFAULT '' COMMENT '最终输出的文件',
 `total_success` int(11) NOT NULL DEFAULT '1000' COMMENT '总成功数据数',

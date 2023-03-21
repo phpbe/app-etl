@@ -310,7 +310,7 @@ class Flow
                 $categoryKeyValues = Be::getService('App.Etl.Admin.FlowCategory')->getIdNameKeyValues();
                 $response->set('categoryKeyValues', $categoryKeyValues);
                 $response->set('title', '新建数据流');
-                $response->display('App.Etl.Flow.create');
+                $response->display();
             } catch (\Exception $e) {
                 $response->error($e->getMessage());
             }
@@ -379,7 +379,7 @@ class Flow
 
                 $response->set('title', '编辑数据流');
 
-                $response->display('App.Etl.Flow.edit');
+                $response->display();
             } catch (\Exception $e) {
                 $response->error($e->getMessage());
             }

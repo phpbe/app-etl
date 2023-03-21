@@ -7,6 +7,15 @@ abstract class Process extends FlowNode
 {
 
     /**
+     * 获取类型
+     *
+     * @return string
+     */
+    public function getItemTypeName(): string {
+        return '处理';
+    }
+
+    /**
      * 编辑数据流
      *
      * @param array $formDataNode 表单数据

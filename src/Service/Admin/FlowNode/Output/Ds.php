@@ -11,6 +11,11 @@ use Be\Db\Driver;
 class Ds extends Output
 {
 
+    public function getItemName(): string
+    {
+        return '数据源';
+    }
+
     /**
      * 编辑数据流
      *
