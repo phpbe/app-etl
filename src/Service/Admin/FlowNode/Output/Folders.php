@@ -127,7 +127,7 @@ class Folders extends Output
     }
 
 
-    public function insert(string $flowNodeId, array $formDataNode): object
+    public function edit(string $flowNodeId, array $formDataNode): object
     {
         $tupleFlowNodeItem = Be::getTuple('etl_flow_node_output_folders');
 

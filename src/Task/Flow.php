@@ -116,6 +116,25 @@ class Flow extends Task
 
                         if ($i === 0) {
                             $i++;
+
+                            $flowNodeLog = $flowNodeLogs[$flowNode->id];
+
+                            $flowNodeItemLog = new \stdClass();
+                            $flowNodeItemLog->id = $db->uuid();
+                            $flowNodeItemLog->flow_node_log_id = $flowNodeLog->id;
+                            $flowNodeItemLog->input = '';
+                            $flowNodeItemLog->output = serialize($input);
+                            $flowNodeItemLog->success = 1;
+                            $flowNodeItemLog->message = '';
+                            $flowNodeItemLog->create_time = date('Y-m-d H:i:s');
+                            $db->insert('etl_flow_node_item_log', $flowNodeItemLog);
+
+                            $flowNodeLog->total_success++;
+                            if ($flowNodeLog->total_success % 100 === 0) {
+                                $flowNodeLog->update_time = date('Y-m-d H:i:s');
+                                $db->update('etl_flow_node_log', $flowNodeLog);
+                            }
+
                             continue;
                         }
 

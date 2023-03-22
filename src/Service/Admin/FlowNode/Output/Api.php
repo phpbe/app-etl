@@ -18,14 +18,7 @@ class Api extends Output
         return 'API调用';
     }
 
-    /**
-     * 编辑数据流
-     *
-     * @param array $formData 表单数据
-     * @param object $input 输入数据
-     * @return object
-     * @throws \Throwable
-     */
+
     public function test(array $formDataNode, object $input): object
     {
 
@@ -203,12 +196,6 @@ class Api extends Output
     }
 
 
-    /**
-     * 格式化数据库中读取出来的数据
-     *
-     * @param object $nodeItem
-     * @return object
-     */
     public function format(object $nodeItem): object
     {
         $nodeItem->headers = unserialize($nodeItem->headers);
