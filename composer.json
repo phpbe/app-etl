@@ -14,7 +14,8 @@
         }
     ],
     "require": {
-        "be/be": "~2.7.0"
+        "be/be": "~2.7.0",
+        "be/app-openai": "*"
     },
     "autoload": {
         "psr-4": {

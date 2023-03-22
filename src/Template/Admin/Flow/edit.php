@@ -214,7 +214,7 @@
                                 <template  v-if="node.type === 'input'">
                                     <div class="node">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_ds'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="primary">{{nodeIndex + 1}}. 输入：数据源</el-button>
                                             </el-badge>
                                         </div>
@@ -237,12 +237,12 @@
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-process" v-if="node.type === 'process'">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 代码处理</el-button>
                                             </el-badge>
                                         </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_chatgpt'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. ChatGPT</el-button>
                                             </el-badge>
                                         </div>
@@ -266,31 +266,31 @@
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-output">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_ds'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：数据源</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_csv'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：CSV</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_files'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：文件包</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_folders'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：目录包</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_api'">
-                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：API调用</el-button>
                                             </el-badge>
                                         </div>
@@ -1676,8 +1676,8 @@
 
 
                             <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode.item">
-                                <el-button type="success" size="medium" @click="test">验证</el-button>
-                                <el-button type="danger" size="medium" @click="deleteCurrentNode">删除节点</el-button>
+                                <el-button type="success" size="medium" :disabled="loading" @click="test">验证</el-button>
+                                <el-button type="danger" size="medium" :disabled="loading" @click="deleteCurrentNode">删除节点</el-button>
                             </div>
 
                             <div class="be-mt-200" v-show="currentNode.item && currentNode.item.output">
@@ -1733,8 +1733,8 @@
                 // 输出 表字段
                 outputDsTableFields: [],
 
-
                 loading: false,
+
                 t: false
                 <?php
                 echo $uiItems->getVueData();
@@ -1935,6 +1935,8 @@
 
                         case 'process_code':
                             break;
+                        case 'process_chatgpt':
+                            break;
 
                         case 'output_ds':
                             this.outputDsTableFields = [];
@@ -1970,6 +1972,9 @@
 
                 // 验证
                 test: function () {
+                    this.loading = true;
+                    vueNorth.loading = true;
+
                     let _this = this;
                     this.$http.post("<?php echo beAdminUrl('Etl.Flow.test'); ?>", {
                         formData: _this.formData,
@@ -1977,6 +1982,7 @@
                     }).then(function (response) {
                         _this.loading = false;
                         vueNorth.loading = false;
+
                         //console.log(response);
                         if (response.status === 200) {
                             var responseData = response.data;
@@ -2014,11 +2020,15 @@
                     }).catch(function (error) {
                         _this.loading = false;
                         vueNorth.loading = false;
+
                         _this.$message.error(error);
                     });
                 },
 
                 save: function (command) {
+                    this.loading = true;
+                    vueNorth.loading = true;
+
                     let _this = this;
                     this.$refs["formRef"].validate(function (valid) {
                         if (valid) {
