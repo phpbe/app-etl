@@ -229,21 +229,21 @@
                                                 <i class="el-icon-plus"></i>
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
-                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </el-dropdown>
                                     </div>
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-process" v-if="node.type === 'process'">
-                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
-                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 代码处理</el-button>
-                                            </el-badge>
-                                        </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_chatgpt'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. ChatGPT</el-button>
+                                            </el-badge>
+                                        </div>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 代码处理</el-button>
                                             </el-badge>
                                         </div>
                                     </div>
@@ -258,8 +258,8 @@
                                                 <i class="el-icon-plus"></i>
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
-                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </el-dropdown>
                                     </div>
@@ -306,8 +306,8 @@
                                             <i class="el-icon-plus"></i>
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item :command="'process_code|' + formData.nodes.length">代码处理</el-dropdown-item>
                                             <el-dropdown-item :command="'process_chatgpt|' + formData.nodes.length">ChatGPT</el-dropdown-item>
+                                            <el-dropdown-item :command="'process_code|' + formData.nodes.length">代码处理</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
@@ -531,50 +531,6 @@
 
 
 
-                            <!-- process_clean -->
-                            <div v-if="currentNode.item && currentNode.item_type === 'process_clean'">
-                            </div>
-                            <!-- process_clean -->
-
-
-
-                            <!-- process_code -->
-                            <div v-show="currentNode.item && currentNode.item_type === 'process_code'">
-                                <div class="be-row">
-                                    <div class="be-col">
-                                        <pre class="be-c-999">function (object $input) ：object {</pre>
-                                        <?php
-                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
-                                            'name' => 'process_code',
-                                            'language' => 'php',
-                                            'ui' => [
-                                                'v-model' => 'currentNode.item.code',
-                                            ],
-                                        ]);
-                                        echo $driver->getHtml();
-                                        $uiItems->add($driver);
-                                        ?>
-                                        <pre class="be-c-999">}</pre>
-
-                                    </div>
-                                    <div class="be-col-auto">
-                                        <div class="be-pl-100"></div>
-                                    </div>
-                                    <div class="be-col">
-                                        <div class="input-json" v-if="currentNodeInput !== false">
-                                            参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
-                                        </div>
-                                        <div v-else>
-                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- process_code -->
-
-
-
                             <!-- process_chatgpt -->
                             <div v-if="currentNode.item && currentNode.item_type === 'process_chatgpt'">
 
@@ -694,6 +650,57 @@
 
                             </div>
                             <!-- process_chatgpt -->
+
+
+
+                            <!-- process_clean -->
+                            <div v-if="currentNode.item && currentNode.item_type === 'process_clean'">
+                            </div>
+                            <!-- process_clean -->
+
+
+
+                            <!-- process_filter -->
+                            <div v-if="currentNode.item && currentNode.item_type === 'process_filter'">
+                            </div>
+                            <!-- process_clean -->
+
+
+
+                            <!-- process_code -->
+                            <div v-show="currentNode.item && currentNode.item_type === 'process_code'">
+                                <div class="be-row">
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'process_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.item.code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- process_code -->
 
 
 
@@ -1849,16 +1856,16 @@
                             break;
 
 
-                        case 'process_code':
-                            item.code = 'return $input;';
-                            item.output = false;
-                            break;
                         case 'process_chatgpt':
                             item.system_prompt = '';
                             item.user_prompt = '';
                             item.output_field = 'assign';
                             item.output_field_assign = '';
                             item.output_field_custom = '';
+                            item.output = false;
+                            break;
+                        case 'process_code':
+                            item.code = 'return $input;';
                             item.output = false;
                             break;
 
