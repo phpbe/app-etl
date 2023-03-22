@@ -89,21 +89,6 @@ ADD KEY `flow_node_id` (`flow_node_id`);
 
 
 
-CREATE TABLE `etl_flow_node_process_code` (
-`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
-`flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
-`code` text NOT NULL COMMENT '代码处理',
-`output` text NOT NULL COMMENT '输出（php序列化）',
-`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-`update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
-
-ALTER TABLE `etl_flow_node_process_code`
-ADD PRIMARY KEY (`id`),
-ADD KEY `flow_node_id` (`flow_node_id`);
-
-
-
 CREATE TABLE `etl_flow_node_process_chatgpt` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
@@ -118,6 +103,21 @@ CREATE TABLE `etl_flow_node_process_chatgpt` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
 
 ALTER TABLE `etl_flow_node_process_chatgpt`
+ADD PRIMARY KEY (`id`),
+ADD KEY `flow_node_id` (`flow_node_id`);
+
+
+
+CREATE TABLE `etl_flow_node_process_code` (
+`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
+`flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
+`code` text NOT NULL COMMENT '代码处理',
+`output` text NOT NULL COMMENT '输出（php序列化）',
+`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
+
+ALTER TABLE `etl_flow_node_process_code`
 ADD PRIMARY KEY (`id`),
 ADD KEY `flow_node_id` (`flow_node_id`);
 
