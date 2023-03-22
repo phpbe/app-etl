@@ -248,6 +248,12 @@ class Csv extends Output
 
     public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+        $outputFile = '/data/App/Etl/output_files/' . $flowNodeLog->id . '/output.csv';
+
+        $flowNodeLog->output_file = $outputFile;
+        $flowNodeLog->update_time = date('Y-m-d H:i:s');
+        Be::getDb()->update('etl_flow_node_log', $flowNodeLog);
+
         $this->fieldMappingDetails = null;
         $this->fieldMappingFn = null;
 

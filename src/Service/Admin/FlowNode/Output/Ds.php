@@ -31,6 +31,48 @@ class Ds extends Output
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据表（ds_table）参数无效！');
         }
 
+        if (!isset($formDataNode['item']['clean']) || !is_numeric($formDataNode['item']['clean'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空数据表（clean）参数无效！');
+        }
+
+        $formDataNode['item']['clean'] = (int)$formDataNode['item']['clean'];
+
+        if (!in_array($formDataNode['item']['clean'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空数据表（clean）参数无效！');
+        }
+
+        if ($formDataNode['item']['clean'] === 1) {
+            if (!isset($formDataNode['item']['clean_type']) || !is_string($formDataNode['item']['clean_type']) || !in_array($formDataNode['item']['clean_type'], ['truncate', 'delete'])) {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清空数据表方式（clean_type）参数无效！');
+            }
+        }
+
+        if (!isset($formDataNode['item']['on_duplicate_update']) || !is_numeric($formDataNode['item']['on_duplicate_update'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 重复数据执行更新（on_duplicate_update）参数无效！');
+        }
+
+        $formDataNode['item']['on_duplicate_update'] = (int)$formDataNode['item']['on_duplicate_update'];
+
+        if (!in_array($formDataNode['item']['on_duplicate_update'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 重复数据执行更新（on_duplicate_update）参数无效！');
+        }
+
+        if ($formDataNode['item']['on_duplicate_update'] === 1) {
+            if (!isset($formDataNode['item']['on_duplicate_update_field']) || !is_string($formDataNode['item']['on_duplicate_update_field']) || $formDataNode['item']['on_duplicate_update_field'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 重复数据执行更新检测字段（on_duplicate_update_field）参数无效！');
+            }
+        }
+
+        if (!isset($formDataNode['item']['mysql_replace']) || !is_numeric($formDataNode['item']['mysql_replace'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
+        }
+
+        $formDataNode['item']['mysql_replace'] = (int)$formDataNode['item']['mysql_replace'];
+
+        if (!in_array($formDataNode['item']['mysql_replace'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
+        }
+
         if (!isset($formDataNode['item']['field_mapping']) || !is_string($formDataNode['item']['field_mapping']) || !in_array($formDataNode['item']['field_mapping'], ['mapping', 'code'])) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射类型（field_mapping）参数无效！');
         }
@@ -146,6 +188,11 @@ class Ds extends Output
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->ds_id = $formDataNode['item']['ds_id'];
         $tupleFlowNodeItem->ds_table = $formDataNode['item']['ds_table'];
+        $tupleFlowNodeItem->clean = $formDataNode['item']['clean'];
+        $tupleFlowNodeItem->clean_type = $formDataNode['item']['clean_type'];
+        $tupleFlowNodeItem->on_duplicate_update = $formDataNode['item']['on_duplicate_update'];
+        $tupleFlowNodeItem->on_duplicate_update_field = $formDataNode['item']['on_duplicate_update_field'];
+        $tupleFlowNodeItem->mysql_replace = $formDataNode['item']['mysql_replace'];
         $tupleFlowNodeItem->field_mapping = $formDataNode['item']['field_mapping'];
         $tupleFlowNodeItem->field_mapping_details = serialize($formDataNode['item']['field_mapping_details']);
         $tupleFlowNodeItem->field_mapping_code = $formDataNode['item']['field_mapping_code'];
@@ -190,6 +237,10 @@ class Ds extends Output
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+        $flowNode->item->clean = (int) $flowNode->item->clean;
+        $flowNode->item->on_duplicate_update = (int) $flowNode->item->on_duplicate_update;
+        $flowNode->item->mysql_replace = (int) $flowNode->item->mysql_replace;
+
         if ($flowNode->item->field_mapping === 'mapping') {
             $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
         } else {
@@ -201,6 +252,17 @@ class Ds extends Output
         }
 
         $this->db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+
+        // 清空数据
+        if ($flowNode->item->clean === 1) {
+            if ($flowNode->item->clean_type === 'truncate') {
+                $sql = 'TRUNCATE TABLE ' . $this->db->quoteKey($flowNode->item->ds_table);
+            } else {
+                $sql = 'DELETE FROM ' . $this->db->quoteKey($flowNode->item->ds_table);
+            }
+
+            $this->db->query($sql);
+        }
     }
 
 
@@ -230,7 +292,28 @@ class Ds extends Output
         }
 
 
-        $this->db->insert($flowNode->item->ds_table, $output);
+        if ($flowNode->item->on_duplicate_update === 1) {
+            if ($flowNode->item->mysql_replace === 1) {
+                $this->db->replace($flowNode->item->ds_table, $output);
+            } else {
+                $sql = 'SELECT COUNT(*) FROM ' . $this->db->quoteKey($flowNode->item->ds_table) . ' WHERE ';
+                $field = $flowNode->item->on_duplicate_update_field;
+                $sql .= $this->db->quoteKey($field) . ' = ' . $this->db->quoteValue($input->$field);
+
+                $count = (int)$this->db->getValue($sql);
+                if ($count > 0) {
+                    $this->db->update($flowNode->item->ds_table, $output, $field);
+                } else {
+                    $this->db->insert($flowNode->item->ds_table, $output);
+                }
+            }
+        } else {
+            if ($flowNode->item->mysql_replace === 1) {
+                $this->db->replace($flowNode->item->ds_table, $output);
+            } else {
+                $this->db->insert($flowNode->item->ds_table, $output);
+            }
+        }
 
         return $output;
     }

@@ -54,6 +54,9 @@ class Flow extends Task
 
                 $itemServices = [];
                 foreach ($flowNodes as $flowNode) {
+
+                    $flowNode->index = (int) $flowNode->index;
+
                     $sql = 'SELECT * FROM etl_flow_node_' . $flowNode->item_type . ' WHERE id = ?';
                     $flowNodeItem = $db->getObject($sql, [$flowNode->item_id]);
                     if (!$flowNodeItem) {

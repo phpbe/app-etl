@@ -159,7 +159,7 @@ class Flow
 
                 foreach ($existsNodes as $existsNode) {
                     if (count($keepFlowNodeItemIds) > 0) {
-                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ? id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeItemIds)) .')';
+                        $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ? AND id NOT IN ('.  implode(',', $db->quoteValues($keepFlowNodeItemIds)) .')';
                     } else {
                         $sql = 'DELETE FROM etl_flow_node_' . $existsNode->item_type . ' WHERE flow_node_id = ?';
                     }

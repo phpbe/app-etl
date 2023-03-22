@@ -222,6 +222,8 @@ class Api extends Output
     {
         $this->headers = unserialize($flowNode->item->headers);
 
+        $flowNode->item->interval = (int) $flowNode->item->interval;
+
         if ($flowNode->item->field_mapping === 'mapping') {
             $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
         } else {

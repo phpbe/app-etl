@@ -128,6 +128,11 @@ CREATE TABLE `etl_flow_node_output_ds` (
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `ds_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据源ID',
 `ds_table` varchar(60) NOT NULL DEFAULT '' COMMENT '数据源表名',
+`clean` tinyint(4) NOT NULL DEFAULT '1' COMMENT '运行前清空数据表（如：全量同步时）',
+`clean_type` varchar(60) NOT NULL DEFAULT 'truncate' COMMENT '清空数据表方式（truncate：TRUNCATE/delete：DELETE）',
+`on_duplicate_update` tinyint(4) NOT NULL DEFAULT '1' COMMENT '重复数据执行更新',
+`on_duplicate_update_field` varchar(60) NOT NULL DEFAULT '' COMMENT '重复数据执行更新检测字段',
+`mysql_replace` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用 MYSQL 数据库 Replace Into',
 `field_mapping` varchar(30) NOT NULL DEFAULT 'mapping' COMMENT '字段映射类型（mapping：字段映射/code：代码处理）',
 `field_mapping_details` text NOT NULL COMMENT '字段映射',
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
@@ -135,6 +140,8 @@ CREATE TABLE `etl_flow_node_output_ds` (
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-数据源';
+
+
 
 ALTER TABLE `etl_flow_node_output_ds`
 ADD PRIMARY KEY (`id`),

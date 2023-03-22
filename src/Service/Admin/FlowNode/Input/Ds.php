@@ -221,6 +221,9 @@ class Ds extends Input
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+
+        $flowNode->item->breakpoint_step = (int) $flowNode->item->breakpoint_step;
+
         $t = time();
 
         if ($flowNode->item->breakpoint === 'breakpoint') { // 按断点同步

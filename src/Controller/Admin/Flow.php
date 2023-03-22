@@ -38,7 +38,7 @@ class Flow
 
             'grid' => [
                 'title' => '数据流',
-                'orderBy' => 'id',
+                'orderBy' => 'create_time',
                 'orderByDir' => 'DESC',
                 'filter' => [
                     ['is_delete', '=', '0'],
