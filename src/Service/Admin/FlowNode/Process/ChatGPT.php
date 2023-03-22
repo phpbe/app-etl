@@ -23,16 +23,39 @@ class ChatGPT extends Process
             throw new ServiceException('节点参数（index）无效！');
         }
 
-        if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || $formDataNode['item']['code'] === '') {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）参数无效！');
+        if (!isset($formDataNode['item']['system_prompt']) || !is_string($formDataNode['item']['system_prompt'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 系统提示语（system_prompt）参数无效！');
         }
 
-        try {
-            $fn = eval('return function(object $input): object {' . $formDataNode['item']['code'] . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）执行出错：' . $t->getMessage());
+        if (!isset($formDataNode['item']['user_prompt']) || !is_string($formDataNode['item']['user_prompt']) || $formDataNode['item']['user_prompt'] === '') {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 用户提示语（user_prompt）参数无效！');
         }
+
+        if (!isset($formDataNode['item']['output_field']) || !is_string($formDataNode['item']['output_field']) || !in_array($formDataNode['item']['output_field'], ['assign', 'custom'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出字段（output_field）参数无效！');
+        }
+
+        if ($formDataNode['item']['output_field'] === 'assign') {
+            if (!isset($formDataNode['item']['output_field_assign']) || !is_string($formDataNode['item']['output_field_assign']) || $formDataNode['item']['output_field_assign'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出字段：指定字段（output_field_assign）参数无效！');
+            }
+        } else {
+            if (!isset($formDataNode['item']['output_field_custom']) || !is_string($formDataNode['item']['output_field_custom']) || $formDataNode['item']['output_field_custom'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出字段：自定义字段（output_field_custom）参数无效！');
+            }
+        }
+
+        $messages = $this->formatAiMessages($formDataNode['item']['system_prompt'], $formDataNode['item']['user_prompt'], $input);
+        $result = $this->chatCompletion($messages);
+
+        $output = clone $input;
+        if ($formDataNode['item']['output_field'] === 'assign') {
+            $outputField = $formDataNode['item']['output_field_assign'];
+        } else {
+            $outputField = $formDataNode['item']['output_field_custom'];
+        }
+
+        $output->$outputField = $result;
 
         return $output;
     }
@@ -50,7 +73,11 @@ class ChatGPT extends Process
         }
 
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
-        $tupleFlowNodeItem->code = $formDataNode['item']['code'];
+        $tupleFlowNodeItem->system_prompt = $formDataNode['item']['system_prompt'];
+        $tupleFlowNodeItem->user_prompt = $formDataNode['item']['user_prompt'];
+        $tupleFlowNodeItem->output_field = $formDataNode['item']['output_field'];
+        $tupleFlowNodeItem->output_field_assign = $formDataNode['item']['output_field_assign'];
+        $tupleFlowNodeItem->output_field_custom = $formDataNode['item']['output_field_custom'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
@@ -83,14 +110,55 @@ class ChatGPT extends Process
 
     public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
+        $messages = $this->formatAiMessages($flowNode->item->system_prompt, $flowNode->item->user_prompt, $input);
+        $result = $this->chatCompletion($messages);
 
-        $messages = [];
-        $summary = $this->chatCompletion($messages);
+        $output = clone $input;
+        if ($flowNode->item->output_field === 'assign') {
+            $outputField = $flowNode->item->output_field_assign;
+        } else {
+            $outputField = $flowNode->item->output_field_custom;
+        }
 
-        return $summary;
+        $output->$outputField = $result;
+
+        return $output;
     }
 
 
+    /**
+     * 格式化提问
+     *
+     * @param string $systemPrompt
+     * @param string $userPrompt
+     * @param object $input
+     * @return array
+     */
+    private function formatAiMessages(string $systemPrompt, string $userPrompt, object $input): array
+    {
+        if ($userPrompt === '') {
+            throw new TaskException('用户提示语不能为空！');
+        }
+
+        $messages = [];
+        if ($systemPrompt !== '') {
+            $messages[] = [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ];
+        }
+
+        foreach (get_object_vars($input) as $k => $v) {
+            $userPrompt = str_replace('{' . $k . '}', $v, $userPrompt);
+        }
+
+        $messages[] = [
+            'role' => 'user',
+            'content' => $userPrompt,
+        ];
+
+        return $messages;
+    }
 
     /**
      * 文本应签

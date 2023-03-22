@@ -230,6 +230,7 @@
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
                                                 <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </el-dropdown>
                                     </div>
@@ -237,7 +238,12 @@
                                     <div class="node node-process" v-if="node.type === 'process'">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex}}. 代码处理</el-button>
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 代码处理</el-button>
+                                            </el-badge>
+                                        </div>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_chatgpt'">
+                                            <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. ChatGPT</el-button>
                                             </el-badge>
                                         </div>
                                     </div>
@@ -253,6 +259,7 @@
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
                                                 <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
                                             </el-dropdown-menu>
                                         </el-dropdown>
                                     </div>
@@ -260,31 +267,31 @@
                                     <div class="node node-output">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_ds'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：数据源</el-button>
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：数据源</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_csv'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：CSV</el-button>
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：CSV</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_files'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：文件包</el-button>
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：文件包</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_folders'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：目录包</el-button>
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：目录包</el-button>
                                             </el-badge>
                                         </div>
 
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_api'">
                                             <el-badge :value="node.output === false? '未验证 ' : '已验证'" :type="node.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex}}. 输出：API调用</el-button>
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：API调用</el-button>
                                             </el-badge>
                                         </div>
                                     </div>
@@ -300,6 +307,7 @@
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
                                             <el-dropdown-item :command="'process_code|' + formData.nodes.length">代码处理</el-dropdown-item>
+                                            <el-dropdown-item :command="'process_chatgpt|' + formData.nodes.length">ChatGPT</el-dropdown-item>
                                         </el-dropdown-menu>
                                     </el-dropdown>
                                 </div>
@@ -532,8 +540,6 @@
 
                             <!-- process_code -->
                             <div v-show="currentNode.item && currentNode.item_type === 'process_code'">
-
-
                                 <div class="be-row">
                                     <div class="be-col">
                                         <pre class="be-c-999">function (object $input) ：object {</pre>
@@ -568,6 +574,126 @@
                             <!-- process_code -->
 
 
+
+                            <!-- process_chatgpt -->
+                            <div v-if="currentNode.item && currentNode.item_type === 'process_chatgpt'">
+
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        系统提示语：
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="textarea"
+                                                :autosize="{minRows:4,maxRows:12}"
+                                                placeholder="请输入系统提示语"
+                                                v-model = "currentNode.item.system_prompt"
+                                                size="medium"
+                                                maxlength="65535"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-100 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <div class="be-mt-100 be-lh-250">
+                                            <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                            <span class="be-d-inline-block be-mt-50" v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="processChatgptSystemPromptInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 用户提示语：
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="textarea"
+                                                :autosize="{minRows:4,maxRows:12}"
+                                                placeholder="请输入用户提示语"
+                                                v-model = "currentNode.item.user_prompt"
+                                                size="medium"
+                                                maxlength="65535"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-100 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+
+                                        <div class="be-mt-100 be-lh-250">
+                                            <span class="be-d-inline-block be-mt-50">插入标签：</span>
+                                            <span class="be-d-inline-block be-mt-50" v-for="(v, k) in currentNodeInput">
+                                                <el-button @click="processChatgptUserPromptInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 输出字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.item.output_field" size="medium">
+                                            <el-radio-button label="assign">指定现有字段</el-radio-button>
+                                            <el-radio-button label="custom">自定议</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.output_field === 'assign'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 指定输出字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select
+                                                v-model="currentNode.item.output_field_assign"
+                                                placeholder="请选择输入字段"
+                                                size="medium"
+                                                filterable>
+                                            <el-option
+                                                    v-for="(v, k) in currentNodeInput"
+                                                    :key="k"
+                                                    :label="k"
+                                                    :value="k">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.output_field === 'custom'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 自定义输出字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入自定义字段"
+                                                v-model = "currentNode.item.output_field_custom"
+                                                size="medium">
+                                        </el-input>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- process_chatgpt -->
 
 
 
@@ -1173,7 +1299,7 @@
 
                                 <div class="be-row be-mb-300" v-for="file, fileIndex in currentNode.item.files" :key="fileIndex">
                                     <div class="be-col-auto be-lh-250">
-                                       文件 {{fileIndex+1}}：
+                                        文件 {{fileIndex+1}}：
                                     </div>
                                     <div class="be-col">
 
@@ -1727,6 +1853,14 @@
                             item.code = 'return $input;';
                             item.output = false;
                             break;
+                        case 'process_chatgpt':
+                            item.system_prompt = '';
+                            item.user_prompt = '';
+                            item.output_field = 'assign';
+                            item.output_field_assign = '';
+                            item.output_field_custom = '';
+                            item.output = false;
+                            break;
 
 
                         case 'output_ds':
@@ -2033,6 +2167,14 @@
                 },
 
 
+                processChatgptSystemPromptInsertTag: function (tag) {
+                    this.currentNode.item.system_prompt += "{"  + tag +  "}";
+                },
+                processChatgptUserPromptInsertTag: function (tag) {
+                    this.currentNode.item.user_prompt += "{"  + tag +  "}";
+                },
+
+
 
                 outputDsUpdateFieldMapping: function () {
 
@@ -2180,7 +2322,6 @@
                 outputFilesContentInsertTag: function (tag) {
                     this.currentNode.item.content_template += "{"  + tag +  "}";
                 },
-
 
 
                 outputFoldersNameInsertTag: function (tag) {

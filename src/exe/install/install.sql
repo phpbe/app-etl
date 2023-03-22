@@ -104,6 +104,25 @@ ADD KEY `flow_node_id` (`flow_node_id`);
 
 
 
+CREATE TABLE `etl_flow_node_process_chatgpt` (
+`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
+`flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
+`system_prompt` text NOT NULL COMMENT '系统提示语',
+`user_prompt` text NOT NULL COMMENT '用户提示语',
+`output_field` varchar(30) NOT NULL DEFAULT 'assign' COMMENT '输出字段（assign：指定现有字段/custom：自定议）',
+`output_field_assign` varchar(60) NOT NULL DEFAULT '' COMMENT '输出字段：指定字段',
+`output_field_custom` varchar(60) NOT NULL DEFAULT '' COMMENT '输出字段：自定义字段',
+`output` text NOT NULL COMMENT '输出（php序列化）',
+`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
+
+ALTER TABLE `etl_flow_node_process_chatgpt`
+ADD PRIMARY KEY (`id`),
+ADD KEY `flow_node_id` (`flow_node_id`);
+
+
+
 CREATE TABLE `etl_flow_node_output_ds` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
