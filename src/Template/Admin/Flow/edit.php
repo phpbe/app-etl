@@ -1845,8 +1845,9 @@
                                 this.dsTableChange();
                             }
 
-                            break;
+                            this.formItems.input_ds_sql.codeMirror.setValue(this.currentNode.item.ds_sql);
 
+                            break;
 
                         case 'process_code':
                             this.formItems.process_code.codeMirror.setValue(this.currentNode.item.code);
