@@ -356,7 +356,6 @@ class Flow
     {
         return Be::getTable('etl_flow')
             ->where('is_delete', 0)
-            ->where('is_enable', 1)
             ->getKeyValues('id', 'name');
     }
 
