@@ -146,6 +146,17 @@ class Ds extends Input
         }
 
         $total = (int) $db->getValue($sql);
+        if ($total === 0) { // 断点无数量里，移除断点条件
+            $where = '';
+
+            if ($formDataNode['item']['ds_type'] === 'table') {
+                $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey($formDataNode['item']['ds_table']);
+            } else {
+                $sql = 'SELECT COUNT(*) FROM (' . $formDataNode['item']['ds_sql'] . ' ) t ';
+            }
+            $total = (int) $db->getValue($sql);
+        }
+
         if ($total === 0) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 未读取到符合条件的数据，无法完成数据流验证！');
         }
