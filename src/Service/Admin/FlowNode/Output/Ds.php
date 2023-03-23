@@ -280,7 +280,11 @@ class Ds extends Output
                     $inputField = $mapping['input_field'];
                     $output->$field = $input->$inputField;
                 } else {
-                    $output->$field = $mapping['custom'];
+                    if ($mapping['custom'] === 'uuid()') {
+                        $output->$field = $this->db->uuid();
+                    } else {
+                        $output->$field = $mapping['custom'];
+                    }
                 }
             }
 
