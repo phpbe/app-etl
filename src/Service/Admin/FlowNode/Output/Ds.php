@@ -61,16 +61,18 @@ class Ds extends Output
             if (!isset($formDataNode['item']['on_duplicate_update_field']) || !is_string($formDataNode['item']['on_duplicate_update_field']) || $formDataNode['item']['on_duplicate_update_field'] === '') {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 重复数据执行更新检测字段（on_duplicate_update_field）参数无效！');
             }
-        }
+        } else {
 
-        if (!isset($formDataNode['item']['mysql_replace']) || !is_numeric($formDataNode['item']['mysql_replace'])) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
-        }
+            if (!isset($formDataNode['item']['mysql_replace']) || !is_numeric($formDataNode['item']['mysql_replace'])) {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
+            }
 
-        $formDataNode['item']['mysql_replace'] = (int)$formDataNode['item']['mysql_replace'];
+            $formDataNode['item']['mysql_replace'] = (int)$formDataNode['item']['mysql_replace'];
 
-        if (!in_array($formDataNode['item']['mysql_replace'], [0, 1])) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
+            if (!in_array($formDataNode['item']['mysql_replace'], [0, 1])) {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
+            }
+
         }
 
         if (!isset($formDataNode['item']['field_mapping']) || !is_string($formDataNode['item']['field_mapping']) || !in_array($formDataNode['item']['field_mapping'], ['mapping', 'code'])) {
@@ -293,19 +295,15 @@ class Ds extends Output
 
 
         if ($flowNode->item->on_duplicate_update === 1) {
-            if ($flowNode->item->mysql_replace === 1) {
-                $this->db->replace($flowNode->item->ds_table, $output);
-            } else {
-                $sql = 'SELECT COUNT(*) FROM ' . $this->db->quoteKey($flowNode->item->ds_table) . ' WHERE ';
-                $field = $flowNode->item->on_duplicate_update_field;
-                $sql .= $this->db->quoteKey($field) . ' = ' . $this->db->quoteValue($input->$field);
+            $sql = 'SELECT COUNT(*) FROM ' . $this->db->quoteKey($flowNode->item->ds_table) . ' WHERE ';
+            $field = $flowNode->item->on_duplicate_update_field;
+            $sql .= $this->db->quoteKey($field) . ' = ' . $this->db->quoteValue($output->$field);
 
-                $count = (int)$this->db->getValue($sql);
-                if ($count > 0) {
-                    $this->db->update($flowNode->item->ds_table, $output, $field);
-                } else {
-                    $this->db->insert($flowNode->item->ds_table, $output);
-                }
+            $count = (int)$this->db->getValue($sql);
+            if ($count > 0) {
+                $this->db->update($flowNode->item->ds_table, $output, $field);
+            } else {
+                $this->db->insert($flowNode->item->ds_table, $output);
             }
         } else {
             if ($flowNode->item->mysql_replace === 1) {
