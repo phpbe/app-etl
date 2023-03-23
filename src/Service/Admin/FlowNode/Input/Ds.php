@@ -336,7 +336,7 @@ class Ds extends Input
             $obj->breakpoint_time = $this->breakpointEnd;
             $obj->update_time = date('Y-m-d H:i:s');
 
-            $db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
+            $db = Be::newDb();
             $db->update('etl_flow_node_input_ds', $obj);
         }
     }

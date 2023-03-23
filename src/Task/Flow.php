@@ -204,6 +204,9 @@ class Flow extends Task
                 $db->update('etl_flow_log', $flowLog);
 
             } catch (\Throwable $t) {
+
+                Be::getLog()->error($t);
+
                 $flowLog->status = 'error';
                 $flowLog->message = $t->getMessage();
                 $flowLog->update_time = date('Y-m-d H:i:s');
