@@ -222,7 +222,7 @@ class Ds extends Input
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
 
-        $flowNode->item->breakpoint_step = (int) $flowNode->item->breakpoint_step;
+        $flowNode->item->breakpoint_offset = (int) $flowNode->item->breakpoint_offset;
 
         $t = time();
 
