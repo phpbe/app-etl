@@ -676,6 +676,127 @@
 
                             <!-- process_clean -->
                             <div v-if="currentNode.item && currentNode.item_type === 'process_clean'">
+
+                                <div class="be-row">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 清洗字段：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            <el-select
+                                                    v-model="currentNode.item.clean_field"
+                                                    placeholder="请选择清洗字段"
+                                                    size="medium"
+                                                    filterable>
+                                                <el-option
+                                                        v-for="(v, k) in currentNodeInput"
+                                                        :key="k"
+                                                        :label="k"
+                                                        :value="k">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取字段列表。
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 清洗掉的内容列表：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <el-input
+                                                type="textarea"
+                                                :autosize="{minRows:20,maxRows:100}"
+                                                placeholder="请输入清洗掉的内容"
+                                                v-model = "currentNode.item.clean_values"
+                                                size="medium"
+                                                maxlength="65535"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div>一行一个要清洗掉的关键词，</div>
+                                        <div class="be-mt-50">如果需要替换，可以一行内用竖线分隔两个词，例：</div>
+                                        <div class="be-c-999 be-mt-50">他的</div>
+                                        <div class="be-c-999 be-mt-20">你的|我的</div>
+                                        <div class="be-mt-100">
+                                            将执行的操作为：<br>
+                                            1. 将 "他的" 剔除掉<br>
+                                            2. 将 "你的" 替换为 "我的"
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 标记清洗过：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-switch v-model.number="currentNode.item.sign" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.sign === 1">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 标记字段名：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入标记字段名"
+                                                v-model = "currentNode.item.sign_field"
+                                                size="medium">
+                                        </el-input>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.sign === 1">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 标记字段值：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <div class="be-px-100">默认值 - </div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入标记字段值（默认值）"
+                                                v-model = "currentNode.item.sign_field_value_0"
+                                                size="medium">
+                                        </el-input>
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <div class="be-px-100">已清洗 - </div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input
+                                                type="text"
+                                                placeholder="请输入标记字段值（已清洗）"
+                                                v-model = "currentNode.item.sign_field_value_1"
+                                                size="medium">
+                                        </el-input>
+                                    </div>
+                                </div>
+
                             </div>
                             <!-- process_clean -->
 
@@ -746,13 +867,24 @@
                                     <div class="be-col">
                                         <el-input
                                                 type="textarea"
-                                                :autosize="{minRows:4,maxRows:12}"
+                                                :autosize="{minRows:20,maxRows:100}"
                                                 placeholder="请输入系统提示语"
                                                 v-model = "currentNode.item.filter_values"
                                                 size="medium"
                                                 maxlength="65535"
                                                 show-word-limit>
                                         </el-input>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div>一行一个关键词，</div>
+                                        <div class="be-mt-50">过滤操作为 "范围" 时，在一行内用竖线分隔两个值，例：</div>
+                                        <div class="be-c-999 be-mt-50">100|200</div>
+                                        <div class="be-mt-100">
+                                            表示范围为：大于等于100，小于等于200
+                                        </div>
                                     </div>
                                 </div>
 
@@ -1061,7 +1193,7 @@
 
 
 
-                                <div class="be-row be-mt-250" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
                                     </div>
@@ -2049,6 +2181,13 @@
 
 
                         case 'process_clean':
+                            item.clean_field = '';
+                            item.clean_values = '';
+                            item.sign = 0;
+                            item.sign_field = 'cleaned';
+                            item.sign_field_value_0 = '0';
+                            item.sign_field_value_1 = '1';
+                            item.op = 'allow';
                             item.output = false;
                             break;
                         case 'process_filter':

@@ -170,10 +170,6 @@ class Ds extends Output
             }
         }
 
-        if (!isset($formDataNode['item']['on_duplicate_update']) || !is_numeric($formDataNode['item']['on_duplicate_update'])) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 重复数据执行更新（on_duplicate_update）参数无效！');
-        }
-
         return $output;
     }
 

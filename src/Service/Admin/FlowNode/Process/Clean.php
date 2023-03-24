@@ -16,24 +16,79 @@ class Clean extends Process
     }
 
 
-
     public function test(array $formDataNode, object $input): object
     {
         if (!isset($formDataNode['index']) || !is_numeric($formDataNode['index'])) {
             throw new ServiceException('节点参数（index）无效！');
         }
 
-        if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || $formDataNode['item']['code'] === '') {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）参数无效！');
+        if (!isset($formDataNode['item']['clean_field']) || !is_string($formDataNode['item']['clean_field']) || $formDataNode['item']['clean_field'] === '') {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清洗字段（clean_field）参数无效！');
         }
 
+        $cleanField = $formDataNode['item']['clean_field'];
+        if (!isset($input->$cleanField)) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清洗字段（'.$cleanField.'）无效！');
+        }
 
+        if (!isset($formDataNode['item']['clean_values']) || !is_string($formDataNode['item']['clean_values']) || $formDataNode['item']['clean_values'] === '') {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清洗掉的内容列表（clean_values）参数无效！');
+        }
 
-        try {
-            $fn = eval('return function(object $input): object {' . $formDataNode['item']['code'] . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）执行出错：' . $t->getMessage());
+        $output = clone $input;
+
+        $matched = false;
+        $cleanValues = explode("\n", $formDataNode['item']['clean_values']);
+        foreach ($cleanValues as $cleanValue) {
+            $cleanValue = trim($cleanValue);
+            if ($cleanValue === '') continue;
+            $arr = explode('|', $cleanValue);
+            if (count($arr) === 2) {
+                if (strpos($output->$cleanField, $arr[0]) !== false) {
+                    $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
+                    $matched = true;
+                }
+            } else {
+                if (strpos($output->$cleanField, $cleanValue) !== false) {
+                    $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
+                    $matched = true;
+                }
+            }
+        }
+
+        if (!isset($formDataNode['item']['sign']) || !is_numeric($formDataNode['item']['sign'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记清洗过（sign）参数无效！');
+        }
+
+        $formDataNode['item']['sign'] = (int)$formDataNode['item']['sign'];
+
+        if (!in_array($formDataNode['item']['sign'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记清洗过（sign）参数无效！');
+        }
+
+        if ($formDataNode['item']['sign'] === 1) {
+            if (!isset($formDataNode['item']['sign_field']) || !is_string($formDataNode['item']['sign_field']) || $formDataNode['item']['sign_field'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记字段名（sign_field）参数无效！');
+            }
+
+            if (!isset($formDataNode['item']['sign_field_value_0']) || !is_string($formDataNode['item']['sign_field_value_0']) || $formDataNode['item']['sign_field_value_0'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记字段值（默认值）（sign_field_value_0）参数无效！');
+            }
+
+            if (!isset($formDataNode['item']['sign_field_value_1']) || !is_string($formDataNode['item']['sign_field_value_1']) || $formDataNode['item']['sign_field_value_1'] === '') {
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记字段值（已清洗）（sign_field_value_1）参数无效！');
+            }
+
+            $signField = $formDataNode['item']['sign_field'];
+            if ($matched) {
+                $output->$signField = $formDataNode['item']['sign_field_value_1'];
+            } else {
+                $output->$signField = $formDataNode['item']['sign_field_value_0'];
+            }
+        } else {
+            $formDataNode['item']['sign_field'] = '';
+            $formDataNode['item']['sign_field_value_0'] = '';
+            $formDataNode['item']['sign_field_value_1'] = '';
         }
 
         return $output;
@@ -52,9 +107,13 @@ class Clean extends Process
         }
 
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
-        $tupleFlowNodeItem->code = $formDataNode['item']['code'];
+        $tupleFlowNodeItem->clean_field = $formDataNode['item']['clean_field'];
+        $tupleFlowNodeItem->clean_values = $formDataNode['item']['clean_values'];
+        $tupleFlowNodeItem->sign = $formDataNode['item']['sign'];
+        $tupleFlowNodeItem->sign_field = $formDataNode['item']['sign_field'];
+        $tupleFlowNodeItem->sign_field_value_0 = $formDataNode['item']['sign_field_value_0'];
+        $tupleFlowNodeItem->sign_field_value_1 = $formDataNode['item']['sign_field_value_1'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
-
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
 
         if ($tupleFlowNodeItem->isLoaded()) {
@@ -83,16 +142,61 @@ class Clean extends Process
         return $nodeItem;
     }
 
+
+    private ?array $cleanValues = null;
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
+    {
+        $flowNode->item->sign = (int)$flowNode->item->sign;
+
+        $newCleanValues = [];
+        $cleanValues = explode("\n", $flowNode->item->clean_values);
+        foreach ($cleanValues as $cleanValue) {
+            $cleanValue = trim($cleanValue);
+            if ($cleanValue === '') continue;
+
+            $newCleanValues[] = $cleanValue;
+        }
+
+        $this->cleanValues = $newCleanValues;
+    }
+
+
     public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
-        try {
-            $fn = eval('return function(object $input): object {' . $flowNode->item->code . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码（code）执行出错：' . $t->getMessage());
+        $output = clone $input;
+
+        $cleanField = $flowNode->item->clean_field;
+
+        $matched = false;
+        foreach ($this->cleanValues as $cleanValue) {
+            $cleanValue = trim($cleanValue);
+            if ($cleanValue === '') continue;
+            $arr = explode('|', $cleanValue);
+            if (count($arr) === 2) {
+                if (strpos($output->$cleanField, $arr[0]) !== false) {
+                    $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
+                    $matched = true;
+                }
+            } else {
+                if (strpos($output->$cleanField, $cleanValue) !== false) {
+                    $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
+                    $matched = true;
+                }
+            }
+        }
+
+        if ($flowNode->item->sign === 1) {
+            $signField = $flowNode->item->sign_field;
+            if ($matched) {
+                $output->$signField = $flowNode->item->sign_field_value_1;
+            } else {
+                $output->$signField = $flowNode->item->sign_field_value_0;
+            }
         }
 
         return $output;
+
     }
 
 }

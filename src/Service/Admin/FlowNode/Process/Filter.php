@@ -43,6 +43,8 @@ class Filter extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 操作（op）参数无效！');
         }
 
+        $output = clone $input;
+
         $matched = false;
         $filterValues = explode("\n", $formDataNode['item']['filter_values']);
         foreach ($filterValues as $filterValue) {
@@ -51,53 +53,53 @@ class Filter extends Process
 
             switch ($formDataNode['item']['filter_op']) {
                 case 'include':
-                    if (strpos($input->$filterField, $filterValue) !== false) {
+                    if (strpos($output->$filterField, $filterValue) !== false) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'start':
-                    if (substr($input->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                    if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'end':
-                    if (substr($input->$filterField, -strlen($filterValue)) === $filterValue) {
+                    if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'eq':
-                    if ($input->$filterField === $filterValue) {
+                    if ($output->$filterField === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'gt':
-                    if ($input->$filterField > $filterValue) {
+                    if ($output->$filterField > $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'gte':
-                    if ($input->$filterField >= $filterValue) {
+                    if ($output->$filterField >= $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'lt':
-                    if ($input->$filterField < $filterValue) {
+                    if ($output->$filterField < $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'lte':
-                    if ($input->$filterField <= $filterValue) {
+                    if ($output->$filterField <= $filterValue) {
                         $matched = true;
                         break;
                     }
@@ -105,8 +107,8 @@ class Filter extends Process
 
                 case 'between':
                     $arr = explode('|', $filterValue);
-                    if (count($arr) >= 2) {
-                        if ($input->$filterField >= $arr[0] && $input->$filterField <= $arr[1]) {
+                    if (count($arr) === 2) {
+                        if ($output->$filterField >= $arr[0] && $output->$filterField <= $arr[1]) {
                             $matched = true;
                             break;
                         }
@@ -118,19 +120,19 @@ class Filter extends Process
 
         if ($matched) {
             if ($formDataNode['item']['op'] === 'allow') {
-                $input->$filterField .= '（符合条件，放行）';
+                $output->$filterField .= '（符合条件，放行）';
             } else {
-                $input->$filterField .= '（符合条件，中止处理）';
+                $output->$filterField .= '（符合条件，中止处理）';
             }
         } else {
             if ($formDataNode['item']['op'] === 'allow') {
-                $input->$filterField .= '（不符合条件，中止处理）';
+                $output->$filterField .= '（不符合条件，中止处理）';
             } else {
-                $input->$filterField .= '（不符合条件，放行）';
+                $output->$filterField .= '（不符合条件，放行）';
             }
         }
 
-        return $input;
+        return $output;
     }
 
 
@@ -200,6 +202,8 @@ class Filter extends Process
 
     public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
+        $output = clone $input;
+
         $filterField = $flowNode->item->filter_field;
 
         $matched = false;
@@ -207,53 +211,53 @@ class Filter extends Process
 
             switch ($flowNode->item->filter_op) {
                 case 'include':
-                    if (strpos($input->$filterField, $filterValue) !== false) {
+                    if (strpos($output->$filterField, $filterValue) !== false) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'start':
-                    if (substr($input->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                    if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'end':
-                    if (substr($input->$filterField, -strlen($filterValue)) === $filterValue) {
+                    if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
                 case 'eq':
-                    if ($input->$filterField === $filterValue) {
+                    if ($output->$filterField === $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'gt':
-                    if ($input->$filterField > $filterValue) {
+                    if ($output->$filterField > $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'gte':
-                    if ($input->$filterField >= $filterValue) {
+                    if ($output->$filterField >= $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'lt':
-                    if ($input->$filterField < $filterValue) {
+                    if ($output->$filterField < $filterValue) {
                         $matched = true;
                         break;
                     }
                     break;
 
                 case 'lte':
-                    if ($input->$filterField <= $filterValue) {
+                    if ($output->$filterField <= $filterValue) {
                         $matched = true;
                         break;
                     }
@@ -261,8 +265,8 @@ class Filter extends Process
 
                 case 'between':
                     $arr = explode('|', $filterValue);
-                    if (count($arr) >= 2) {
-                        if ($input->$filterField >= $arr[0] && $input->$filterField <= $arr[1]) {
+                    if (count($arr) === 2) {
+                        if ($output->$filterField >= $arr[0] && $output->$filterField <= $arr[1]) {
                             $matched = true;
                             break;
                         }
@@ -274,7 +278,7 @@ class Filter extends Process
 
         if ($matched) {
             if ($flowNode->item->op === 'allow') {
-                return $input;
+                return $output;
             } else {
                 throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 符合过滤条件，中止处理！');
             }
@@ -282,7 +286,7 @@ class Filter extends Process
             if ($flowNode->item->op === 'allow') {
                 throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 不符合过滤条件，中止处理！');
             } else {
-                return $input;
+                return $output;
             }
         }
     }
