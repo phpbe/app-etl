@@ -31,6 +31,10 @@ class Filter extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤字段（'.$filterField.'）无效！');
         }
 
+        if (!isset($formDataNode['item']['filter_op']) || !is_string($formDataNode['item']['filter_op']) || !in_array($formDataNode['item']['filter_op'], ['include', 'start', 'end', 'eq', 'gt', 'gte', 'lt', 'lte', 'between'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤操作（filter_op）参数无效！');
+        }
+
         if (!isset($formDataNode['item']['filter_values']) || !is_string($formDataNode['item']['filter_values']) || $formDataNode['item']['filter_values'] === '') {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤值列表（filter_values）参数无效！');
         }
@@ -39,18 +43,77 @@ class Filter extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 操作（op）参数无效！');
         }
 
-
-
         $matched = false;
         $filterValues = explode("\n", $formDataNode['item']['filter_values']);
         foreach ($filterValues as $filterValue) {
             $filterValue = trim($filterValue);
             if ($filterValue === '') continue;
 
-            if (strpos($input->$filterField, $filterValue) !== false) {
-                $matched = true;
-                break;
+            switch ($formDataNode['item']['filter_op']) {
+                case 'include':
+                    if (strpos($input->$filterField, $filterValue) !== false) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'start':
+                    if (substr($input->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'end':
+                    if (substr($input->$filterField, -strlen($filterValue)) === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'eq':
+                    if ($input->$filterField === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'gt':
+                    if ($input->$filterField > $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'gte':
+                    if ($input->$filterField >= $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'lt':
+                    if ($input->$filterField < $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'lte':
+                    if ($input->$filterField <= $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'between':
+                    $arr = explode('|', $filterValue);
+                    if (count($arr) >= 2) {
+                        if ($input->$filterField >= $arr[0] && $input->$filterField <= $arr[1]) {
+                            $matched = true;
+                            break;
+                        }
+                    }
+                    break;
             }
+
         }
 
         if ($matched) {
@@ -84,6 +147,7 @@ class Filter extends Process
 
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->filter_field = $formDataNode['item']['filter_field'];
+        $tupleFlowNodeItem->filter_op = $formDataNode['item']['filter_op'];
         $tupleFlowNodeItem->filter_values = $formDataNode['item']['filter_values'];
         $tupleFlowNodeItem->op = $formDataNode['item']['op'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
@@ -140,10 +204,72 @@ class Filter extends Process
 
         $matched = false;
         foreach ($this->filterValues as $filterValue) {
-            if (strpos($input->$filterField, $filterValue) !== false) {
-                $matched = true;
-                break;
+
+            switch ($flowNode->item->filter_op) {
+                case 'include':
+                    if (strpos($input->$filterField, $filterValue) !== false) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'start':
+                    if (substr($input->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'end':
+                    if (substr($input->$filterField, -strlen($filterValue)) === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+                case 'eq':
+                    if ($input->$filterField === $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'gt':
+                    if ($input->$filterField > $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'gte':
+                    if ($input->$filterField >= $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'lt':
+                    if ($input->$filterField < $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'lte':
+                    if ($input->$filterField <= $filterValue) {
+                        $matched = true;
+                        break;
+                    }
+                    break;
+
+                case 'between':
+                    $arr = explode('|', $filterValue);
+                    if (count($arr) >= 2) {
+                        if ($input->$filterField >= $arr[0] && $input->$filterField <= $arr[1]) {
+                            $matched = true;
+                            break;
+                        }
+                    }
+                    break;
             }
+
         }
 
         if ($matched) {

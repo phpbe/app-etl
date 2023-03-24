@@ -715,6 +715,29 @@
 
                                 <div class="be-row be-mt-150">
                                     <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 过滤操作：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <el-select v-model="currentNode.item.filter_op" size="medium">
+                                            <el-option label="包含" value="include"></el-option>
+                                            <el-option label="以...开头" value="start"></el-option>
+                                            <el-option label="以...结尾" value="end"></el-option>
+                                            <el-option label="等于" value="eq"></el-option>
+                                            <el-option label="大于" value="gt"></el-option>
+                                            <el-option label="大于等于" value="gte"></el-option>
+                                            <el-option label="小于" value="lt"></el-option>
+                                            <el-option label="小于等于" value="lte"></el-option>
+                                            <el-option label="范围（过滤值以 | 分隔）" value="between"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto be-lh-250">
                                         <span class="be-c-red">*</span> 过滤值列表：
                                     </div>
                                     <div class="be-col-auto">
@@ -982,7 +1005,63 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 数据操作类型：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.item.op" size="medium">
+                                            <el-option label="插入，重复数据更新" value="auto"></el-option>
+                                            <el-option label="插入" value="insert"></el-option>
+                                            <el-option label="更新" value="update"></el-option>
+                                            <el-option label="删除" value="delete"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'auto' || currentNode.item.op === 'update' || currentNode.item.op === 'delete'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 更新/删除操作的唯一键字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select
+                                                v-model="currentNode.item.op_field"
+                                                placeholder="请选择字段"
+                                                size="medium"
+                                                filterable>
+                                            <el-option
+                                                    v-for="field in outputDsTableFields"
+                                                    :key="field.name"
+                                                    :label="field.name"
+                                                    :value="field.name">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'auto'">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 启用 MYSQL 数据库 Replace Into：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-switch v-model.number="currentNode.item.mysql_replace" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="be-row be-mt-250" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
                                     </div>
@@ -1006,53 +1085,6 @@
                                         <el-radio v-model="currentNode.item.clean_type" label="delete">DELETE</el-radio>
                                     </div>
                                 </div>
-
-
-                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <span class="be-c-red">*</span> 重复数据执行更新：
-                                    </div>
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <div class="be-pl-50 be-pt-100"></div>
-                                    </div>
-                                    <div class="be-col-24 be-md-col">
-                                        <el-switch v-model.number="currentNode.item.on_duplicate_update" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                    </div>
-                                </div>
-
-
-                                <div class="be-row be-mt-150" v-if="currentNode.item.on_duplicate_update === 1">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
-                                        <span class="be-c-red">*</span> 重复数据执行更新检测字段：
-                                    </div>
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <div class="be-pl-50 be-pt-100"></div>
-                                    </div>
-                                    <div class="be-col-24 be-md-col">
-                                        <el-input
-                                                type="text"
-                                                placeholder="请输入字段名"
-                                                v-model = "currentNode.item.on_duplicate_update_field"
-                                                size="medium"
-                                                maxlength="300"
-                                                show-word-limit>
-                                        </el-input>
-                                    </div>
-                                </div>
-
-
-                                <div class="be-row be-mt-150" v-if="currentNode.item.on_duplicate_update === 0">
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <span class="be-c-red">*</span> 是否启用 MYSQL 数据库 Replace Into：
-                                    </div>
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <div class="be-pl-50 be-pt-100"></div>
-                                    </div>
-                                    <div class="be-col-24 be-md-col">
-                                        <el-switch v-model.number="currentNode.item.mysql_replace" :active-value="1" :inactive-value="0" size="medium"></el-switch>
-                                    </div>
-                                </div>
-
 
                             </div>
                             <!-- output_ds -->
@@ -2021,6 +2053,7 @@
                             break;
                         case 'process_filter':
                             item.filter_field = '';
+                            item.filter_op = 'include';
                             item.filter_values = '';
                             item.op = 'allow';
                             item.output = false;
@@ -2042,14 +2075,14 @@
                         case 'output_ds':
                             item.ds_id = '';
                             item.ds_table = '';
-                            item.clean = 1;
-                            item.clean_type = 'truncate';
-                            item.on_duplicate_update = 1;
-                            item.on_duplicate_update_field = '';
-                            item.mysql_replace = 1;
                             item.field_mapping = 'mapping';
                             item.field_mapping_details = [];
                             item.field_mapping_code = '';
+                            item.op = 'auto';
+                            item.op_field = 'id';
+                            item.mysql_replace = 1;
+                            item.clean = 1;
+                            item.clean_type = 'truncate';
                             item.output = false;
                             break;
                         case 'output_csv':
