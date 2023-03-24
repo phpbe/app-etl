@@ -22,24 +22,58 @@ class Filter extends Process
             throw new ServiceException('节点参数（index）无效！');
         }
 
-        if (!isset($formDataNode['item']['code']) || !is_string($formDataNode['item']['code']) || $formDataNode['item']['code'] === '') {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）参数无效！');
+        if (!isset($formDataNode['item']['filter_field']) || !is_string($formDataNode['item']['filter_field']) || $formDataNode['item']['filter_field'] === '') {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤字段（filter_field）参数无效！');
         }
 
-        try {
-            $fn = eval('return function(object $input): object {' . $formDataNode['item']['code'] . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）执行出错：' . $t->getMessage());
+        $filterField = $formDataNode['item']['filter_field'];
+        if (!isset($input->$filterField)) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤字段（'.$filterField.'）无效！');
         }
 
-        return $output;
+        if (!isset($formDataNode['item']['filter_values']) || !is_string($formDataNode['item']['filter_values']) || $formDataNode['item']['filter_values'] === '') {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤值列表（filter_values）参数无效！');
+        }
+
+        if (!isset($formDataNode['item']['op']) || !is_string($formDataNode['item']['op']) || !in_array($formDataNode['item']['op'], ['allow', 'deny'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 操作（op）参数无效！');
+        }
+
+
+
+        $matched = false;
+        $filterValues = explode("\n", $formDataNode['item']['filter_values']);
+        foreach ($filterValues as $filterValue) {
+            $filterValue = trim($filterValue);
+            if ($filterValue === '') continue;
+
+            if (strpos($input->$filterField, $filterValue) !== false) {
+                $matched = true;
+                break;
+            }
+        }
+
+        if ($matched) {
+            if ($formDataNode['item']['op'] === 'allow') {
+                $input->$filterField .= '（符合条件，放行）';
+            } else {
+                $input->$filterField .= '（符合条件，中止处理）';
+            }
+        } else {
+            if ($formDataNode['item']['op'] === 'allow') {
+                $input->$filterField .= '（不符合条件，中止处理）';
+            } else {
+                $input->$filterField .= '（不符合条件，放行）';
+            }
+        }
+
+        return $input;
     }
 
 
     public function edit(string $flowNodeId, array $formDataNode): object
     {
-        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_process_clean');
+        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_process_filter');
 
         if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
             try {
@@ -49,7 +83,9 @@ class Filter extends Process
         }
 
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
-        $tupleFlowNodeItem->code = $formDataNode['item']['code'];
+        $tupleFlowNodeItem->filter_field = $formDataNode['item']['filter_field'];
+        $tupleFlowNodeItem->filter_values = $formDataNode['item']['filter_values'];
+        $tupleFlowNodeItem->op = $formDataNode['item']['op'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
@@ -80,16 +116,56 @@ class Filter extends Process
         return $nodeItem;
     }
 
-    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
+
+    private ?array $filterValues = null;
+
+    public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
-        try {
-            $fn = eval('return function(object $input): object {' . $flowNode->item->code . '};');
-            $output = $fn($input);
-        } catch (\Throwable $t) {
-            throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 代码（code）执行出错：' . $t->getMessage());
+        $newFilterValues = [];
+        $filterValues = explode("\n", $flowNode->item->filter_values);
+        foreach ($filterValues as $filterValue) {
+            $filterValue = trim($filterValue);
+            if ($filterValue === '') continue;
+
+            $newFilterValues[] = $filterValue;
         }
 
-        return $output;
+        $this->filterValues = $newFilterValues;
     }
+
+
+    public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
+    {
+        $filterField = $flowNode->item->filter_field;
+
+        $matched = false;
+        foreach ($this->filterValues as $filterValue) {
+            if (strpos($input->$filterField, $filterValue) !== false) {
+                $matched = true;
+                break;
+            }
+        }
+
+        if ($matched) {
+            if ($flowNode->item->op === 'allow') {
+                return $input;
+            } else {
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 符合过滤条件，中止处理！');
+            }
+        } else {
+            if ($flowNode->item->op === 'allow') {
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 不符合过滤条件，中止处理！');
+            } else {
+                return $input;
+            }
+        }
+    }
+
+
+    public function finish(object $flowNode, object $flowLog, object $flowNodeLog)
+    {
+        $this->filterValues = null;
+    }
+
 
 }

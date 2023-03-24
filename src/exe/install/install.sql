@@ -88,6 +88,42 @@ ADD PRIMARY KEY (`id`),
 ADD KEY `flow_node_id` (`flow_node_id`);
 
 
+CREATE TABLE `etl_flow_node_process_clean` (
+`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
+`flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
+`clean_field` varchar(60) NOT NULL DEFAULT 'assign' COMMENT '清洗字段',
+`clean_values` text NOT NULL COMMENT '包含掉的值列表',
+`sign` tinyint(4) NOT NULL DEFAULT '0' COMMENT '标记清洗过',
+`sign_field` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段名',
+`sign_field_value_0` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段值（未清理）',
+`sign_field_value_1` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段值（已清理）',
+`output` text NOT NULL COMMENT '输出（php序列化）',
+`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-清洗';
+
+ALTER TABLE `etl_flow_node_process_clean`
+ADD PRIMARY KEY (`id`),
+ADD KEY `flow_node_id` (`flow_node_id`);
+
+
+CREATE TABLE `etl_flow_node_process_filter` (
+`id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
+`flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
+`filter_field` varchar(60) NOT NULL DEFAULT 'assign' COMMENT '过滤字段',
+`filter_values` text NOT NULL COMMENT '过滤值列表',
+`op` varchar(30) NOT NULL DEFAULT 'allow' COMMENT '操作（allow：符合条件的放行/deny：符合条件的中止处理）',
+`output` text NOT NULL COMMENT '输出（php序列化）',
+`create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+`update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-过滤';
+
+ALTER TABLE `etl_flow_node_process_filter`
+ADD PRIMARY KEY (`id`),
+ADD KEY `flow_node_id` (`flow_node_id`);
+
+
+
 
 CREATE TABLE `etl_flow_node_process_chatgpt` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
@@ -105,6 +141,7 @@ CREATE TABLE `etl_flow_node_process_chatgpt` (
 ALTER TABLE `etl_flow_node_process_chatgpt`
 ADD PRIMARY KEY (`id`),
 ADD KEY `flow_node_id` (`flow_node_id`);
+
 
 
 

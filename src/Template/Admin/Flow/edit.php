@@ -229,6 +229,8 @@
                                                 <i class="el-icon-plus"></i>
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item :command="'process_clean|' + nodeIndex">清洗</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_filter|' + nodeIndex">过滤</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                             </el-dropdown-menu>
@@ -236,6 +238,16 @@
                                     </div>
                                     <div class="node-line-arrow"></div>
                                     <div class="node node-process" v-if="node.type === 'process'">
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_clean'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 清洗</el-button>
+                                            </el-badge>
+                                        </div>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_filter'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 过滤</el-button>
+                                            </el-badge>
+                                        </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_chatgpt'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. ChatGPT</el-button>
@@ -258,6 +270,8 @@
                                                 <i class="el-icon-plus"></i>
                                             </el-button>
                                             <el-dropdown-menu slot="dropdown">
+                                                <el-dropdown-item :command="'process_clean|' + nodeIndex">清洗</el-dropdown-item>
+                                                <el-dropdown-item :command="'process_filter|' + nodeIndex">过滤</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
                                                 <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
                                             </el-dropdown-menu>
@@ -306,6 +320,8 @@
                                             <i class="el-icon-plus"></i>
                                         </el-button>
                                         <el-dropdown-menu slot="dropdown">
+                                            <el-dropdown-item :command="'process_clean|' + formData.nodes.length">清洗</el-dropdown-item>
+                                            <el-dropdown-item :command="'process_filter|' + formData.nodes.length">过滤</el-dropdown-item>
                                             <el-dropdown-item :command="'process_chatgpt|' + formData.nodes.length">ChatGPT</el-dropdown-item>
                                             <el-dropdown-item :command="'process_code|' + formData.nodes.length">代码处理</el-dropdown-item>
                                         </el-dropdown-menu>
@@ -615,18 +631,23 @@
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-select
-                                                v-model="currentNode.item.output_field_assign"
-                                                placeholder="请选择输入字段"
-                                                size="medium"
-                                                filterable>
-                                            <el-option
-                                                    v-for="(v, k) in currentNodeInput"
-                                                    :key="k"
-                                                    :label="k"
-                                                    :value="k">
-                                            </el-option>
-                                        </el-select>
+                                        <div v-if="currentNodeInput !== false">
+                                            <el-select
+                                                    v-model="currentNode.item.output_field_assign"
+                                                    placeholder="请选择输出字段"
+                                                    size="medium"
+                                                    filterable>
+                                                <el-option
+                                                        v-for="(v, k) in currentNodeInput"
+                                                        :key="k"
+                                                        :label="k"
+                                                        :value="k">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取字段列表。
+                                        </div>
                                     </div>
                                 </div>
 
@@ -662,8 +683,73 @@
 
                             <!-- process_filter -->
                             <div v-if="currentNode.item && currentNode.item_type === 'process_filter'">
+
+                                <div class="be-row">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 过滤字段：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div v-if="currentNodeInput !== false">
+                                            <el-select
+                                                    v-model="currentNode.item.filter_field"
+                                                    placeholder="请选择过滤字段"
+                                                    size="medium"
+                                                    filterable>
+                                                <el-option
+                                                        v-for="(v, k) in currentNodeInput"
+                                                        :key="k"
+                                                        :label="k"
+                                                        :value="k">
+                                                </el-option>
+                                            </el-select>
+                                        </div>
+                                        <div class="be-mt-50" v-else>
+                                            请先验证上个结点，获取字段列表。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 过滤值列表：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <el-input
+                                                type="textarea"
+                                                :autosize="{minRows:4,maxRows:12}"
+                                                placeholder="请输入系统提示语"
+                                                v-model = "currentNode.item.filter_values"
+                                                size="medium"
+                                                maxlength="65535"
+                                                show-word-limit>
+                                        </el-input>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 操作：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <el-select v-model="currentNode.item.op" size="medium">
+                                            <el-option label="符合条件的放行" value="allow"></el-option>
+                                            <el-option label="符合条件的中止处理" value="deny"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
                             </div>
-                            <!-- process_clean -->
+                            <!-- process_filter -->
 
 
 
@@ -896,7 +982,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150">
+                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
                                     </div>
@@ -922,7 +1008,7 @@
                                 </div>
 
 
-                                <div class="be-row be-mt-150">
+                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 重复数据执行更新：
                                     </div>
@@ -1930,6 +2016,15 @@
                             break;
 
 
+                        case 'process_clean':
+                            item.output = false;
+                            break;
+                        case 'process_filter':
+                            item.filter_field = '';
+                            item.filter_values = '';
+                            item.op = 'allow';
+                            item.output = false;
+                            break;
                         case 'process_chatgpt':
                             item.system_prompt = '';
                             item.user_prompt = '';

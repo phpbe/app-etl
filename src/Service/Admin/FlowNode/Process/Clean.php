@@ -27,6 +27,8 @@ class Clean extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码（code）参数无效！');
         }
 
+
+
         try {
             $fn = eval('return function(object $input): object {' . $formDataNode['item']['code'] . '};');
             $output = $fn($input);
