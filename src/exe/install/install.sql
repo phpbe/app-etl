@@ -171,11 +171,9 @@ CREATE TABLE `etl_flow_node_output_ds` (
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
 `op` varchar(30) NOT NULL DEFAULT 'auto' COMMENT '数据操作类型（auto：插入，重复数据更新/insert：插入/update：更新/delete：删除）',
 `op_field` varchar(60) NOT NULL DEFAULT 'id' COMMENT '更新/删除操作的唯一键字段',
+`mysql_replace` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用 MYSQL 数据库 Replace Into',
 `clean` tinyint(4) NOT NULL DEFAULT '0' COMMENT '运行前清空数据表（如：全量同步时）',
 `clean_type` varchar(60) NOT NULL DEFAULT 'truncate' COMMENT '清空数据表方式（truncate：TRUNCATE/delete：DELETE）',
-`on_duplicate_update` tinyint(4) NOT NULL DEFAULT '1' COMMENT '重复数据执行更新',
-`on_duplicate_update_field` varchar(60) NOT NULL DEFAULT '' COMMENT '重复数据执行更新检测字段',
-`mysql_replace` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用 MYSQL 数据库 Replace Into',
 `output` text NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'

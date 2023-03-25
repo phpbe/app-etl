@@ -291,7 +291,7 @@ class FlowLog
 
         $f = fopen($path, 'r');
         while (!feof($f)) {
-            $response->write(fread($f, 8192));
+            $response->write(fread($f, 1048576));
         }
         fclose($f);
     }
