@@ -100,7 +100,13 @@ class Folders extends Output
         if ($formDataNode['item']['files_code'] !== '') {
             try {
                 $fn = eval('return function(object $input): array {' . $formDataNode['item']['files_code'] . '};');
-                $output->files_code = $fn($input);
+                $filesCode = $fn($input);
+                foreach ($filesCode as &$fileCode) {
+                    $fileCode = base64_encode($fileCode);
+                }
+                unset($fileCode);
+
+                $output->files_code = $filesCode;
             } catch (\Throwable $t) {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
             }
