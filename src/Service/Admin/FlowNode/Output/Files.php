@@ -68,7 +68,15 @@ class Files extends Output
             foreach ((array)$input as $k => $v) {
                 $content = str_replace('{' . $k . '}', $v, $content);
             }
-            $output->content = $content;
+
+            $len = mb_strlen($content);
+            if ($len > 100) {
+                $testContent = '（内容长度：' . $len . '）' . mb_substr($content, 0, 100) . '...';
+            } else {
+                $testContent = $content;
+            }
+
+            $output->content = $testContent;
 
         } else {
 
@@ -78,7 +86,10 @@ class Files extends Output
 
             try {
                 $fn = eval('return function(object $input): string {' . $formDataNode['item']['content_code'] . '};');
-                $output->content = $fn($input);
+
+                $content = $fn($input);
+                $output->content = '内容长度：' . mb_strlen($content);
+
             } catch (\Throwable $t) {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 文件内容代码处理（content_code）执行出错：' . $t->getMessage());
             }

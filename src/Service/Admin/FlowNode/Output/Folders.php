@@ -85,7 +85,15 @@ class Folders extends Output
                     $content = str_replace('{' . $k . '}', $v, $content);
                 }
 
-                $files[$name] = $content;
+                $len = mb_strlen($content);
+
+                if ($len > 100) {
+                    $testContent = '（内容长度：'.$len.'）' . mb_substr($content, 0, 100) . '...';
+                } else {
+                    $testContent = $content;
+                }
+
+                $files[$name] = $testContent;
 
                 $i++;
             }
@@ -101,12 +109,13 @@ class Folders extends Output
             try {
                 $fn = eval('return function(object $input): array {' . $formDataNode['item']['files_code'] . '};');
                 $filesCode = $fn($input);
-                foreach ($filesCode as &$fileCode) {
-                    $fileCode = base64_encode($fileCode);
-                }
-                unset($fileCode);
 
-                $output->files_code = $filesCode;
+                $files = [];
+                foreach ($filesCode as $name => $content) {
+                    $files[$name] = '内容长度：'.mb_strlen($content);
+                }
+
+                $output->files_code = $files;
             } catch (\Throwable $t) {
                 throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 代码输出文件列表（files_code）执行出错：' . $t->getMessage());
             }
