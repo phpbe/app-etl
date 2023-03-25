@@ -8,7 +8,7 @@ use Be\App\ServiceException;
 use Be\Be;
 use Be\Task\TaskException;
 
-class ChatGPT extends Process
+class Chatgpt extends Process
 {
 
     public function getItemName(): string
