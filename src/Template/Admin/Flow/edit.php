@@ -88,7 +88,7 @@
         <div class="be-row">
             <div class="be-col">
                 <div style="padding: 1.25rem 0 0 2rem;">
-                    <el-link icon="el-icon-back" href="<?php echo $this->backUrl; ?>">返回加工任务列表</el-link>
+                    <el-link icon="el-icon-back" href="<?php echo beAdminUrl('Etl.Flow.index'); ?>">返回数据流列表</el-link>
                 </div>
             </div>
             <div class="be-col-auto">
@@ -617,7 +617,7 @@
                                     <div class="be-col-24 be-md-col">
                                         <el-radio-group v-model="currentNode.item.output_field" size="medium">
                                             <el-radio-button label="assign">指定现有字段</el-radio-button>
-                                            <el-radio-button label="custom">自定议</el-radio-button>
+                                            <el-radio-button label="custom">自定义</el-radio-button>
                                         </el-radio-group>
                                     </div>
                                 </div>
