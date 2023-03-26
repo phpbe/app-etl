@@ -12,7 +12,7 @@ abstract class Process extends FlowNode
      * @return string
      */
     public function getItemTypeName(): string {
-        return '处理';
+        return '加工';
     }
 
     /**

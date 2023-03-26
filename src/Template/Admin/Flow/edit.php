@@ -193,7 +193,7 @@
 
 
             <div class="be-mt-150 be-p-150 be-bc-fff">
-                <div class="be-fs-110">处理节点</div>
+                <div class="be-fs-110">节点配置</div>
 
                 <div class="be-row be-mt-200">
                     <div class="be-col-auto">
