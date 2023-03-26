@@ -739,6 +739,45 @@
                                     </div>
                                 </div>
 
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto">
+                                        <span class="be-c-red">*</span> 插入标签：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <div>
+                                            <el-switch v-model.number="currentNode.item.insert_tags" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                        </div>
+
+                                        <div v-if="currentNode.item.insert_tags === 1">
+                                            <div v-if="currentNodeInput !== false">
+                                                <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                    <el-button @click="processCleanCleanValuesInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                </span>
+                                            </div>
+                                            <div class="be-mt-50" v-else>
+                                                请先验证上个结点，获取可插入标签。
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 区分大小写：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-switch v-model.number="currentNode.item.match_case" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div>
+                                </div>
+
+
                                 <div class="be-row be-mt-150">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 标记清洗过：
@@ -796,6 +835,8 @@
                                         </el-input>
                                     </div>
                                 </div>
+
+
 
                             </div>
                             <!-- process_clean -->
@@ -887,6 +928,44 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-auto">
+                                        <span class="be-c-red">*</span> 插入标签：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <div>
+                                            <el-switch v-model.number="currentNode.item.insert_tags" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                        </div>
+
+                                        <div v-if="currentNode.item.insert_tags === 1">
+                                            <div v-if="currentNodeInput !== false">
+                                                <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
+                                                    <el-button @click="processFilterFilterValuesInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                </span>
+                                            </div>
+                                            <div class="be-mt-50" v-else>
+                                                请先验证上个结点，获取可插入标签。
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 区分大小写：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-switch v-model.number="currentNode.item.match_case" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div>
+                                </div>
+
 
                                 <div class="be-row be-mt-150">
                                     <div class="be-col-auto be-lh-250">
@@ -2183,6 +2262,8 @@
                         case 'process_clean':
                             item.clean_field = '';
                             item.clean_values = '';
+                            item.match_case = 0;
+                            item.insert_tags = 0;
                             item.sign = 0;
                             item.sign_field = 'cleaned';
                             item.sign_field_value_0 = '0';
@@ -2194,6 +2275,8 @@
                             item.filter_field = '';
                             item.filter_op = 'include';
                             item.filter_values = '';
+                            item.match_case = 0;
+                            item.insert_tags = 0;
                             item.op = 'allow';
                             item.output = false;
                             break;
@@ -2527,6 +2610,16 @@
                     } else {
                         this.inputDsTableFields = this.dsTableFields[this.currentNode.item.ds_id]['_sql'];
                     }
+                },
+
+
+                processCleanCleanValuesInsertTag: function (tag) {
+                    this.currentNode.item.clean_values += "\n{"  + tag +  "}";
+                },
+
+
+                processFilterFilterValuesInsertTag: function (tag) {
+                    this.currentNode.item.filter_values += "\n{"  + tag +  "}";
                 },
 
 

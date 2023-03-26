@@ -39,6 +39,36 @@ class Filter extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 过滤值列表（filter_values）参数无效！');
         }
 
+
+        if (!isset($formDataNode['item']['insert_tags']) || !is_numeric($formDataNode['item']['insert_tags'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 插入标签（insert_tags）参数无效！');
+        }
+
+        $formDataNode['item']['insert_tags'] = (int)$formDataNode['item']['insert_tags'];
+
+        if (!in_array($formDataNode['item']['insert_tags'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 插入标签（insert_tags）参数无效！');
+        }
+
+        if ($formDataNode['item']['insert_tags'] === 1) {
+            foreach (get_object_vars($input) as $k => $v) {
+                $formDataNode['item']['filter_values'] = str_replace('{' . $k . '}', $v, $formDataNode['item']['filter_values']);
+            }
+        }
+
+
+        if (!isset($formDataNode['item']['match_case']) || !is_numeric($formDataNode['item']['match_case'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记清洗过（match_case）参数无效！');
+        }
+
+        $formDataNode['item']['match_case'] = (int)$formDataNode['item']['match_case'];
+
+        if (!in_array($formDataNode['item']['match_case'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 区分大小写（match_case）参数无效！');
+        }
+
+
+
         if (!isset($formDataNode['item']['op']) || !is_string($formDataNode['item']['op']) || !in_array($formDataNode['item']['op'], ['allow', 'deny'])) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 操作（op）参数无效！');
         }
@@ -53,27 +83,58 @@ class Filter extends Process
 
             switch ($formDataNode['item']['filter_op']) {
                 case 'include':
-                    if (strpos($output->$filterField, $filterValue) !== false) {
-                        $matched = true;
-                        break;
+                    if ($formDataNode['item']['match_case'] === 0) {
+                        if (stripos($output->$filterField, $filterValue) !== false) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (strpos($output->$filterField, $filterValue) !== false) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'start':
-                    if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($formDataNode['item']['match_case'] === 0) {
+                        if (strtolower(substr($output->$filterField, 0, strlen($filterValue))) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'end':
-                    if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($formDataNode['item']['match_case'] === 0) {
+                        if (strtolower(substr($output->$filterField, -strlen($filterValue))) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'eq':
-                    if ($output->$filterField === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($formDataNode['item']['match_case'] === 0) {
+                        if (strtolower($output->$filterField) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if ($output->$filterField === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
 
@@ -151,6 +212,8 @@ class Filter extends Process
         $tupleFlowNodeItem->filter_field = $formDataNode['item']['filter_field'];
         $tupleFlowNodeItem->filter_op = $formDataNode['item']['filter_op'];
         $tupleFlowNodeItem->filter_values = $formDataNode['item']['filter_values'];
+        $tupleFlowNodeItem->insert_tags = $formDataNode['item']['insert_tags'];
+        $tupleFlowNodeItem->match_case = $formDataNode['item']['match_case'];
         $tupleFlowNodeItem->op = $formDataNode['item']['op'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
@@ -187,16 +250,21 @@ class Filter extends Process
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
-        $newFilterValues = [];
-        $filterValues = explode("\n", $flowNode->item->filter_values);
-        foreach ($filterValues as $filterValue) {
-            $filterValue = trim($filterValue);
-            if ($filterValue === '') continue;
+        $flowNode->item->insert_tags = (int)$flowNode->item->insert_tags;
+        $flowNode->item->match_case = (int)$flowNode->item->match_case;
 
-            $newFilterValues[] = $filterValue;
+        if ($flowNode->item->insert_tags === 0) {
+            $newFilterValues = [];
+            $filterValues = explode("\n", $flowNode->item->filter_values);
+            foreach ($filterValues as $filterValue) {
+                $filterValue = trim($filterValue);
+                if ($filterValue === '') continue;
+
+                $newFilterValues[] = $filterValue;
+            }
+
+            $this->filterValues = $newFilterValues;
         }
-
-        $this->filterValues = $newFilterValues;
     }
 
 
@@ -206,32 +274,84 @@ class Filter extends Process
 
         $filterField = $flowNode->item->filter_field;
 
+        if ($flowNode->item->insert_tags === 1) {
+            $filterValues = $flowNode->item->filter_values;
+            foreach (get_object_vars($input) as $k => $v) {
+                $filterValues = str_replace('{' . $k . '}', $v, $filterValues);
+            }
+
+            $newFilterValues = [];
+            $filterValues = explode("\n", $filterValues);
+            foreach ($filterValues as $filterValue) {
+                $filterValue = trim($filterValue);
+                if ($filterValue === '') continue;
+
+                $newFilterValues[] = $filterValue;
+            }
+
+            $filterValues = $newFilterValues;
+        } else {
+            $filterValues = $this->filterValues;
+        }
+
+
         $matched = false;
-        foreach ($this->filterValues as $filterValue) {
+        foreach ($filterValues as $filterValue) {
 
             switch ($flowNode->item->filter_op) {
                 case 'include':
-                    if (strpos($output->$filterField, $filterValue) !== false) {
-                        $matched = true;
-                        break;
+                    if ($flowNode->item->match_case === 0) {
+                        if (stripos($output->$filterField, $filterValue) !== false) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (strpos($output->$filterField, $filterValue) !== false) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'start':
-                    if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($flowNode->item->match_case === 0) {
+                        if (strtolower(substr($output->$filterField, 0, strlen($filterValue))) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (substr($output->$filterField, 0, strlen($filterValue)) === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'end':
-                    if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($flowNode->item->match_case === 0) {
+                        if (strtolower(substr($output->$filterField, -strlen($filterValue))) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if (substr($output->$filterField, -strlen($filterValue)) === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
+
                 case 'eq':
-                    if ($output->$filterField === $filterValue) {
-                        $matched = true;
-                        break;
+                    if ($flowNode->item->match_case === 0) {
+                        if (strtolower($output->$filterField) === strtolower($filterValue)) {
+                            $matched = true;
+                            break;
+                        }
+                    } else {
+                        if ($output->$filterField === $filterValue) {
+                            $matched = true;
+                            break;
+                        }
                     }
                     break;
 

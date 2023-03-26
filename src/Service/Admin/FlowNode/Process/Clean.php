@@ -35,6 +35,35 @@ class Clean extends Process
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清洗掉的内容列表（clean_values）参数无效！');
         }
 
+
+        if (!isset($formDataNode['item']['insert_tags']) || !is_numeric($formDataNode['item']['insert_tags'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 插入标签（insert_tags）参数无效！');
+        }
+
+        $formDataNode['item']['insert_tags'] = (int)$formDataNode['item']['insert_tags'];
+
+        if (!in_array($formDataNode['item']['insert_tags'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 插入标签（insert_tags）参数无效！');
+        }
+
+        if ($formDataNode['item']['insert_tags'] === 1) {
+            foreach (get_object_vars($input) as $k => $v) {
+                $formDataNode['item']['clean_values'] = str_replace('{' . $k . '}', $v, $formDataNode['item']['clean_values']);
+            }
+        }
+
+
+        if (!isset($formDataNode['item']['match_case']) || !is_numeric($formDataNode['item']['match_case'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 标记清洗过（match_case）参数无效！');
+        }
+
+        $formDataNode['item']['match_case'] = (int)$formDataNode['item']['match_case'];
+
+        if (!in_array($formDataNode['item']['match_case'], [0, 1])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 区分大小写（match_case）参数无效！');
+        }
+
+
         $output = clone $input;
 
         $matched = false;
@@ -44,14 +73,28 @@ class Clean extends Process
             if ($cleanValue === '') continue;
             $arr = explode('|', $cleanValue);
             if (count($arr) === 2) {
-                if (strpos($output->$cleanField, $arr[0]) !== false) {
-                    $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
-                    $matched = true;
+                if ($formDataNode['item']['match_case'] === 0) {
+                    if (stripos($output->$cleanField, $arr[0]) !== false) {
+                        $output->$cleanField = str_ireplace($arr[0], $arr[1], $output->$cleanField);
+                        $matched = true;
+                    }
+                } else {
+                    if (strpos($output->$cleanField, $arr[0]) !== false) {
+                        $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
+                        $matched = true;
+                    }
                 }
             } else {
-                if (strpos($output->$cleanField, $cleanValue) !== false) {
-                    $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
-                    $matched = true;
+                if ($formDataNode['item']['match_case'] === 0) {
+                    if (stripos($output->$cleanField, $cleanValue) !== false) {
+                        $output->$cleanField = str_ireplace($cleanValue, '', $output->$cleanField);
+                        $matched = true;
+                    }
+                } else {
+                    if (strpos($output->$cleanField, $cleanValue) !== false) {
+                        $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
+                        $matched = true;
+                    }
                 }
             }
         }
@@ -109,6 +152,8 @@ class Clean extends Process
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
         $tupleFlowNodeItem->clean_field = $formDataNode['item']['clean_field'];
         $tupleFlowNodeItem->clean_values = $formDataNode['item']['clean_values'];
+        $tupleFlowNodeItem->insert_tags = $formDataNode['item']['insert_tags'];
+        $tupleFlowNodeItem->match_case = $formDataNode['item']['match_case'];
         $tupleFlowNodeItem->sign = $formDataNode['item']['sign'];
         $tupleFlowNodeItem->sign_field = $formDataNode['item']['sign_field'];
         $tupleFlowNodeItem->sign_field_value_0 = $formDataNode['item']['sign_field_value_0'];
@@ -147,18 +192,22 @@ class Clean extends Process
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
+        $flowNode->item->insert_tags = (int)$flowNode->item->insert_tags;
+        $flowNode->item->match_case = (int)$flowNode->item->match_case;
         $flowNode->item->sign = (int)$flowNode->item->sign;
 
-        $newCleanValues = [];
-        $cleanValues = explode("\n", $flowNode->item->clean_values);
-        foreach ($cleanValues as $cleanValue) {
-            $cleanValue = trim($cleanValue);
-            if ($cleanValue === '') continue;
+        if ($flowNode->item->insert_tags === 0) {
+            $newCleanValues = [];
+            $cleanValues = explode("\n", $flowNode->item->clean_values);
+            foreach ($cleanValues as $cleanValue) {
+                $cleanValue = trim($cleanValue);
+                if ($cleanValue === '') continue;
 
-            $newCleanValues[] = $cleanValue;
+                $newCleanValues[] = $cleanValue;
+            }
+
+            $this->cleanValues = $newCleanValues;
         }
-
-        $this->cleanValues = $newCleanValues;
     }
 
 
@@ -168,20 +217,55 @@ class Clean extends Process
 
         $cleanField = $flowNode->item->clean_field;
 
+        if ($flowNode->item->insert_tags === 1) {
+            $cleanValues = $flowNode->item->clean_values;
+            foreach (get_object_vars($input) as $k => $v) {
+                $cleanValues = str_replace('{' . $k . '}', $v, $cleanValues);
+            }
+
+            $newCleanValues = [];
+            $cleanValues = explode("\n", $cleanValues);
+            foreach ($cleanValues as $cleanValue) {
+                $cleanValue = trim($cleanValue);
+                if ($cleanValue === '') continue;
+
+                $newCleanValues[] = $cleanValue;
+            }
+
+            $cleanValues = $newCleanValues;
+        } else {
+            $cleanValues = $this->cleanValues;
+        }
+
         $matched = false;
-        foreach ($this->cleanValues as $cleanValue) {
+        foreach ($cleanValues as $cleanValue) {
             $cleanValue = trim($cleanValue);
             if ($cleanValue === '') continue;
             $arr = explode('|', $cleanValue);
+
             if (count($arr) === 2) {
-                if (strpos($output->$cleanField, $arr[0]) !== false) {
-                    $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
-                    $matched = true;
+                if ($flowNode->item->match_case === 0) {
+                    if (stripos($output->$cleanField, $arr[0]) !== false) {
+                        $output->$cleanField = str_ireplace($arr[0], $arr[1], $output->$cleanField);
+                        $matched = true;
+                    }
+                } else {
+                    if (strpos($output->$cleanField, $arr[0]) !== false) {
+                        $output->$cleanField = str_replace($arr[0], $arr[1], $output->$cleanField);
+                        $matched = true;
+                    }
                 }
             } else {
-                if (strpos($output->$cleanField, $cleanValue) !== false) {
-                    $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
-                    $matched = true;
+                if ($flowNode->item->match_case === 0) {
+                    if (stripos($output->$cleanField, $cleanValue) !== false) {
+                        $output->$cleanField = str_ireplace($cleanValue, '', $output->$cleanField);
+                        $matched = true;
+                    }
+                } else {
+                    if (strpos($output->$cleanField, $cleanValue) !== false) {
+                        $output->$cleanField = str_replace($cleanValue, '', $output->$cleanField);
+                        $matched = true;
+                    }
                 }
             }
         }
