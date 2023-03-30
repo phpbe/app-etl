@@ -178,7 +178,9 @@ class Flow extends Task
                             $db->update('etl_flow_node_log', $flowNodeLog);
                         }
 
-                        $lastOutput = $output;
+                        if ($flowNode->type !== 'output') {
+                            $lastOutput = $output;
+                        }
                     }
 
                     $flowLog->total_success++;

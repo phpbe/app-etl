@@ -221,64 +221,38 @@
                                     </div>
                                 </template>
 
-                                <template  v-if="node.type === 'process'">
+                                <template v-else>
                                     <div class="node-line"></div>
                                     <div class="node-add">
-                                        <el-dropdown @command="addProcessNode">
-                                            <el-button type="info" size="mini">
-                                                <i class="el-icon-plus"></i>
-                                            </el-button>
-                                            <el-dropdown-menu slot="dropdown">
-                                                <el-dropdown-item :command="'process_clean|' + nodeIndex">清洗</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_filter|' + nodeIndex">过滤</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
-                                            </el-dropdown-menu>
-                                        </el-dropdown>
+                                        <el-button type="info" @click="addNodeDialog(nodeIndex)" size="mini">
+                                            <i class="el-icon-plus"></i>
+                                        </el-button>
                                     </div>
                                     <div class="node-line-arrow"></div>
-                                    <div class="node node-process" v-if="node.type === 'process'">
+                                    <div class="node">
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_clean'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 清洗</el-button>
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 加工：清洗</el-button>
                                             </el-badge>
                                         </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_filter'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 过滤</el-button>
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 加工：过滤</el-button>
                                             </el-badge>
                                         </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_chatgpt'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. ChatGPT</el-button>
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 加工：ChatGPT</el-button>
                                             </el-badge>
                                         </div>
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'process_code'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
-                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 代码处理</el-button>
+                                                <el-button @click="toggleNode(node)" type="warning">{{nodeIndex + 1}}. 加工：代码处理</el-button>
                                             </el-badge>
                                         </div>
-                                    </div>
-                                </template>
 
 
-                                <template  v-if="node.type === 'output'">
-                                    <div class="node-line"></div>
-                                    <div class="node-add">
-                                        <el-dropdown @command="addProcessNode">
-                                            <el-button type="info" size="mini">
-                                                <i class="el-icon-plus"></i>
-                                            </el-button>
-                                            <el-dropdown-menu slot="dropdown">
-                                                <el-dropdown-item :command="'process_clean|' + nodeIndex">清洗</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_filter|' + nodeIndex">过滤</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_chatgpt|' + nodeIndex">ChatGPT</el-dropdown-item>
-                                                <el-dropdown-item :command="'process_code|' + nodeIndex">代码处理</el-dropdown-item>
-                                            </el-dropdown-menu>
-                                        </el-dropdown>
-                                    </div>
-                                    <div class="node-line-arrow"></div>
-                                    <div class="node node-output">
+
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_ds'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：数据源</el-button>
@@ -309,43 +283,42 @@
                                             </el-badge>
                                         </div>
                                     </div>
+
                                 </template>
+
                             </template>
 
-                            <template v-if="formData.nodes.length > 0 && formData.nodes[formData.nodes.length - 1].type !== 'output'">
-                                <div class="node-line"></div>
-                                <div class="node-add">
-                                    <el-dropdown @command="addProcessNode">
-                                        <el-button type="info" size="mini">
-                                            <i class="el-icon-plus"></i>
-                                        </el-button>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item :command="'process_clean|' + formData.nodes.length">清洗</el-dropdown-item>
-                                            <el-dropdown-item :command="'process_filter|' + formData.nodes.length">过滤</el-dropdown-item>
-                                            <el-dropdown-item :command="'process_chatgpt|' + formData.nodes.length">ChatGPT</el-dropdown-item>
-                                            <el-dropdown-item :command="'process_code|' + formData.nodes.length">代码处理</el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
-                                </div>
-                                <div class="node-line-arrow"></div>
-                                <div class="node">
-                                    <el-dropdown @command="addOutputNode">
-                                        <el-button type="info">
-                                            输出 <i class="el-icon-arrow-down el-icon--right"></i>
-                                        </el-button>
-                                        <el-dropdown-menu slot="dropdown">
-                                            <el-dropdown-item command="output_ds">数据源</el-dropdown-item>
-                                            <el-dropdown-item command="output_csv">CSV</el-dropdown-item>
-                                            <el-dropdown-item command="output_files">文件包</el-dropdown-item>
-                                            <el-dropdown-item command="output_folders">目录包</el-dropdown-item>
-                                            <el-dropdown-item command="output_api">API调用</el-dropdown-item>
-                                        </el-dropdown-menu>
-                                    </el-dropdown>
-                                </div>
-                            </template>
+                            <div class="node-line-arrow"></div>
+                            <div class="node">
+                                <el-button type="info" @click="addNodeDialog(formData.nodes.length)" size="mini">
+                                    <i class="el-icon-plus"></i>
+                                </el-button>
+                            </div>
+
                             <?php
                             $formData['nodes'] = $this->flow->nodes;
                             ?>
+
+                            <el-dialog title="添加节点" width="60%" :visible.sync="addNodeDialogVisible" center="true">
+                                <div class="be-pb-400">
+                                <el-tabs v-model="addNodeDialogTab" type="card">
+                                    <el-tab-pane label="加工" name="process">
+                                        <el-button type="warning" @click="addNodeDialogConfirm('process', 'process_clean')">清洗</el-button>
+                                        <el-button type="warning" @click="addNodeDialogConfirm('process', 'process_filter')">过滤</el-button>
+                                        <el-button type="warning" @click="addNodeDialogConfirm('process', 'process_chatgpt')">ChatGPT</el-button>
+                                        <el-button type="warning" @click="addNodeDialogConfirm('process', 'process_code')">代码处理</el-button>
+                                    </el-tab-pane>
+                                    <el-tab-pane label="输出" name="output">
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_ds')">数据源</el-button>
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_csv')">CSV</el-button>
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_files')">文件包</el-button>
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_folders')">目录包</el-button>
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_api')">API调用</el-button>
+                                    </el-tab-pane>
+                                </el-tabs>
+                                </div>
+                            </el-dialog>
+
                         </div>
                     </div>
                     <div class="be-col-auto">
@@ -2114,7 +2087,6 @@
     echo $uiItems->getJs();
     echo $uiItems->getCss();
     ?>
-
     <script>
         let vueCenter = new Vue({
             el: '#app',
@@ -2122,6 +2094,10 @@
                 formData: <?php echo json_encode($formData); ?>,
 
                 categoryKeyValues: <?php echo json_encode($this->categoryKeyValues); ?>,
+
+                addNodeIndex: 0,
+                addNodeDialogVisible: false,
+                addNodeDialogTab: "process",
 
                 currentNode: {item: false,},
                 currentNodeInput: false,
@@ -2232,7 +2208,15 @@
                 addOutputNode: function (command) {
                     this.addNode('output', command, this.formData.nodes.length);
                 },
-
+                addNodeDialog(index) {
+                    this.addNodeIndex = Number(index);
+                    this.addNodeDialogVisible = true;
+                },
+                addNodeDialogConfirm(type, itemType) {
+                    this.addNodeDialogVisible = false;
+                    this.addNode(type, itemType, this.addNodeIndex);
+                    this.addNodeIndex = 0;
+                },
                 // 添加节点
                 addNode(type, itemType, index) {
 

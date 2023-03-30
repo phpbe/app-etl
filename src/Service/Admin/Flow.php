@@ -106,7 +106,7 @@ class Flow
         }
 
         $i = 0;
-        $input = null;
+        $lastOutput = null;
         foreach ($formData['nodes'] as &$formDataNode) {
 
             if ($i === 0) {
@@ -120,11 +120,14 @@ class Flow
             if ($i === 0) {
                 $output = $service->test($formDataNode);
             } else {
-                $output = $service->test($formDataNode, $input);
+                $output = $service->test($formDataNode, $lastOutput);
             }
 
-            $input = $output;
             $formDataNode['output'] = $output;
+
+            if ($formDataNode['type'] !== 'output') {
+                $lastOutput = $output;
+            }
 
             $i++;
         }
@@ -139,7 +142,6 @@ class Flow
             $tupleFlow->is_enable = $formData['is_enable'];
             $tupleFlow->update_time = date('Y-m-d H:i:s');;
             $tupleFlow->update();
-
 
             $sql = 'SELECT * FROM etl_flow_node WHERE flow_id = ?';
             $existsNodes = $db->getObjects($sql, [$flowId]);
@@ -243,7 +245,7 @@ class Flow
 
         $nodes = [];
         $i = 0;
-        $input = null;
+        $lastOutput = null;
         foreach ($formData['nodes'] as $formDataNode) {
 
             if ($i === 0) {
@@ -259,7 +261,7 @@ class Flow
             if ($i > $index) {
 
                 // 无输入时，直接无输出
-                if ($input === false) {
+                if ($lastOutput === false) {
 
                     $node['item']['output'] = false;
                     $nodes[] = $node;
@@ -269,12 +271,15 @@ class Flow
                     // 当前节点之后节点，仅检测，不抛错
                     try {
                         $service = $this->getNodeItemService($formDataNode['item_type']);
-                        $output = $service->test($formDataNode, $input);
+                        $output = $service->test($formDataNode, $lastOutput);
                     } catch (\Throwable $t) {
                         $output = false;
                     }
 
-                    $input = $output;
+
+                    if ($formDataNode['type'] !== 'output') {
+                        $lastOutput = $output;
+                    }
 
                     $node['item']['output'] = $output;
                     $nodes[] = $node;
@@ -286,10 +291,12 @@ class Flow
                 if ($i === 0) {
                     $output = $service->test($formDataNode);
                 } else {
-                    $output = $service->test($formDataNode, $input);
+                    $output = $service->test($formDataNode, $lastOutput);
                 }
 
-                $input = $output;
+                if ($formDataNode['type'] !== 'output') {
+                    $lastOutput = $output;
+                }
 
                 $node['item']['output'] = $output;
                 $nodes[] = $node;
