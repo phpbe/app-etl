@@ -709,6 +709,14 @@
                                             1. 将 "他的" 剔除掉<br>
                                             2. 将 "你的" 替换为 "我的"
                                         </div>
+
+                                        <div class="be-mt-100">
+                                            插入特殊字符：<br>
+                                            <span class="be-d-inline-block be-mt-50">
+                                                <el-button @click="processCleanCleanValuesInsertTag('换行符')"  type="primary" size="mini">{换行符}</el-button> &nbsp;
+                                            </span>
+                                        </div>
+
                                     </div>
                                 </div>
 
@@ -726,14 +734,7 @@
                                         </div>
 
                                         <div v-if="currentNode.item.insert_tags === 1">
-
-                                            <div>
-                                                <span class="be-d-inline-block be-mt-50">
-                                                    <el-button @click="processCleanCleanValuesInsertTag('换行符')"  type="info" size="mini">{换行符}</el-button> &nbsp;
-                                                </span>
-                                            </div>
-
-                                            <div class="be-mt-50" v-if="currentNodeInput !== false">
+                                            <div v-if="currentNodeInput !== false">
                                                 <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
                                                     <el-button @click="processCleanCleanValuesInsertTag(k)"  type="primary" size="mini">{{"{" + k + "}"}}</el-button> &nbsp;
                                                 </span>
@@ -905,6 +906,13 @@
                                         <div class="be-c-999 be-mt-50">100|||200</div>
                                         <div class="be-mt-100">
                                             表示范围为：大于等于100，小于等于200
+                                        </div>
+
+                                        <div class="be-mt-100">
+                                            插入特殊字符：<br>
+                                            <span class="be-d-inline-block be-mt-50">
+                                                <el-button @click="processFilterFilterValuesInsertTag('换行符')"  type="primary" size="mini">{换行符}</el-button> &nbsp;
+                                            </span>
                                         </div>
                                     </div>
                                 </div>

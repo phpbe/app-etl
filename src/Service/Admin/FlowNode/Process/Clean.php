@@ -72,9 +72,7 @@ class Clean extends Process
             //$cleanValue = trim($cleanValue);
             if ($cleanValue === '') continue;
 
-            if ($formDataNode['item']['insert_tags'] === 1) {
-                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
-            }
+            $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
 
             $arr = explode('|||', $cleanValue);
             if (count($arr) === 2) {
@@ -205,8 +203,10 @@ class Clean extends Process
             $newCleanValues = [];
             $cleanValues = explode("\n", $flowNode->item->clean_values);
             foreach ($cleanValues as $cleanValue) {
-                $cleanValue = trim($cleanValue);
+                //$cleanValue = trim($cleanValue);
                 if ($cleanValue === '') continue;
+
+                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
 
                 $newCleanValues[] = $cleanValue;
             }
@@ -231,8 +231,10 @@ class Clean extends Process
             $newCleanValues = [];
             $cleanValues = explode("\n", $cleanValues);
             foreach ($cleanValues as $cleanValue) {
-                $cleanValue = trim($cleanValue);
+                //$cleanValue = trim($cleanValue);
                 if ($cleanValue === '') continue;
+
+                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
 
                 $newCleanValues[] = $cleanValue;
             }
@@ -246,10 +248,6 @@ class Clean extends Process
         foreach ($cleanValues as $cleanValue) {
             //$cleanValue = trim($cleanValue);
             if ($cleanValue === '') continue;
-
-            if ($flowNode->item->insert_tags === 1) {
-                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
-            }
 
             $arr = explode('|||', $cleanValue);
 

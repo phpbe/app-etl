@@ -81,9 +81,7 @@ class Filter extends Process
             //$filterValue = trim($filterValue);
             if ($filterValue === '') continue;
 
-            if ($formDataNode['item']['insert_tags'] === 1) {
-                $filterValue = str_replace('{换行符}', "\n", $filterValue);
-            }
+            $filterValue = str_replace('{换行符}', "\n", $filterValue);
 
             switch ($formDataNode['item']['filter_op']) {
                 case 'include':
@@ -263,6 +261,9 @@ class Filter extends Process
             foreach ($filterValues as $filterValue) {
                 //$filterValue = trim($filterValue);
                 if ($filterValue === '') continue;
+
+                $filterValue = str_replace('{换行符}', "\n", $filterValue);
+
                 $newFilterValues[] = $filterValue;
             }
 
@@ -286,8 +287,10 @@ class Filter extends Process
             $newFilterValues = [];
             $filterValues = explode("\n", $filterValues);
             foreach ($filterValues as $filterValue) {
-                $filterValue = trim($filterValue);
+                //$filterValue = trim($filterValue);
                 if ($filterValue === '') continue;
+
+                $filterValue = str_replace('{换行符}', "\n", $filterValue);
 
                 $newFilterValues[] = $filterValue;
             }
@@ -300,10 +303,6 @@ class Filter extends Process
 
         $matched = false;
         foreach ($filterValues as $filterValue) {
-
-            if ($flowNode->item->insert_tags === 1) {
-                $filterValue = str_replace('{换行符}', "\n", $filterValue);
-            }
 
             switch ($flowNode->item->filter_op) {
                 case 'include':
