@@ -69,9 +69,14 @@ class Clean extends Process
         $matched = false;
         $cleanValues = explode("\n", $formDataNode['item']['clean_values']);
         foreach ($cleanValues as $cleanValue) {
-            $cleanValue = trim($cleanValue);
+            //$cleanValue = trim($cleanValue);
             if ($cleanValue === '') continue;
-            $arr = explode('|', $cleanValue);
+
+            if ($formDataNode['item']['insert_tags'] === 1) {
+                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
+            }
+
+            $arr = explode('|||', $cleanValue);
             if (count($arr) === 2) {
                 if ($formDataNode['item']['match_case'] === 0) {
                     if (stripos($output->$cleanField, $arr[0]) !== false) {
@@ -239,9 +244,14 @@ class Clean extends Process
 
         $matched = false;
         foreach ($cleanValues as $cleanValue) {
-            $cleanValue = trim($cleanValue);
+            //$cleanValue = trim($cleanValue);
             if ($cleanValue === '') continue;
-            $arr = explode('|', $cleanValue);
+
+            if ($flowNode->item->insert_tags === 1) {
+                $cleanValue = str_replace('{换行符}', "\n", $cleanValue);
+            }
+
+            $arr = explode('|||', $cleanValue);
 
             if (count($arr) === 2) {
                 if ($flowNode->item->match_case === 0) {

@@ -78,8 +78,12 @@ class Filter extends Process
         $matched = false;
         $filterValues = explode("\n", $formDataNode['item']['filter_values']);
         foreach ($filterValues as $filterValue) {
-            $filterValue = trim($filterValue);
+            //$filterValue = trim($filterValue);
             if ($filterValue === '') continue;
+
+            if ($formDataNode['item']['insert_tags'] === 1) {
+                $filterValue = str_replace('{换行符}', "\n", $filterValue);
+            }
 
             switch ($formDataNode['item']['filter_op']) {
                 case 'include':
@@ -167,7 +171,7 @@ class Filter extends Process
                     break;
 
                 case 'between':
-                    $arr = explode('|', $filterValue);
+                    $arr = explode('|||', $filterValue);
                     if (count($arr) === 2) {
                         if ($output->$filterField >= $arr[0] && $output->$filterField <= $arr[1]) {
                             $matched = true;
@@ -257,9 +261,8 @@ class Filter extends Process
             $newFilterValues = [];
             $filterValues = explode("\n", $flowNode->item->filter_values);
             foreach ($filterValues as $filterValue) {
-                $filterValue = trim($filterValue);
+                //$filterValue = trim($filterValue);
                 if ($filterValue === '') continue;
-
                 $newFilterValues[] = $filterValue;
             }
 
@@ -297,6 +300,10 @@ class Filter extends Process
 
         $matched = false;
         foreach ($filterValues as $filterValue) {
+
+            if ($flowNode->item->insert_tags === 1) {
+                $filterValue = str_replace('{换行符}', "\n", $filterValue);
+            }
 
             switch ($flowNode->item->filter_op) {
                 case 'include':
@@ -384,7 +391,7 @@ class Filter extends Process
                     break;
 
                 case 'between':
-                    $arr = explode('|', $filterValue);
+                    $arr = explode('|||', $filterValue);
                     if (count($arr) === 2) {
                         if ($output->$filterField >= $arr[0] && $output->$filterField <= $arr[1]) {
                             $matched = true;

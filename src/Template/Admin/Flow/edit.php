@@ -701,9 +701,9 @@
                                     </div>
                                     <div class="be-col">
                                         <div>一行一个要清洗掉的关键词，</div>
-                                        <div class="be-mt-50">如果需要替换，可以一行内用竖线分隔两个词，例：</div>
+                                        <div class="be-mt-50">如果需要替换，可以一行内用三竖线分隔两个词，例：</div>
                                         <div class="be-c-999 be-mt-50">他的</div>
-                                        <div class="be-c-999 be-mt-20">你的|我的</div>
+                                        <div class="be-c-999 be-mt-20">你的|||我的</div>
                                         <div class="be-mt-100">
                                             将执行的操作为：<br>
                                             1. 将 "他的" 剔除掉<br>
@@ -726,9 +726,16 @@
                                         </div>
 
                                         <div v-if="currentNode.item.insert_tags === 1">
-                                            <div v-if="currentNodeInput !== false">
+
+                                            <div>
+                                                <span class="be-d-inline-block be-mt-50">
+                                                    <el-button @click="processCleanCleanValuesInsertTag('换行符')"  type="info" size="mini">{换行符}</el-button> &nbsp;
+                                                </span>
+                                            </div>
+
+                                            <div class="be-mt-50" v-if="currentNodeInput !== false">
                                                 <span class="be-d-inline-block be-mt-50"  v-for="(v, k) in currentNodeInput">
-                                                    <el-button @click="processCleanCleanValuesInsertTag(k)"  type="primary" size="mini" :label="k">{{"{" + k + "}"}}</el-button> &nbsp;
+                                                    <el-button @click="processCleanCleanValuesInsertTag(k)"  type="primary" size="mini">{{"{" + k + "}"}}</el-button> &nbsp;
                                                 </span>
                                             </div>
                                             <div class="be-mt-50" v-else>
@@ -865,7 +872,7 @@
                                             <el-option label="大于等于" value="gte"></el-option>
                                             <el-option label="小于" value="lt"></el-option>
                                             <el-option label="小于等于" value="lte"></el-option>
-                                            <el-option label="范围（过滤值以 | 分隔）" value="between"></el-option>
+                                            <el-option label="范围（过滤值以 ||| 分隔）" value="between"></el-option>
                                         </el-select>
                                     </div>
                                 </div>
@@ -895,7 +902,7 @@
                                     <div class="be-col">
                                         <div>一行一个关键词，</div>
                                         <div class="be-mt-50">过滤操作为 "范围" 时，在一行内用竖线分隔两个值，例：</div>
-                                        <div class="be-c-999 be-mt-50">100|200</div>
+                                        <div class="be-c-999 be-mt-50">100|||200</div>
                                         <div class="be-mt-100">
                                             表示范围为：大于等于100，小于等于200
                                         </div>
@@ -2200,13 +2207,6 @@
 
                 addInputNode: function (command) {
                     this.addNode('input', command, 0)
-                },
-                addProcessNode: function (command) {
-                    let arr = command.split("|");
-                    this.addNode('process', arr[0], arr[1]);
-                },
-                addOutputNode: function (command) {
-                    this.addNode('output', command, this.formData.nodes.length);
                 },
                 addNodeDialog(index) {
                     this.addNodeIndex = Number(index);
