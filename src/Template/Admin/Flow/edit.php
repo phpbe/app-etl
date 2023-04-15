@@ -2151,7 +2151,13 @@
                     if (node.index === 0) {
                         this.currentNodeInput = false;
                     } else {
-                        this.currentNodeInput = this.formData.nodes[node.index-1].item.output;
+
+                        let tmpNodeId = node.index-1;
+                        while (tmpNodeId > 0 && this.formData.nodes[tmpNodeId].item.type === "output") {
+                            tmpNodeId--;
+                        }
+
+                        this.currentNodeInput = this.formData.nodes[tmpNodeId].item.output;
                     }
 
                     switch (node.item_type) {
