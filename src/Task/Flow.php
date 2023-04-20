@@ -187,6 +187,9 @@ class Flow extends Task
                     if ($flowLog->total_success % 100 === 0) {
                         $flowLog->update_time = date('Y-m-d H:i:s');
                         $db->update('etl_flow_log', $flowLog);
+
+                        $this->taskLog->update_time = date('Y-m-d H:i:s');
+                        $this->updateTaskLog();
                     }
                 }
 
