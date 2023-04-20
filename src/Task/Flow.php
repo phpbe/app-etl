@@ -9,16 +9,12 @@ use Be\Task\Task;
 /**
  * 加工
  *
- * @BeTask("数据流处理")
+ * @BeTask("数据流处理", timeout="300")
  */
 class Flow extends Task
 {
-    /**
-     * 执行超时时间
-     *
-     * @var null|int
-     */
-    protected $timeout = 300;
+
+    protected $parallel = false;
 
 
     public function execute()
