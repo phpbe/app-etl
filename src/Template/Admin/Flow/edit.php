@@ -151,7 +151,7 @@
 
                         <div class="be-row be-mt-150">
                             <div class="be-col-24 be-md-col-auto be-lh-250">
-                                分类：
+                                <span class="be-c-red">*</span> 分类：
                             </div>
                             <div class="be-col-24 be-md-col-auto">
                                 <div class="be-pl-50 be-pt-100"></div>

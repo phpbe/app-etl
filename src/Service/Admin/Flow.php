@@ -20,11 +20,11 @@ class Flow
     {
         $db = Be::getDb();
 
-        if (!isset($formData['name']) || !is_string($formData['name'])) {
+        if (!isset($formData['name']) || !is_string($formData['name']) || $formData['name'] === '') {
             throw new ServiceException('数据流名称未填写！');
         }
 
-        if (!isset($formData['category_id']) || !is_string($formData['category_id'])) {
+        if (!isset($formData['category_id']) || !is_string($formData['category_id']) || $formData['category_id'] === '') {
             throw new ServiceException('分类未填写！');
         }
 
@@ -82,11 +82,11 @@ class Flow
             throw new ServiceException('数据流（# ' . $flowId . '）不存在！');
         }
 
-        if (!isset($formData['name']) || !is_string($formData['name'])) {
+        if (!isset($formData['name']) || !is_string($formData['name']) || $formData['name'] === '') {
             throw new ServiceException('数据流名称未填写！');
         }
 
-        if (!isset($formData['category_id']) || !is_string($formData['category_id'])) {
+        if (!isset($formData['category_id']) || !is_string($formData['category_id']) || $formData['category_id'] === '') {
             throw new ServiceException('分类未填写！');
         }
 
