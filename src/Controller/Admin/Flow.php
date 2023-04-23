@@ -34,7 +34,7 @@ class Flow
 
         $categoryKeyValues = Be::getService('App.Etl.Admin.FlowCategory')->getIdNameKeyValues();
 
-        $cookieKey = 'App-Etl-Admin-Flow-index-category_id';
+        $cookieKey = 'App-Etl-Admin-Flow-index-categoryId';
 
         $categoryId = false;
         if ($request->isGet()) {
