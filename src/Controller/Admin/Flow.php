@@ -29,7 +29,28 @@ class Flow
      */
     public function index()
     {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
         $categoryKeyValues = Be::getService('App.Etl.Admin.FlowCategory')->getIdNameKeyValues();
+
+        $cookieKey = 'App-Etl-Admin-Flow-index-category_id';
+
+        $categoryId = false;
+        if ($request->isGet()) {
+            $categoryId = $request->cookie($cookieKey, false);
+        } else {
+            if ($request->isPost()) {
+                $categoryId = $request->json('formData.category_id', false);
+                if ($categoryId !== false) {
+                    $response->cookie($cookieKey, $categoryId, time() + 30 * 86400);
+                }
+            }
+        }
+
+        if ($categoryId === false) {
+            $categoryId = key($categoryKeyValues);
+        }
 
         Be::getAdminPlugin('Curd')->setting([
 
@@ -47,7 +68,7 @@ class Flow
                 'tab' => [
                     'name' => 'category_id',
                     'keyValues' => $categoryKeyValues,
-                    'value' => key($categoryKeyValues),
+                    'value' => $categoryId,
                 ],
 
                 'form' => [
