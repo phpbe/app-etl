@@ -191,7 +191,14 @@ class Chatgpt extends Process
                 sleep(5);
             }
 
-            if (!$hasError) {
+            if ($hasError) {
+                $message = $err->getMessage();
+
+                // 账号额度用完了
+                if (strpos($message, 'You exceeded your current quota, please check your plan and billing details.') !== false) {
+                    break;
+                }
+            } else {
                 break;
             }
 
@@ -200,7 +207,7 @@ class Chatgpt extends Process
         } while ($times < 5);
 
         if ($hasError) {
-            throw new TaskException('调用OpenAi接口重试出错超过5次：' . $err->getMessage());
+            throw new TaskException('调用OpenAi接口出错：' . $err->getMessage());
         }
 
         return $answer;
