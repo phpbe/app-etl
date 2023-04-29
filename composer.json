@@ -1,7 +1,6 @@
 {
     "name": "be/app-etl",
     "type": "library",
-    "license": "No license",
     "description": "基于BE框架实现的简单实用的的ETL工具",
     "keywords": [
         "ETL"
