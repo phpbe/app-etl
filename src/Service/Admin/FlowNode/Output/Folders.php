@@ -247,11 +247,10 @@ class Folders extends Output
         }
 
         $dir = $this->dir . '/' . $output->name;
-        if (is_dir($dir)) {
-            throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 文件名代码处理（name_code）目录（' . $dir . '）已存在：');
+        if (!is_dir($dir)) {
+            //throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 文件名代码处理（name_code）目录（' . $dir . '）已存在：');
+            mkdir($dir, 0777, true);
         }
-
-        mkdir($dir, 0777, true);
 
         if (count($this->files) > 0) {
 
