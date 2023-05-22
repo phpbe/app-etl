@@ -24,7 +24,7 @@ class FlowLog
     /**
      * 任务管理
      *
-     * @BeMenu("运行记录", icon="bi-list", ordering="2.3")
+     * @BeMenu("运行记录", icon="bi-list", ordering="3.3")
      * @BePermission("运行记录")
      */
     public function index()

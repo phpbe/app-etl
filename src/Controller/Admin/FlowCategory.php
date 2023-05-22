@@ -14,15 +14,15 @@ use Be\AdminPlugin\Table\Item\TableItemSwitch;
  * Class FlowCategory
  * @package Be\App\Etl\Controller\Admin
  *
- * @BeMenuGroup("数据流", icon="bi-box-arrow-right", ordering="2")
- * @BePermissionGroup("数据流", ordering="2.2")
+ * @BeMenuGroup("数据流", icon="bi-box-arrow-right", ordering="3")
+ * @BePermissionGroup("数据流", ordering="3")
  */
 class FlowCategory
 {
     /**
      * 分类管理
      *
-     * @BeMenu("分类", icon="el-icon-folder", ordering="2.1")
+     * @BeMenu("分类", icon="el-icon-folder", ordering="3.1")
      * @BePermission("分类")
      */
     public function lists()

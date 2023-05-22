@@ -24,7 +24,7 @@ class Flow
     /**
      * 任务管理
      *
-     * @BeMenu("数据流", icon="bi-arrow-left-right", ordering="2.2")
+     * @BeMenu("数据流", icon="bi-arrow-left-right", ordering="3.2")
      * @BePermission("数据流")
      */
     public function index()
