@@ -69,7 +69,6 @@ class MaterialItem extends Auth
 
         $material = $service->getMaterial($materialId);
 
-
         $tableItems = [
             [
                 'driver' => TableItemSelection::class,
@@ -415,13 +414,11 @@ class MaterialItem extends Auth
                     'items' => $importItems,
                 ],
                 'events' => [
-                    'before' => function ($tuple, $postData) use ($materialId)  {
+                    'before' => function ($tuple, $row) use ($materialId)  {
                         $tuple->material_id = $materialId;
 
-                        $formData = $postData['formData'];
-                        $formData['material_id'] = $materialId;
-
-                        Be::getService('App.Etl.Admin.MaterialItem')->processData($tuple, $formData);
+                        $row['material_id'] = $materialId;
+                        Be::getService('App.Etl.Admin.MaterialItem')->processData($tuple, $row);
                     }
                 ],
             ],
