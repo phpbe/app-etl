@@ -5,7 +5,7 @@
                 <div class="be-col-auto">选择素材：</div>
                 <div class="be-col-auto be-px-100">
                     <?php
-                    foreach ($this->materialIdLabelKeyValues as $id => $label) {
+                    foreach ($this->materialIdNameKeyValues as $id => $label) {
                         ?>
                         <div class="be-mb-100">
                             <el-link type="primary" href="<?php echo beAdminUrl('Etl.MaterialItem.index', ['material_id' => $id]); ?>"><?php echo $label; ?></el-link>

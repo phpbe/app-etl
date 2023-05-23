@@ -99,16 +99,16 @@
 
             <div class="be-row">
                 <div class="be-col-auto be-lh-250">
-                    <span class="be-c-red">*</span> 素村英文名称：
+                    <span class="be-c-red">*</span> 素村名称：
                 </div>
                 <div class="be-col-auto">
                     <div class="be-pl-50"></div>
                 </div>
                 <div class="be-col">
-                    <el-form-item style="margin: 0;" prop="name" :rules="[{required: true, message: '请输入素村英文名称', trigger: 'change' }]">
+                    <el-form-item style="margin: 0;" prop="name" :rules="[{required: true, message: '请输入素村名称', trigger: 'change' }]">
                         <el-input
                                 type="text"
-                                placeholder="请输入素村英文名称"
+                                placeholder="请输入素村名称"
                                 v-model = "formData.name"
                                 size="medium"
                                 maxlength="180"
@@ -116,28 +116,6 @@
                         </el-input>
                     </el-form-item>
                     <?php $formData['name'] = $this->material ? $this->material->name : ''; ?>
-                </div>
-                <div class="be-col-auto">
-                    <div class="be-pl-100"></div>
-                </div>
-                <div class="be-col-auto be-lh-250">
-                    <span class="be-c-red">*</span> 素村中文名称：
-                </div>
-                <div class="be-col-auto">
-                    <div class="be-pl-50"></div>
-                </div>
-                <div class="be-col">
-                    <el-form-item style="margin: 0;" prop="label" :rules="[{required: true, message: '请输入素村中文名称', trigger: 'change' }]">
-                        <el-input
-                                type="text"
-                                placeholder="请输入素村中文名称"
-                                v-model = "formData.label"
-                                size="medium"
-                                maxlength="300"
-                                show-word-limit>
-                        </el-input>
-                    </el-form-item>
-                    <?php $formData['label'] = $this->material ? $this->material->label : ''; ?>
                 </div>
             </div>
 

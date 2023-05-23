@@ -23,7 +23,7 @@
                 <div class="be-col-auto be-px-100">
                     <el-select @change="selectMaterial" v-model="materialId" filterable size="medium">
                     <?php
-                    foreach ($this->materialIdLabelKeyValues as $id => $label) {
+                    foreach ($this->materialIdNameKeyValues as $id => $label) {
                         ?>
                         <el-option value="<?php echo $id; ?>" label="<?php echo $label; ?>"></el-option>
                         <?php
@@ -297,7 +297,7 @@
     <script>
         <?php
         $materialUrls = [];
-        foreach ($this->materialIdLabelKeyValues as $id => $label) {
+        foreach ($this->materialIdNameKeyValues as $id => $label) {
             $materialUrls[$id] = beAdminUrl('Etl.MaterialApi.config', ['material_id' => $id]);
         }
 

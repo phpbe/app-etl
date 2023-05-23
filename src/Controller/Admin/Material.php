@@ -86,12 +86,7 @@ class Material extends Auth
                         ],
                         [
                             'name' => 'name',
-                            'label' => '英文名称',
-                            'align' => 'left',
-                        ],
-                        [
-                            'name' => 'label',
-                            'label' => '中文名称',
+                            'label' => '名称',
                             'driver' => TableItemLink::class,
                             'align' => 'left',
                             'task' => 'detail',
@@ -179,11 +174,7 @@ class Material extends Auth
                         ],
                         [
                             'name' => 'name',
-                            'label' => '英文名称',
-                        ],
-                        [
-                            'name' => 'label',
-                            'label' => '中文名称',
+                            'label' => '名称',
                         ],
                         [
                             'name' => 'fields',

@@ -39,8 +39,8 @@ class MaterialItem extends Auth
         $request = Be::getRequest();
         $response = Be::getResponse();
 
-        $materialIdLabelKeyValues = Be::getService('App.Etl.Admin.Material')->getIdLabelKeyValues();
-        $response->set('materialIdLabelKeyValues', $materialIdLabelKeyValues);
+        $materialIdNameKeyValues = Be::getService('App.Etl.Admin.Material')->getIdNameKeyValues();
+        $response->set('materialIdNameKeyValues', $materialIdNameKeyValues);
 
         $response->set('title', '选择素材');
         $response->display();
@@ -58,11 +58,11 @@ class MaterialItem extends Auth
 
         $service = Be::getService('App.Etl.Admin.Material');
 
-        $materialIdLabelKeyValues = $service->getIdLabelKeyValues();
+        $materialIdNameKeyValues = $service->getIdNameKeyValues();
 
         $materialId = Be::getRequest()->get('material_id', '');
 
-        if (!isset($materialIdLabelKeyValues[$materialId])) {
+        if (!isset($materialIdNameKeyValues[$materialId])) {
             $response->redirect(beAdminUrl('Etl.MaterialItem.select'));
             return;
         }
@@ -86,7 +86,7 @@ class MaterialItem extends Auth
                 'name' => 'material_id',
                 'label' => '素材',
                 'driver' => FormItemSelect::class,
-                'keyValues' => $materialIdLabelKeyValues,
+                'keyValues' => $materialIdNameKeyValues,
                 'value' => $materialId,
                 'disabled' => true,
             ],
@@ -96,7 +96,7 @@ class MaterialItem extends Auth
                 'name' => 'material_id',
                 'label' => '素材',
                 'driver' => FormItemSelect::class,
-                'keyValues' => $materialIdLabelKeyValues,
+                'keyValues' => $materialIdNameKeyValues,
                 'value' => $materialId,
                 'disabled' => true,
             ],
@@ -264,7 +264,7 @@ class MaterialItem extends Auth
                             'label' => '素材',
                             'driver' => FormItemSelect::class,
                             'required' => true,
-                            'keyValues' => $materialIdLabelKeyValues,
+                            'keyValues' => $materialIdNameKeyValues,
                             'value' => $materialId,
                         ],
                     ],

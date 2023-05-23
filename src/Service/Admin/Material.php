@@ -48,24 +48,6 @@ class Material
     }
 
     /**
-     * 获取素材  id -> label 键值对
-     * @return array
-     */
-    public function getIdLabelKeyValues()
-    {
-        return Be::getTable('etl_material')->getKeyValues('id', 'label');
-    }
-
-    /**
-     * 获取素材  name -> label 键值对
-     * @return array
-     */
-    public function getNameLabelKeyValues()
-    {
-        return Be::getTable('etl_material')->getKeyValues('name', 'label');
-    }
-
-    /**
      * 编辑素材
      *
      * @param array $formData 素材数据

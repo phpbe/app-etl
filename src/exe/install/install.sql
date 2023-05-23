@@ -321,8 +321,7 @@ ADD KEY `flow_node_log_id` (`flow_node_log_id`);
 
 CREATE TABLE `etl_material` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
-`name` varchar(180) NOT NULL DEFAULT '' COMMENT '英文名称',
-`label` varchar(300) NOT NULL DEFAULT '' COMMENT '中文名称',
+`name` varchar(180) NOT NULL DEFAULT '' COMMENT '名称',
 `fields` mediumtext NOT NULL COMMENT '字段参数',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间'

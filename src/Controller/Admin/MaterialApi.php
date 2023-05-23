@@ -28,11 +28,11 @@ class MaterialApi extends Auth
 
         $service = Be::getService('App.Etl.Admin.Material');
 
-        $materialIdLabelKeyValues = $service->getIdLabelKeyValues();
-        $response->set('materialIdLabelKeyValues', $materialIdLabelKeyValues);
+        $materialIdNameKeyValues = $service->getIdNameKeyValues();
+        $response->set('materialIdNameKeyValues', $materialIdNameKeyValues);
 
         $materialId = $request->get('material_id', '');
-        if (isset($materialIdLabelKeyValues[$materialId])) {
+        if (isset($materialIdNameKeyValues[$materialId])) {
             $material = $service->getMaterial($materialId);
             $response->set('material', $material);
         } else {
