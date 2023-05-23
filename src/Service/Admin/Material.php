@@ -73,7 +73,7 @@ class Material
         }
 
         if (!isset($formData['name']) || !is_string($formData['name']) || $formData['name'] === '') {
-            throw new ServiceException('素材英文名称（name）未填写！');
+            throw new ServiceException('素材名称（name）未填写！');
         }
 
         if ($isNew) {
@@ -88,11 +88,7 @@ class Material
         }
 
         if ($nameExist) {
-            throw new ServiceException('素材英文名称（' . $formData['name'] . '）已存在！');
-        }
-
-        if (!isset($formData['label']) || !is_string($formData['label']) || $formData['label'] === '') {
-            throw new ServiceException('素材中文名称（label）未填写！');
+            throw new ServiceException('素材名称（' . $formData['name'] . '）已存在！');
         }
 
         if (!isset($formData['fields']) || !is_array($formData['fields'])) {
@@ -174,7 +170,6 @@ class Material
         try {
 
             $tupleMaterial->name = $formData['name'];
-            $tupleMaterial->label = $formData['label'];
             $tupleMaterial->fields = serialize($fields);
             $tupleMaterial->update_time = date('Y-m-d H:i:s');;
             if ($isNew) {
