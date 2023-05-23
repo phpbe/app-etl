@@ -65,8 +65,8 @@ class MaterialItem
 
         $this->processData($tupleMaterialItem, $formData);
 
-        $db = Be::getDb();
-        $db->startTransaction();
+        //$db = Be::getDb();
+        //$db->startTransaction();
         try {
 
             $tupleMaterialItem->material_id = $formData['material_id'];
@@ -78,10 +78,10 @@ class MaterialItem
                 $tupleMaterialItem->update();
             }
 
-            $db->commit();
+            //$db->commit();
 
         } catch (\Throwable $t) {
-            $db->rollback();
+            //$db->rollback();
             Be::getLog()->error($t);
 
             throw new ServiceException('编辑素材内容发生异常：' . $t->getMessage());
@@ -121,23 +121,44 @@ class MaterialItem
         $uniqueField = null;
         foreach ($material->fields as &$field) {
 
-            if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
-                if ($field->required === 1) {
-                    throw new ServiceException('素材内容' . $uniqueField->label . '（' . $formData[$uniqueField->name] . '）不可为空！');
-                } else {
-                    $formData[$field->name] = $field->default;
+            if ($field->required === 1) {
+                switch ($field->type) {
+                    case 'text':
+                    case 'html':
+                        if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
+                            throw new ServiceException('素材内容' . $field->label . '（' . $formData[$field->name] . '）无效！');
+                        }
+                        break;
+                    case 'int':
+                    case 'float':
+                    case 'bool':
+                        if (!isset($formData[$field->name]) || !is_numeric($formData[$field->name]) || $formData[$field->name] === '') {
+                            throw new ServiceException('素材内容' . $field->label . '（' . $formData[$field->name] . '）无效！');
+                        }
+                        break;
+                    case 'date':
+                    case 'datetime':
+                        if (!strtotime($formData[$field->name])) {
+                            throw new ServiceException('素材内容' . $field->label . '（' . $formData[$field->name] . '）无效！');
+                        }
+                        break;
                 }
             }
 
-            if ($field->length > 0) {
-                if (mb_strlen($formData[$field->name]) > $field->length) {
-                    $formData[$field->name] = mb_substr($formData[$field->name], 0, $field->length);
-                }
-            }
 
             switch ($field->type) {
                 case 'text':
                 case 'html':
+                    if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
+                        $formData[$field->name] = $field->default;
+                    }
+
+                    if ($field->length > 0) {
+                        if (mb_strlen($formData[$field->name]) > $field->length) {
+                            $formData[$field->name] = mb_substr($formData[$field->name], 0, $field->length);
+                        }
+                    }
+
                     break;
                 case 'int':
                     $formData[$field->name] = (int)$formData[$field->name];
@@ -175,7 +196,7 @@ class MaterialItem
                         ->where('unique_key', $formData[$uniqueField->name])
                         ->getValue('COUNT(*)') > 0;
             } else {
-                $uniqueExist = Be::getTable('etl_material')
+                $uniqueExist = Be::getTable('etl_material_item')
                         ->where('unique_key', $formData[$uniqueField->name])
                         ->where('id', '!=', $materialItemId)
                         ->getValue('COUNT(*)') > 0;

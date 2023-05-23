@@ -203,7 +203,7 @@
                         </div>
                     </div>
 
-                    <div class="be-lh-250 be-mt-100">POST请求：</div>
+                    <div class="be-lh-250 be-mt-100">GET/POST请求：</div>
                     <div class="be-mt-50">
                         <el-table
                                 :data="requestDataFetch"
