@@ -122,7 +122,11 @@ class MaterialItem
         foreach ($material->fields as &$field) {
 
             if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
-                $formData[$field->name] = $field->default;
+                if ($field->required === 1) {
+                    throw new ServiceException('素材内容' . $uniqueField->label . '（' . $formData[$uniqueField->name] . '）不可为空！');
+                } else {
+                    $formData[$field->name] = $field->default;
+                }
             }
 
             if ($field->length > 0) {

@@ -15,8 +15,8 @@ class MaterialApi extends Auth
     /**
      * 采集接口
      *
-     * @BeMenu("API", icon="bi-bounding-box", ordering="2.3")
-     * @BePermission("API", ordering="2.3")
+     * @BeMenu("API接口", icon="bi-bounding-box", ordering="2.3")
+     * @BePermission("API接口", ordering="2.3")
      */
     public function config()
     {
@@ -39,14 +39,14 @@ class MaterialApi extends Auth
             $response->set('material', false);
         }
 
-        $response->set('title', 'API 接口');
+        $response->set('title', 'API接口');
         $response->display();
     }
 
     /**
      * 采集接口 切换启用状态
      *
-     * @BePermission("API", ordering="2.3")
+     * @BePermission("API接口")
      */
     public function toggleEnable()
     {
@@ -55,7 +55,7 @@ class MaterialApi extends Auth
         try {
             $enable = Be::getService('App.Etl.Admin.MaterialApi')->toggleEnable();
             $response->set('success', true);
-            $response->set('message', '接口开关' . ($enable ? '启用' : '停用') . '成功！');
+            $response->set('message', 'API接口开关' . ($enable ? '启用' : '停用') . '成功！');
             $response->json();
         } catch (\Throwable $t) {
             $response->set('success', false);
@@ -67,7 +67,7 @@ class MaterialApi extends Auth
     /**
      * 采集接口 重设Token
      *
-     * @BePermission("API", ordering="2.3")
+     * @BePermission("API接口")
      */
     public function resetToken()
     {

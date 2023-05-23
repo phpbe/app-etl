@@ -267,13 +267,24 @@
                                         <div class="be-pl-100"></div>
                                     </div>
                                     <div class="be-col-auto be-lh-250">
+                                        是否必填：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50"></div>
+                                    </div>
+                                    <div class="be-col be-lh-250">
+                                        <el-switch v-model.number="field.required" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div> <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col-auto be-lh-250">
                                         是否唯一：
                                     </div>
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
                                     <div class="be-col be-lh-250">
-                                        <el-switch v-model.number="field.unique" :active-value="1" :inactive-value="0" size="medium" @click="fieldUpdateUnique(field)"></el-switch>
+                                        <el-switch v-model.number="field.unique" :active-value="1" :inactive-value="0" size="medium" @change="fieldUpdateUnique(field)"></el-switch>
                                     </div>
                                 </div>
 
@@ -305,6 +316,7 @@
                         'default' => '',
                         'lengthType' => 'custom',
                         'length' => 300,
+                        'required' => 0,
                         'unique' => 0,
                     ],
                     (object)[
@@ -314,6 +326,7 @@
                         'default' => '',
                         'lengthType' => 'unlimited',
                         'length' => 0,
+                        'required' => 0,
                         'unique' => 0,
                     ],
                 ];
@@ -397,6 +410,7 @@
                         default: "",
                         lengthType: "unlimited",
                         length: 0,
+                        required: 0,
                         unique: 0,
                     });
                     this.$forceUpdate();
@@ -407,6 +421,7 @@
                 },
                 fieldUpdateUnique: function (field) {
                     if (field.unique === 1) {
+                        field.required = 1;
                         for(let f of this.formData.fields) {
                             if (f !== field && f.unique === 1) {
                                 f.unique = 0;

@@ -182,6 +182,10 @@ class MaterialItem extends Auth
                 ];
             }
 
+            if ($field->required === 1) {
+                $formItem['required'] = true;
+            }
+
             $createItems[] = $formItem;
 
             $formItem['value'] = function($row) use($field) {

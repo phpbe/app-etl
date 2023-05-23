@@ -163,6 +163,12 @@ class Material
             $f->length = (int)$field['length'];
 
 
+            if (!isset($field['required']) || !is_numeric($field['required']) || !in_array($field['required'], ['0', '1'])) {
+                throw new ServiceException('字段 ' . $i . ' 是否必填（required）参数无效！');
+            }
+            $f->required = (int)$field['required'];
+
+
             if (!isset($field['unique']) || !is_numeric($field['unique']) || !in_array($field['unique'], ['0', '1'])) {
                 throw new ServiceException('字段 ' . $i . ' 是否唯一（unique）参数无效！');
             }
