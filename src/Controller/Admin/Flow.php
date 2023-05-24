@@ -398,6 +398,10 @@ class Flow
                 $fieldMappingKeyValues = $serviceFlow->getFieldMappingKeyValues();
                 $response->set('fieldMappingKeyValues', $fieldMappingKeyValues);
 
+                $serviceMaterial = Be::getService('App.Etl.Admin.Material');
+                $materialKeyValues = $serviceMaterial->getIdNameKeyValues();
+                $response->set('materialKeyValues', $materialKeyValues);
+
                 $response->set('title', '编辑数据流');
 
                 $response->display();

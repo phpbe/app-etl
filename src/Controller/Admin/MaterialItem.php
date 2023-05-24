@@ -112,7 +112,7 @@ class MaterialItem extends Auth
         ];
 
         foreach ($material->fields as $field) {
-            if ($field->type === 'text' && $field->length > 0 && $field->length < 300 ){
+            if ($field->type === 'text'){
                 if (count($tableItems) === 1) {
                     $tableItems[] = [
                         'name' => $field->name,
@@ -148,11 +148,10 @@ class MaterialItem extends Auth
 
             switch ($field->type) {
                 case 'text':
-                    if ($field->length > 0 && $field->length < 300) {
-                        $formItem['driver'] = FormItemInput::class;
-                    } else {
-                        $formItem['driver'] = FormItemInputTextArea::class;
-                    }
+                    $formItem['driver'] = FormItemInput::class;
+                    break;
+                case 'textarea':
+                    $formItem['driver'] = FormItemInputTextArea::class;
                     break;
                 case 'html':
                     $formItem['driver'] = FormItemTinymce::class;

@@ -124,6 +124,7 @@ class MaterialItem
             if ($field->required === 1) {
                 switch ($field->type) {
                     case 'text':
+                    case 'textarea':
                     case 'html':
                         if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
                             throw new ServiceException('素材内容' . $field->label . '（' . $formData[$field->name] . '）无效！');
@@ -148,6 +149,7 @@ class MaterialItem
 
             switch ($field->type) {
                 case 'text':
+                case 'textarea':
                 case 'html':
                     if (!isset($formData[$field->name]) || !is_string($formData[$field->name]) || $formData[$field->name] === '') {
                         $formData[$field->name] = $field->default;

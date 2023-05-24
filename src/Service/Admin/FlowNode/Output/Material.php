@@ -8,12 +8,12 @@ use Be\App\ServiceException;
 use Be\Be;
 use Be\Db\Driver;
 
-class Ds extends Output
+class Material extends Output
 {
 
     public function getItemName(): string
     {
-        return '数据源';
+        return '素材';
     }
 
 
@@ -23,21 +23,15 @@ class Ds extends Output
             throw new ServiceException('节点参数（index）无效！');
         }
 
-        if (!isset($formDataNode['item']['ds_id']) || !is_string($formDataNode['item']['ds_id']) || strlen($formDataNode['item']['ds_id']) !== 36) {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据源（ds_id）参数无效！');
-        }
-
-        if (!isset($formDataNode['item']['ds_table']) || !is_string($formDataNode['item']['ds_table']) || $formDataNode['item']['ds_table'] === '') {
-            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据表（ds_table）参数无效！');
+        if (!isset($formDataNode['item']['material_id']) || !is_string($formDataNode['item']['material_id']) || strlen($formDataNode['item']['material_id']) !== 36) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 素材（material_id）参数无效！');
         }
 
         if (!isset($formDataNode['item']['field_mapping']) || !is_string($formDataNode['item']['field_mapping']) || !in_array($formDataNode['item']['field_mapping'], ['mapping', 'code'])) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射类型（field_mapping）参数无效！');
         }
 
-        $serviceDs = Be::getService('App.Etl.Admin.Ds');
-
-        $tableFields = $serviceDs->getTableFields($formDataNode['item']['ds_id'], $formDataNode['item']['ds_table']);
+        $material = Be::getService('App.Etl.Admin.Material')->getMaterial($formDataNode['item']['material_id']);
 
         if ($formDataNode['item']['field_mapping'] === 'mapping') {
 
@@ -63,21 +57,25 @@ class Ds extends Output
                 if ($enable === 0) continue;
 
                 if (!isset($mapping['field']) || !is_string($mapping['field']) || $mapping['field'] === '') {
-                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 数据表字段名（field）参数无效！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 素材字段名（field）参数无效！');
                 }
 
                 $field = $mapping['field'];
 
                 $found = false;
-                foreach ($tableFields as $tableField) {
-                    if ($tableField['name'] === $field) {
-                        $found = true;
-                        break;
+                if (in_array($field, ['id', 'material_id', 'unique_key', 'create_time', 'update_time'])) {
+                    $found = true;
+                } else {
+                    foreach ($material->fields as $materialField) {
+                        if ($materialField->name === $field) {
+                            $found = true;
+                            break;
+                        }
                     }
                 }
 
                 if (!$found) {
-                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 数据表字段名（' . $field . '）不存在！');
+                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 字段映射第 ' . $i . ' 行 素材字段名（' . $field . '）不存在！');
                 }
 
                 if (!isset($mapping['type']) || !is_string($mapping['type']) || !in_array($mapping['type'], ['input_field', 'custom'])) {
@@ -139,41 +137,17 @@ class Ds extends Output
             }
         }
 
-        if ($formDataNode['item']['op'] === 'auto') {
-            if (!isset($formDataNode['item']['mysql_replace']) || !is_numeric($formDataNode['item']['mysql_replace'])) {
-                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
-            }
-
-            $formDataNode['item']['mysql_replace'] = (int)$formDataNode['item']['mysql_replace'];
-
-            if (!in_array($formDataNode['item']['mysql_replace'], [0, 1])) {
-                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 是否启用 MYSQL 数据库 Replace Into（mysql_replace）参数无效！');
-            }
-
-        } else {
-            $formDataNode['item']['mysql_replace'] = 0;
-        }
-
         $formDataNode['item']['clean'] = 0;
-        $formDataNode['item']['clean_type'] = 'truncate';
         if ($formDataNode['item']['op'] === 'insert') {
-
             if (!isset($formDataNode['item']['clean']) || !is_numeric($formDataNode['item']['clean'])) {
-                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空数据表（clean）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空素材（clean）参数无效！');
             }
 
             $formDataNode['item']['clean'] = (int)$formDataNode['item']['clean'];
 
             if (!in_array($formDataNode['item']['clean'], [0, 1])) {
-                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空数据表（clean）参数无效！');
+                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 运行前清空素材（clean）参数无效！');
             }
-
-            if ($formDataNode['item']['clean'] === 1) {
-                if (!isset($formDataNode['item']['clean_type']) || !is_string($formDataNode['item']['clean_type']) || !in_array($formDataNode['item']['clean_type'], ['truncate', 'delete'])) {
-                    throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 清空数据表方式（clean_type）参数无效！');
-                }
-            }
-
         }
 
         return $output;
@@ -182,7 +156,7 @@ class Ds extends Output
 
     public function edit(string $flowNodeId, array $formDataNode): object
     {
-        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_output_ds');
+        $tupleFlowNodeItem = Be::getTuple('etl_flow_node_output_material');
 
         if (isset($formDataNode['item']['id']) && is_string($formDataNode['item']['id']) && strlen($formDataNode['item']['id']) === 36) {
             try {
@@ -192,16 +166,13 @@ class Ds extends Output
         }
 
         $tupleFlowNodeItem->flow_node_id = $flowNodeId;
-        $tupleFlowNodeItem->ds_id = $formDataNode['item']['ds_id'];
-        $tupleFlowNodeItem->ds_table = $formDataNode['item']['ds_table'];
+        $tupleFlowNodeItem->material_id = $formDataNode['item']['material_id'];
         $tupleFlowNodeItem->field_mapping = $formDataNode['item']['field_mapping'];
         $tupleFlowNodeItem->field_mapping_details = serialize($formDataNode['item']['field_mapping_details']);
         $tupleFlowNodeItem->field_mapping_code = $formDataNode['item']['field_mapping_code'];
         $tupleFlowNodeItem->op = $formDataNode['item']['op'];
         $tupleFlowNodeItem->op_field = $formDataNode['item']['op_field'];
-        $tupleFlowNodeItem->mysql_replace = $formDataNode['item']['mysql_replace'];
         $tupleFlowNodeItem->clean = $formDataNode['item']['clean'];
-        $tupleFlowNodeItem->clean_type = $formDataNode['item']['clean_type'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
@@ -237,13 +208,11 @@ class Ds extends Output
 
     private ?array $fieldMappingDetails = null;
     private ?\Closure $fieldMappingFn = null;
-    private ?Driver $db = null;
-
+    private ?object $material = null;
 
     public function start(object $flowNode, object $flowLog, object $flowNodeLog)
     {
         $flowNode->item->clean = (int)$flowNode->item->clean;
-        $flowNode->item->mysql_replace = (int)$flowNode->item->mysql_replace;
 
         if ($flowNode->item->field_mapping === 'mapping') {
             $this->fieldMappingDetails = unserialize($flowNode->item->field_mapping_details);
@@ -255,35 +224,40 @@ class Ds extends Output
             }
         }
 
-        $this->db = Be::getService('App.Etl.Admin.Ds')->newDb($flowNode->item->ds_id);
-
         // 清空数据
         if ($flowNode->item->clean === 1) {
-            if ($flowNode->item->clean_type === 'truncate') {
-                $sql = 'TRUNCATE TABLE ' . $this->db->quoteKey($flowNode->item->ds_table);
-            } else {
-                $sql = 'DELETE FROM ' . $this->db->quoteKey($flowNode->item->ds_table);
-            }
-
-            $this->db->query($sql);
+            $db = Be::getDb();
+            $sql = 'DELETE FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ' . $db->quoteKey('material_id') . '=' . $db->quoteValue($flowNode->item->material_id);
+            $db->query($sql);
         }
+
+        $this->material = Be::getService('App.Etl.Admin.Material')->getMaterial($flowNode->item->material_id);
     }
+
 
 
     public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object
     {
+        $db = Be::getDb();
+
         if ($flowNode->item->field_mapping === 'mapping') {
             $output = new \stdClass();
             foreach ($this->fieldMappingDetails as $mapping) {
-                if ($mapping['enable'] === 0) continue;
 
                 $field = $mapping['field'];
+
+                if ($mapping['enable'] === 0) {
+                    if (in_array($field, ['id', 'material_id', 'unique_key', 'create_time', 'update_time'])) {
+                        continue;
+                    }
+                }
+
                 if ($mapping['type'] === 'input_field') {
                     $inputField = $mapping['input_field'];
                     $output->$field = $input->$inputField;
                 } else {
                     if ($mapping['custom'] === 'uuid()') {
-                        $output->$field = $this->db->uuid();
+                        $output->$field = $db->uuid();
                     } else {
                         $output->$field = $mapping['custom'];
                     }
@@ -300,40 +274,74 @@ class Ds extends Output
         }
 
 
+        $m = new \stdClass();
+
+        if (isset($output->id)) $m->id = $output->id;
+        if (isset($output->material_id)) $m->material_id = $output->material_id;
+        if (isset($output->unique_key)) $m->unique_key = $output->unique_key;
+
+        $uniqueKey = '';
+        $data = [];
+        foreach ($this->material->fields as $field) {
+            $fieldName = $field->name;
+            if (isset($output->$fieldName)) {
+                $data[$fieldName] = $output->$fieldName;
+            } else {
+                $data[$fieldName] = $field->default;
+            }
+
+            if ($field->unique === 1) {
+                $uniqueKey = $data[$fieldName];
+            }
+        }
+        $m->data = serialize($data);
+
+        if (isset($output->create_time)) $m->create_time = $output->create_time;
+        if (isset($output->update_time)) $m->update_time = $output->update_time;
+
         if ($flowNode->item->op === 'auto') {
-            if ($flowNode->item->mysql_replace === 1) {
 
-                $this->db->replace($flowNode->item->ds_table, $output);
+            $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ';
+            $opField = $flowNode->item->op_field;
+            $sql .= $db->quoteKey($opField) . ' = ' . $db->quoteValue($output->$opField);
 
+            $count = (int)$db->getValue($sql);
+            if ($count > 0) {
+                $db->update('etl_material_item', $m, $opField);
             } else {
 
-                $sql = 'SELECT COUNT(*) FROM ' . $this->db->quoteKey($flowNode->item->ds_table) . ' WHERE ';
-                $opField = $flowNode->item->op_field;
-                $sql .= $this->db->quoteKey($opField) . ' = ' . $this->db->quoteValue($output->$opField);
+                $m->material_id = $flowNode->item->material_id;
 
-                $count = (int)$this->db->getValue($sql);
-                if ($count > 0) {
-                    $this->db->update($flowNode->item->ds_table, $output, $opField);
-                } else {
-                    $this->db->insert($flowNode->item->ds_table, $output);
-                }
+                if (!isset($m->id)) $m->id = $db->uuid();
+                if (!isset($m->material_id)) $m->material_id = $flowNode->item->material_id;
+                if (!isset($m->unique_key)) $m->unique_key = $uniqueKey;
+                if (!isset($m->create_time)) $m->create_time = date('Y-m-d H:i:s');
+                if (!isset($m->update_time)) $m->update_time = date('Y-m-d H:i:s');
 
+                $db->insert('etl_material_item', $m);
             }
+
         } elseif ($flowNode->item->op === 'insert') {
 
-            $this->db->insert($flowNode->item->ds_table, $output);
+            if (!isset($m->id)) $m->id = $db->uuid();
+            if (!isset($m->material_id)) $m->material_id = $flowNode->item->material_id;
+            if (!isset($m->unique_key)) $m->unique_key = $uniqueKey;
+            if (!isset($m->create_time)) $m->create_time = date('Y-m-d H:i:s');
+            if (!isset($m->update_time)) $m->update_time = date('Y-m-d H:i:s');
+
+            $db->insert('etl_material_item', $m);
 
         } elseif ($flowNode->item->op === 'update') {
 
             $opField = $flowNode->item->op_field;
-            $this->db->update($flowNode->item->ds_table, $output, $opField);
+            $db->update('etl_material_item', $m, $opField);
 
         } elseif ($flowNode->item->op === 'delete') {
 
-            $sql = 'DELETE FROM ' . $this->db->quoteKey($flowNode->item->ds_table) . ' WHERE ';
+            $sql = 'DELETE FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ';
             $opField = $flowNode->item->op_field;
-            $sql .= $this->db->quoteKey($opField) . ' = ' . $this->db->quoteValue($output->$opField);
-            $this->db->query($sql);
+            $sql .= $db->quoteKey($opField) . ' = ' . $db->quoteValue($output->$opField);
+            $db->query($sql);
 
         }
 
@@ -345,7 +353,7 @@ class Ds extends Output
     {
         $this->fieldMappingDetails = null;
         $this->fieldMappingFn = null;
-        $this->db = null;
+        $this->material = null;
     }
 
 

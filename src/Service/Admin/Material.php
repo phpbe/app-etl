@@ -104,10 +104,14 @@ class Material
 
             $f = new \stdClass();
 
-
             if (!isset($field['name']) || !is_string($field['name']) || $field['name'] === '') {
                 throw new ServiceException('字段 ' . $i . ' 字段英文名（name）参数无效！');
             }
+
+            if (in_array($field['name'], ['id', 'material_id', 'unique_key', 'create_time', 'update_time'])) {
+                throw new ServiceException('字段 ' . $i . ' 字段英文名（name）参数命用了受保护的关键字（' . $field['name'] . '）！');
+            }
+
             $f->name = $field['name'];
 
             if (isset($names[$f->name])) {
@@ -123,7 +127,7 @@ class Material
             $f->label = $field['label'];
 
 
-            if (!isset($field['type']) || !is_string($field['type']) || !in_array($field['type'], ['text', 'html', 'int', 'float', 'bool', 'date', 'datetime'])) {
+            if (!isset($field['type']) || !is_string($field['type']) || !in_array($field['type'], ['text', 'textarea', 'html', 'int', 'float', 'bool', 'date', 'datetime'])) {
                 throw new ServiceException('字段 ' . $i . ' 数据类型（type）参数无效！');
             }
             $f->type = $field['type'];
@@ -135,11 +139,14 @@ class Material
             $f->default = $field['default'];
 
 
-            if (!isset($field['length']) || !is_numeric($field['length'])) {
-                throw new ServiceException('字段 ' . $i . ' 最大长度（length）参数无效！');
+            if (in_array($field['type'], ['text', 'textarea', 'html'])) {
+                if (!isset($field['length']) || !is_numeric($field['length'])) {
+                    throw new ServiceException('字段 ' . $i . ' 最大长度（length）参数无效！');
+                }
+                $f->length = (int)$field['length'];
+            } else {
+                $f->length = 0;
             }
-            $f->length = (int)$field['length'];
-
 
             if (!isset($field['required']) || !is_numeric($field['required']) || !in_array($field['required'], ['0', '1'])) {
                 throw new ServiceException('字段 ' . $i . ' 是否必填（required）参数无效！');

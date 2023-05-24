@@ -104,7 +104,7 @@
                 <div class="be-col-auto">
                     <div class="be-pl-50"></div>
                 </div>
-                <div class="be-col">
+                <div class="be-col-auto">
                     <el-form-item style="margin: 0;" prop="name" :rules="[{required: true, message: '请输入素村名称', trigger: 'change' }]">
                         <el-input
                                 type="text"
@@ -142,7 +142,7 @@
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col">
+                                    <div class="be-col-auto">
                                         <el-form-item :prop="'fields['+fieldIndex+'].name'" :rules="[{required: true, message: '请输入字段英文名称', trigger: 'change' }]">
                                             <el-input
                                                     type="text"
@@ -163,7 +163,7 @@
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col">
+                                    <div class="be-col-auto">
                                         <el-form-item :prop="'fields['+fieldIndex+'].label'" :rules="[{required: true, message: '请输入字段中文名称', trigger: 'change' }]">
                                             <el-input
                                                     type="text"
@@ -184,11 +184,12 @@
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col">
+                                    <div class="be-col-auto">
                                         <el-form-item :prop="'fields['+fieldIndex+'].type'" :rules="[{required: true, message: '请选择字段类型', trigger: 'change' }]">
                                             <el-select v-model="field.type" size="medium">
-                                                <el-option label="文本" value="text"></el-option>
-                                                <el-option label="HTML" value="html"></el-option>
+                                                <el-option label="单行文本" value="text"></el-option>
+                                                <el-option label="多行文本" value="textarea"></el-option>
+                                                <el-option label="富文本" value="html"></el-option>
                                                 <el-option label="整数" value="int"></el-option>
                                                 <el-option label="浮点数" value="float"></el-option>
                                                 <el-option label="布尔（0或1）" value="bool"></el-option>
@@ -197,49 +198,50 @@
                                             </el-select>
                                         </el-form-item>
                                     </div>
-                                    <div class="be-col-auto">
-                                        <div class="be-pl-100"></div>
-                                    </div>
+                                    <template  v-if="field.type === 'text' || field.type === 'textarea' || field.type === 'html'">
+                                        <div class="be-col-auto">
+                                            <div class="be-pl-100"></div>
+                                        </div>
+                                        <div class="be-col-auto be-lh-250">
+                                            <span class="be-c-red">*</span> 字段长度：
+                                        </div>
+                                        <div class="be-col-auto">
+                                            <div class="be-pl-50"></div>
+                                        </div>
+                                        <div class="be-col-auto be-lh-250">
+                                            <el-radio v-model="field.lengthType" label="unlimited" @click="field.length = 0;">不限</el-radio>
+                                            <el-radio v-model="field.lengthType" label="custom">自定义：</el-radio>
+                                        </div>
+                                        <div class="be-col-auto">
+                                            <div class="be-pl-50"></div>
+                                        </div>
+                                        <div class="be-col-auto">
+                                            <el-input-number
+                                                    :precision="0"
+                                                    :step="1"
+                                                    :max="65535"
+                                                    :disabled="field.lengthType === 'unlimited'"
+                                                    v-model.number = "field.length"
+                                                    size="medium">
+                                            </el-input-number>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <div class="be-row">
                                     <div class="be-col-auto be-lh-250">
-                                        字段默认值：
+                                        默认值：
                                     </div>
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col">
+                                    <div class="be-col-auto">
                                         <el-input
                                                 type="text"
                                                 placeholder="请输入字段默认值"
                                                 v-model = "field.default"
                                                 size="medium">
                                         </el-input>
-                                    </div>
-                                </div>
-
-                                <div class="be-row">
-                                    <div class="be-col-auto be-lh-250">
-                                        <span class="be-c-red">*</span> 字段长度：
-                                    </div>
-                                    <div class="be-col-auto">
-                                        <div class="be-pl-50"></div>
-                                    </div>
-                                    <div class="be-col-auto be-lh-250">
-                                        <el-radio v-model="field.lengthType" label="unlimited" @click="field.length = 0;">不限</el-radio>
-                                        <el-radio v-model="field.lengthType" label="custom">自定义：</el-radio>
-                                    </div>
-                                    <div class="be-col-auto">
-                                        <div class="be-pl-50"></div>
-                                    </div>
-                                    <div class="be-col">
-                                        <el-input-number
-                                                :precision="0"
-                                                :step="1"
-                                                :max="65535"
-                                                :controls="false"
-                                                :disabled="field.lengthType === 'unlimited'"
-                                                v-model.number = "field.length"
-                                                size="medium">
-                                        </el-input-number>
                                     </div>
                                     <div class="be-col-auto">
                                         <div class="be-pl-100"></div>
@@ -250,7 +252,7 @@
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col be-lh-250">
+                                    <div class="be-col-auto be-lh-250">
                                         <el-switch v-model.number="field.required" :active-value="1" :inactive-value="0" size="medium"></el-switch>
                                     </div> <div class="be-col-auto">
                                         <div class="be-pl-100"></div>
@@ -261,7 +263,7 @@
                                     <div class="be-col-auto">
                                         <div class="be-pl-50"></div>
                                     </div>
-                                    <div class="be-col be-lh-250">
+                                    <div class="be-col-auto be-lh-250">
                                         <el-switch v-model.number="field.unique" :active-value="1" :inactive-value="0" size="medium" @change="fieldUpdateUnique(field)"></el-switch>
                                     </div>
                                 </div>

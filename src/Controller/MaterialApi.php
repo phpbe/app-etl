@@ -2,8 +2,6 @@
 
 namespace Be\App\Etl\Controller;
 
-use Be\App\ControllerException;
-use Be\App\ServiceException;
 use Be\Be;
 
 /**
@@ -149,6 +147,8 @@ class MaterialApi
 
                 $formattedRow = new \stdClass();
                 $formattedRow->id = $row->id;
+                $formattedRow->material_id = $row->material_id;
+                $formattedRow->unique_key = $row->unique_key;
 
                 $data = unserialize($row->data);
                 foreach ($material->fields as $field) {

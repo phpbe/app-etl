@@ -315,4 +315,41 @@ class Material extends Auth
         }
     }
 
+    /**
+     * @BePermission("*")
+     */
+    public function getFields()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $postData = $request->json();
+
+            $material = Be::getService('App.Etl.Material')->getMaterial($postData['materialId']);
+
+            $fields = [];;
+            $fields[] = 'id';
+            $fields[] = 'material_id';
+            $fields[] = 'unique_key';
+
+            foreach ($material->fields as $field) {
+                $fields[] = $field->name;
+            }
+
+            $fields[] = 'create_time';
+            $fields[] = 'update_time';
+
+            $response->set('success', true);
+            $response->set('data', [
+                'fields' => $fields,
+            ]);
+            $response->json();
+        } catch (\Exception $e) {
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
+        }
+    }
+
 }

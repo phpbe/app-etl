@@ -206,6 +206,8 @@
                                     </el-button>
                                     <el-dropdown-menu slot="dropdown">
                                         <el-dropdown-item command="input_ds">数据源</el-dropdown-item>
+                                        <el-dropdown-item command="input_material">素材</el-dropdown-item>
+                                        <el-dropdown-item command="input_code">代码</el-dropdown-item>
                                     </el-dropdown-menu>
                                 </el-dropdown>
                             </div>
@@ -216,6 +218,16 @@
                                         <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_ds'">
                                             <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
                                                 <el-button @click="toggleNode(node)" type="primary">{{nodeIndex + 1}}. 输入：数据源</el-button>
+                                            </el-badge>
+                                        </div>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_material'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="primary">{{nodeIndex + 1}}. 输入：素材</el-button>
+                                            </el-badge>
+                                        </div>
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'input_code'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="primary">{{nodeIndex + 1}}. 输入：代码</el-button>
                                             </el-badge>
                                         </div>
                                     </div>
@@ -282,6 +294,12 @@
                                                 <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：API调用</el-button>
                                             </el-badge>
                                         </div>
+
+                                        <div :class="{'node-on': currentNode.index == nodeIndex}" v-if="node.item_type === 'output_material'">
+                                            <el-badge :value="node.item.output === false? '未验证 ' : '已验证'" :type="node.item.output === false? 'danger ' : 'success'">
+                                                <el-button @click="toggleNode(node)" type="success">{{nodeIndex + 1}}. 输出：素材</el-button>
+                                            </el-badge>
+                                        </div>
                                     </div>
 
                                 </template>
@@ -314,6 +332,7 @@
                                         <el-button type="success" @click="addNodeDialogConfirm('output', 'output_files')">文件包</el-button>
                                         <el-button type="success" @click="addNodeDialogConfirm('output', 'output_folders')">目录包</el-button>
                                         <el-button type="success" @click="addNodeDialogConfirm('output', 'output_api')">API调用</el-button>
+                                        <el-button type="success" @click="addNodeDialogConfirm('output', 'output_material')">素材</el-button>
                                     </el-tab-pane>
                                 </el-tabs>
                                 </div>
@@ -510,14 +529,142 @@
                             <!-- input_ds -->
 
 
+                            <!-- input_material -->
+                            <div v-show="currentNode.item && currentNode.item_type === 'input_material'">
 
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 素材：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.item.material_id" placeholder="请选择素材" size="medium">
+                                            <el-option
+                                                    v-for="(name, id) in materialKeyValues"
+                                                    :key="id"
+                                                    :label="name"
+                                                    :value="id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
 
-                            <!-- input_csv -->
-                            <div v-if="currentNode.item && currentNode.item_type === 'input_csv'">
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点类型：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.item.breakpoint" size="medium">
+                                            <el-radio-button v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.item.breakpoint_field" placeholder="请选择断点字段">
+                                            <el-option label="创建时间（create_time）" value="create_time"></el-option>
+                                            <el-option label="更新时间（update_time）" value="update_time"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点时间：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-date-picker
+                                                v-model="currentNode.item.breakpoint_time"
+                                                type="datetime"
+                                                size="medium"
+                                                placeholder="请选择断点日期时间"
+                                                value-format="yyyy-MM-dd HH:mm:ss">
+                                        </el-date-picker>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点递增量：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.item.breakpoint_step" size="medium">
+                                            <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 断点向前编移量：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-input-number v-model="currentNode.item.breakpoint_offset" size="medium" :step="1"></el-input-number>
+                                        <div class="be-mt-50 be-c-999">
+                                            此偏移量会将断点范围向前扩充指定的秒数，<br/>
+                                            例如：断点为: 2020-09-10 00:00:00，断点递增量：一天, 断点向前编移量 86400 秒。<br/>
+                                            计划任务2010-09-11执行时，断点范围为: 2020-09-09 00:00:00 (2020-09-10向前偏移86400秒) <= T < 2020-09-11
+                                            00:00:00，即拉取了两天的数据<br/>
+                                            计划任务2010-09-12执行时，断点范围为: 2020-09-10 00:00:00 (2020-09-11向前偏移86400秒) <= T < 2020-09-12 00:00:00。
+                                        </div>
+                                    </div>
+                                </div>
 
                             </div>
-                            <!-- input_csv -->
+                            <!-- input_material -->
 
+
+                            <!-- input_code -->
+                            <div v-show="currentNode.item && currentNode.item_type === 'input_code'">
+
+                                <div class="be-row">
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function () : \Generator {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'input_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.item.code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        通过 yield 迭代器返回数据
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- input_code -->
 
 
                             <!-- process_chatgpt -->
@@ -1259,8 +1406,7 @@
                                 </div>
 
 
-
-                                <div class="be-row be-mt-150" v-if="currentNode.item && currentNode.item_type === 'output_ds'">
+                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'insert'">
                                     <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
                                     </div>
@@ -1287,8 +1433,6 @@
 
                             </div>
                             <!-- output_ds -->
-
-
 
 
                             <!-- output_csv -->
@@ -2072,6 +2216,231 @@
                             <!-- output_api   -->
 
 
+                            <!-- output_material -->
+                            <div v-show="currentNode.item && currentNode.item_type === 'output_material'">
+
+                                <div class="be-row">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 素材：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.item.material_id" placeholder="请选择素材" size="medium" @change="outputMaterialChange">
+                                            <el-option
+                                                    v-for="(name, id) in materialKeyValues"
+                                                    :key="id"
+                                                    :label="name"
+                                                    :value="id">
+                                            </el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段处理方式：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
+                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
+                                        </el-radio-group>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'mapping'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 字段映射：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+
+                                        <div v-show="outputMaterialFields.length > 0">
+
+                                            <div style="padding: 5px;">
+                                                <el-button @click="outputMaterialFieldMappingSelectAll" size="mini">全选</el-button>
+                                                <el-button @click="outputMaterialFieldMappingSelectNone" size="mini">全不选</el-button>
+                                                <el-button @click="outputMaterialFieldMappingSelectMatched" size="mini">选中已匹配的</el-button>
+                                            </div>
+
+                                            <div class="be-row be-mt-150 field-item-header">
+                                                <div class="be-col-auto">
+                                                    <div style="width: 50px;">
+                                                    </div>
+                                                </div>
+                                                <div class="be-col">
+                                                    <div class="be-pl-100">数据表字段名</div>
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col be-ta-center">
+                                                    取值类型
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col">
+                                                    上个节点的输出或自定义
+                                                </div>
+                                            </div>
+
+
+                                            <div class="be-row field-item" v-for="mapping, mappingIndex in currentNode.item.field_mapping_details" :key="mappingIndex">
+
+                                                <div class="be-col-auto">
+                                                    <div class="be-lh-250 be-ta-center" style="width: 50px;">
+                                                        <el-checkbox v-model.number="mapping.enable" :true-label="1" :false-label="0" @change="forceUpdate"></el-checkbox>
+                                                    </div>
+                                                </div>
+
+                                                <div class="be-col be-lh-250">
+                                                    {{mapping.field}}
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col be-ta-center be-lh-250">
+                                                    <el-radio v-model="mapping.type" label="input_field" :disabled="mapping.enable === 0">取用</el-radio>
+                                                    <el-radio v-model="mapping.type" label="custom" :disabled="mapping.enable === 0">自定义</el-radio>
+                                                </div>
+                                                <div class="be-col-auto">
+                                                    <div class="be-pl-100"></div>
+                                                </div>
+                                                <div class="be-col">
+                                                    <div v-show="mapping.type === 'input_field'">
+                                                        <el-select
+                                                                v-model="mapping.input_field"
+                                                                @change="forceUpdate"
+                                                                :disabled="mapping.enable === 0"
+                                                                placeholder="请选择输入字段"
+                                                                size="medium"
+                                                                filterable>
+                                                            <el-option
+                                                                    v-for="(v, k) in currentNodeInput"
+                                                                    :key="k"
+                                                                    :label="k"
+                                                                    :value="k">
+                                                            </el-option>
+                                                        </el-select>
+                                                    </div>
+                                                    <div v-show="mapping.type === 'custom'">
+                                                        <el-input
+                                                                type="text"
+                                                                placeholder="请输入自定义值"
+                                                                v-model = "mapping.custom"
+                                                                :disabled="mapping.enable === 0"
+                                                                size="medium">
+                                                        </el-input>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <div class="be-row be-mt-150" v-show="currentNode.item.field_mapping === 'code'">
+                                    <div class="be-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 代码处理：
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <pre class="be-c-999">function (object $input) ：object {</pre>
+                                        <?php
+                                        $driver = new \Be\AdminPlugin\Form\Item\FormItemCode([
+                                            'name' => 'output_material_field_mapping_code',
+                                            'language' => 'php',
+                                            'ui' => [
+                                                'v-model' => 'currentNode.item.field_mapping_code',
+                                            ],
+                                        ]);
+                                        echo $driver->getHtml();
+                                        $uiItems->add($driver);
+                                        ?>
+                                        <pre class="be-c-999">}</pre>
+                                    </div>
+                                    <div class="be-col-auto">
+                                        <div class="be-pl-100"></div>
+                                    </div>
+                                    <div class="be-col">
+                                        <div class="input-json" v-if="currentNodeInput !== false">
+                                            参数 $input 为上个节点输出的数据：
+                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                        </div>
+                                        <div v-else>
+                                            参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 数据操作类型：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select v-model="currentNode.item.op" size="medium">
+                                            <el-option label="插入，重复数据更新" value="auto"></el-option>
+                                            <el-option label="插入" value="insert"></el-option>
+                                            <el-option label="更新" value="update"></el-option>
+                                            <el-option label="删除" value="delete"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'auto' || currentNode.item.op === 'update' || currentNode.item.op === 'delete'">
+                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                        <span class="be-c-red">*</span> 更新/删除操作的唯一键字段：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-select
+                                                v-model="currentNode.item.op_field"
+                                                placeholder="请选择字段"
+                                                size="medium"
+                                                filterable>
+                                            <el-option label="id" value="id"></el-option>
+                                            <el-option label="unique_key" value="unique_key"></el-option>
+                                        </el-select>
+                                    </div>
+                                </div>
+
+
+                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'insert'">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-switch v-model.number="currentNode.item.clean" :active-value="1" :inactive-value="0" size="medium"></el-switch>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- output_material -->
+
+
+
+
                             <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode.item">
                                 <el-button type="success" size="medium" :disabled="loading" @click="test">验证</el-button>
                                 <el-button type="danger" size="medium" :disabled="loading" @click="deleteCurrentNode">删除节点</el-button>
@@ -2126,12 +2495,18 @@
                 breakpointStepKeyValues: <?php echo json_encode($this->breakpointStepKeyValues); ?>,
                 fieldMappingKeyValues: <?php echo json_encode($this->fieldMappingKeyValues); ?>,
 
-
                 // 输入 表字段
                 inputDsTableFields: [],
 
                 // 输出 表字段
                 outputDsTableFields: [],
+
+                // 素材列表
+                materialKeyValues: <?php echo json_encode($this->materialKeyValues); ?>,
+                materialFields: {},
+
+                // 输出 素材 字段
+                outputMaterialFields: [],
 
                 loading: false,
 
@@ -2175,6 +2550,10 @@
 
                             break;
 
+                        case 'input_code':
+                            this.formItems.input_code.codeMirror.setValue(this.currentNode.item.code);
+                            break;
+
                         case 'process_code':
                             this.formItems.process_code.codeMirror.setValue(this.currentNode.item.code);
                             break;
@@ -2189,6 +2568,8 @@
                             if (this.currentNode.item.ds_table !== "" && !this.dsTableFields.hasOwnProperty(this.currentNode.item.ds_table)) {
                                 this.dsTableChange();
                             }
+
+                            this.formItems.output_ds_field_mapping_code.codeMirror.setValue(this.currentNode.item.field_mapping_code);
 
                             this.outputDsUpdateFieldMapping();
                             break;
@@ -2207,6 +2588,15 @@
                         case 'output_api':
                             this.formItems.output_api_field_mapping_code.codeMirror.setValue(this.currentNode.item.field_mapping_code);
                             this.outputApiUpdateFieldMapping();
+                            break;
+                        case 'output_material':
+                            if (this.currentNode.item.material_id !== "" && !this.materialFields.hasOwnProperty(this.currentNode.item.material_id)) {
+                                this.outputMaterialChange();
+                            }
+
+                            this.formItems.output_material_field_mapping_code.codeMirror.setValue(this.currentNode.item.field_mapping_code);
+
+                            this.outputMaterialUpdateFieldMapping();
                             break;
                     }
 
@@ -2256,6 +2646,20 @@
                             item.output = false;
                             break;
 
+                        case 'input_material':
+                            item.material_id = '';
+                            item.breakpoint = 'full';
+                            item.breakpoint_field = 'update_time';
+                            item.breakpoint_time = '1970-01-02 00:00:00';
+                            item.breakpoint_step = '1_DAY';
+                            item.breakpoint_offset = 0;
+                            item.output = false;
+                            break;
+
+                        case 'input_code':
+                            item.code = '';
+                            item.output = false;
+                            break;
 
                         case 'process_clean':
                             item.clean_field = '';
@@ -2301,7 +2705,7 @@
                             item.op = 'auto';
                             item.op_field = 'id';
                             item.mysql_replace = 1;
-                            item.clean = 1;
+                            item.clean = 0;
                             item.clean_type = 'truncate';
                             item.output = false;
                             break;
@@ -2337,6 +2741,16 @@
                             item.field_mapping_code = '';
                             item.interval = 1000;
                             item.success_mark = '';
+                            item.output = false;
+                            break;
+                        case 'output_material':
+                            item.material_id = '';
+                            item.field_mapping = 'mapping';
+                            item.field_mapping_details = [];
+                            item.field_mapping_code = '';
+                            item.op = 'auto';
+                            item.op_field = 'id';
+                            item.clean = 0;
                             item.output = false;
                             break;
                     }
@@ -2382,6 +2796,9 @@
                         case 'output_folders':
                             break;
                         case 'output_api':
+                            break;
+                        case 'output_material':
+                            this.outputMaterialFields = [];
                             break;
                     }
 
@@ -2860,6 +3277,122 @@
                     this.$forceUpdate();
                 },
 
+
+
+                outputMaterialChange: function () {
+                    if (this.materialFields[this.currentNode.item.material_id] === undefined) {
+                        var _this = this;
+                        _this.$http.post("<?php echo beAdminUrl('Etl.Material.getFields'); ?>", {
+                            materialId: _this.currentNode.item.material_id
+                        }).then(function (response) {
+                            if (response.status === 200) {
+                                var responseData = response.data;
+                                if (responseData.success) {
+                                    _this.materialFields[_this.currentNode.item.material_id] = responseData.data.fields;
+                                    _this.outputMaterialFields = responseData.data.fields;
+
+                                    _this.outputMaterialUpdateFieldMapping();
+                                } else {
+                                    if (responseData.message) {
+                                        _this.$message.error(responseData.message);
+                                    }
+                                }
+                            }
+                        }).catch(function (error) {
+                            _this.$message.error(error);
+                        });
+                    } else {
+                        this.outputMaterialFields = this.materialFields[this.currentNode.item.material_id];
+                        this.outputMaterialUpdateFieldMapping();
+                    }
+                },
+                outputMaterialUpdateFieldMapping: function () {
+
+                    if (this.outputMaterialFields.length === 0 ) return;
+
+                    if (this.currentNode.item.field_mapping_details.length === 0 ) {
+                        for (let i = 0; i < this.outputMaterialFields.length; i++) {
+                            let outputField = this.outputMaterialFields[i];
+                            if (this.currentNodeInput !== false) {
+
+                                if (this.currentNodeInput.hasOwnProperty(outputField)) {
+                                    this.currentNode.item.field_mapping_details.push({
+                                        'enable' : 1,
+                                        'field' : outputField,
+                                        'type' : 'input_field',
+                                        'input_field' : outputField,
+                                        'custom' : "",
+                                    });
+                                } else {
+                                    this.currentNode.item.field_mapping_details.push({
+                                        'enable' : 1,
+                                        'field' : outputField,
+                                        'type' : 'custom',
+                                        'input_field' : "",
+                                        'custom' : "",
+                                    });
+                                }
+
+                            } else {
+
+                                this.currentNode.item.field_mapping_details.push({
+                                    'enable' : 1,
+                                    'field' : outputField,
+                                    'type' : 'custom',
+                                    'input_field' : "",
+                                    'custom' : "",
+                                });
+
+                            }
+                        }
+                    }
+
+
+                    // 生成 CODE
+                    if (this.currentNode.item.field_mapping_code === "") {
+                        let code = "$output = (object)[];\n";
+
+                        for (let x of this.currentNode.item.field_mapping_details) {
+
+                            if (x.enable !== 1) continue;
+
+                            if (x.type === "input_field") {
+                                code += "$output->" + x.field + " = $input->" + x.input_field + ";\n";
+                            } else {
+                                code += "$output->" + x.field + " = '" + x.custom + "';\n";
+                            }
+                        }
+
+                        code += "return $output;";
+                        this.currentNode.item.field_mapping_code = code;
+                        this.formItems.output_material_field_mapping_code.codeMirror.setValue(code);
+                    }
+
+                    this.$forceUpdate();
+                },
+                // 输出 数据源
+                outputMaterialFieldMappingSelectAll: function () {
+                    for (let x of this.currentNode.item.field_mapping_details) {
+                        x.enable = 1;
+                    }
+                    this.$forceUpdate();
+                },
+                outputMaterialFieldMappingSelectNone: function () {
+                    for (let x of this.currentNode.item.field_mapping_details) {
+                        x.enable = 0;
+                    }
+                    this.$forceUpdate();
+                },
+                outputMaterialFieldMappingSelectMatched: function () {
+                    for (let x of this.currentNode.item.field_mapping_details) {
+                        if (this.currentNodeInput.hasOwnProperty(x.field)) {
+                            x.enable = 1;
+                        } else {
+                            x.enable = 0;
+                        }
+                    }
+                    this.$forceUpdate();
+                },
 
                 forceUpdate() {
                     this.$forceUpdate();
