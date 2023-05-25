@@ -79,7 +79,11 @@ class MaterialItem extends Auth
             [
                 'name' => 'id',
                 'label' => 'ID',
-            ]
+            ],
+            [
+                'name' => 'unique_key',
+                'label' => '唯一键',
+            ],
         ];
         $createItems = [
             [
@@ -108,6 +112,10 @@ class MaterialItem extends Auth
             [
                 'name' => 'id',
                 'label' => 'ID',
+            ],
+            [
+                'name' => 'unique_key',
+                'label' => '唯一键',
             ],
         ];
 
