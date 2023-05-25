@@ -2,6 +2,7 @@
 
 namespace Be\App\Etl\Controller;
 
+use Be\App\ServiceException;
 use Be\Be;
 
 /**
@@ -23,9 +24,31 @@ class MaterialApi
         $response = Be::getResponse();
 
         try {
+            $materialId = $request->get('material_id');
+            $material = Be::getService('App.Etl.Material')->getMaterial($materialId);
 
-            $postData = $request->post();
-            $postData['material_id'] = $request->get('material_id');
+            $postData = [];
+            $postData['material_id'] = $materialId;
+            foreach ($material->fields as $field) {
+                switch ($field->type) {
+                    case 'text':
+                    case 'textarea':
+                    case 'date':
+                    case 'datetime':
+                        $postData[$field->name] = $request->post($field->name, '');
+                        break;
+                    case 'html':
+                        $postData[$field->name] = $request->post($field->name, '', 'html');
+                        break;
+                    case 'int':
+                    case 'bool':
+                        $postData[$field->name] = $request->post($field->name, '', 'int');
+                        break;
+                    case 'float':
+                        $postData[$field->name] = $request->post($field->name, '', 'float');
+                        break;
+                }
+            }
 
             Be::getService('App.Etl.Admin.MaterialItem')->edit($postData);
 
@@ -55,12 +78,32 @@ class MaterialApi
 
         try {
             $materialId = $request->get('material_id');
-
-            $postData = $request->post();
-            $postData['material_id'] = $materialId;
-
             $material = Be::getService('App.Etl.Material')->getMaterial($materialId);
 
+            $postData = [];
+            $postData['material_id'] = $materialId;
+            foreach ($material->fields as $field) {
+                switch ($field->type) {
+                    case 'text':
+                    case 'textarea':
+                    case 'date':
+                    case 'datetime':
+                        $postData[$field->name] = $request->post($field->name, '');
+                        break;
+                    case 'html':
+                        $postData[$field->name] = $request->post($field->name, '', 'html');
+                        break;
+                    case 'int':
+                    case 'bool':
+                        $postData[$field->name] = $request->post($field->name, '', 'int');
+                        break;
+                    case 'float':
+                        $postData[$field->name] = $request->post($field->name, '', 'float');
+                        break;
+                }
+            }
+
+            // 有唯一键时，检查唯一键是否需要编辑
             $uniqueField = null;
             foreach ($material->fields as $field) {
                 if ($field->unique === 1) {
@@ -70,7 +113,7 @@ class MaterialApi
             }
 
             if ($uniqueField !== null) {
-                $uniqueKey = $request->post($uniqueField->name);
+                $uniqueKey = $postData[$uniqueField->name];
                 $sql = 'SELECT id FROM etl_material_item WHERE unique_key=?';
                 $id = Be::getDb()->getValue($sql, [$uniqueKey]);
                 if ($id) {
