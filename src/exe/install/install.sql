@@ -77,7 +77,7 @@ CREATE TABLE `etl_flow_node_input_ds` (
 `breakpoint_time` TIMESTAMP NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '断点时间',
 `breakpoint_step` varchar(60) NOT NULL DEFAULT '1_DAY' COMMENT '断点递增量(1_HOUR:一小时/1_DAY:一天/1_MONTH:一个月)',
 `breakpoint_offset` INT NOT NULL DEFAULT '0' COMMENT '断点向前偏移量（秒）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输入节点-数据源';
@@ -96,7 +96,7 @@ CREATE TABLE `etl_flow_node_input_material` (
 `breakpoint_time` TIMESTAMP NOT NULL DEFAULT '1970-01-02 00:00:00' COMMENT '断点时间',
 `breakpoint_step` varchar(60) NOT NULL DEFAULT '1_DAY' COMMENT '断点递增量(1_HOUR:一小时/1_DAY:一天/1_MONTH:一个月)',
 `breakpoint_offset` INT NOT NULL DEFAULT '0' COMMENT '断点向前偏移量（秒）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输入节点-素材';
@@ -110,7 +110,7 @@ CREATE TABLE `etl_flow_node_input_code` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `code` text NOT NULL COMMENT '输入代码',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输入节点-素材';
@@ -132,7 +132,7 @@ CREATE TABLE `etl_flow_node_process_clean` (
 `sign_field` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段名',
 `sign_field_value_0` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段值（默认值）',
 `sign_field_value_1` varchar(60) NOT NULL DEFAULT '' COMMENT '标记字段值（已清洗）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-清洗';
@@ -151,7 +151,7 @@ CREATE TABLE `etl_flow_node_process_filter` (
 `insert_tags` tinyint(4) NOT NULL DEFAULT '0' COMMENT '插入标签',
 `match_case` tinyint(4) NOT NULL DEFAULT '0' COMMENT '区分大小写',
 `op` varchar(30) NOT NULL DEFAULT 'allow' COMMENT '操作（allow：符合条件的放行/deny：符合条件的中止处理）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-过滤';
@@ -171,7 +171,7 @@ CREATE TABLE `etl_flow_node_process_chatgpt` (
 `output_field` varchar(30) NOT NULL DEFAULT 'assign' COMMENT '输出字段（assign：指定现有字段/custom：自定议）',
 `output_field_assign` varchar(60) NOT NULL DEFAULT '' COMMENT '输出字段：指定字段',
 `output_field_custom` varchar(60) NOT NULL DEFAULT '' COMMENT '输出字段：自定义字段',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
@@ -187,7 +187,7 @@ CREATE TABLE `etl_flow_node_process_code` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_node_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点ID',
 `code` text NOT NULL COMMENT '代码处理',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库处理节点-代码处理';
@@ -211,7 +211,7 @@ CREATE TABLE `etl_flow_node_output_ds` (
 `mysql_replace` tinyint(4) NOT NULL DEFAULT '1' COMMENT '是否启用 MYSQL 数据库 Replace Into',
 `clean` tinyint(4) NOT NULL DEFAULT '0' COMMENT '运行前清空数据表（如：全量同步时）',
 `clean_type` varchar(60) NOT NULL DEFAULT 'truncate' COMMENT '清空数据表方式（truncate：TRUNCATE/delete：DELETE）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-数据源';
@@ -228,7 +228,7 @@ CREATE TABLE `etl_flow_node_output_csv` (
 `field_mapping` varchar(30) NOT NULL DEFAULT 'mapping' COMMENT '字段映射类型（mapping：字段映射/code：代码处理）',
 `field_mapping_details` text NOT NULL COMMENT '字段映射',
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-CSV';
@@ -248,7 +248,7 @@ CREATE TABLE `etl_flow_node_output_files` (
 `content` varchar(30) NOT NULL DEFAULT 'template' COMMENT '文件内容生成方式（template：模板/code：代码处理）',
 `content_template` varchar(300) NOT NULL DEFAULT '' COMMENT '文件内容模板',
 `content_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '文件内容代码处理',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-文件包';
@@ -267,7 +267,7 @@ CREATE TABLE `etl_flow_node_output_folders` (
 `name_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '目录代码处理',
 `files` text NOT NULL COMMENT '目录内文件列表',
 `files_code` text NOT NULL COMMENT '代码输出文件列表',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-目录包';
@@ -288,7 +288,7 @@ CREATE TABLE `etl_flow_node_output_api` (
 `field_mapping_code` text NOT NULL COMMENT '代码映射',
 `success_mark` varchar(60) NOT NULL DEFAULT '' COMMENT  '成功标识',
 `interval` int(11) NOT NULL DEFAULT '1000' COMMENT '间隔时间（毫秒）',
-`output` text NOT NULL COMMENT '输出（键值对数组，php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（键值对数组，php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-API调用';
@@ -308,7 +308,7 @@ CREATE TABLE `etl_flow_node_output_material` (
 `op` varchar(30) NOT NULL DEFAULT 'auto' COMMENT '数据操作类型（auto：插入，重复数据更新/insert：插入/update：更新/delete：删除）',
 `op_field` varchar(60) NOT NULL DEFAULT 'id' COMMENT '更新/删除操作的唯一键字段',
 `clean` tinyint(4) NOT NULL DEFAULT '0' COMMENT '运行前清空数据表（如：全量同步时）',
-`output` text NOT NULL COMMENT '输出（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci COMMENT='数据库输出节点-数据源';
@@ -357,8 +357,8 @@ ADD KEY `flow_log_id` (`flow_log_id`);
 CREATE TABLE `etl_flow_node_item_log` (
 `id` varchar(36) NOT NULL DEFAULT 'uuid()' COMMENT 'UUID',
 `flow_node_log_id` varchar(36) NOT NULL DEFAULT '' COMMENT '数据流节点日志ID',
-`input` text NOT NULL COMMENT '输入数据（php序列化）',
-`output` text NOT NULL COMMENT '输出数据（php序列化）',
+`input` mediumtext NOT NULL COMMENT '输入数据（php序列化）',
+`output` mediumtext NOT NULL COMMENT '输出数据（php序列化）',
 `success` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否成功',
 `message` varchar(600) NOT NULL DEFAULT '' COMMENT '异常信息',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间'
