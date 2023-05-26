@@ -95,6 +95,10 @@ class Files extends Output
             }
         }
 
+        if (!isset($formDataNode['item']['file_exist']) || !is_string($formDataNode['item']['file_exist']) || !in_array($formDataNode['item']['file_exist'], ['override', 'append'])) {
+            throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 同名文件操作（file_exist）参数无效！');
+        }
+
         if (count((array)$output) === 0) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出数据为空！');
         }
@@ -121,6 +125,7 @@ class Files extends Output
         $tupleFlowNodeItem->content = $formDataNode['item']['content'];
         $tupleFlowNodeItem->content_template = $formDataNode['item']['content_template'];
         $tupleFlowNodeItem->content_code = $formDataNode['item']['content_code'];
+        $tupleFlowNodeItem->file_exist = $formDataNode['item']['file_exist'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
         $tupleFlowNodeItem->update_time = date('Y-m-d H:i:s');
@@ -214,7 +219,13 @@ class Files extends Output
         }
 
         $path = $this->dir . '/' . $output->name;
-        file_put_contents($path, $output->content);
+
+        // 同名文件追加
+        if ($flowNode->item->file_exist = 'append') {
+            file_put_contents($path, $output->content, FILE_APPEND);
+        } else {
+            file_put_contents($path, $output->content);
+        }
 
         return $output;
     }

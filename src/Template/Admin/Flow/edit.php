@@ -375,16 +375,14 @@
 
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 类型：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.ds_type" size="medium">
-                                            <el-radio-button v-for="(v, k) in dsTypeKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.ds_type" v-for="(v, k) in dsTypeKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -432,16 +430,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 断点类型：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.breakpoint" size="medium">
-                                            <el-radio-button v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.breakpoint" v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -493,16 +489,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 断点递增量：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.breakpoint_step" size="medium">
-                                            <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.breakpoint_step" v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -552,16 +546,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 断点类型：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.breakpoint" size="medium">
-                                            <el-radio-button v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.breakpoint" v-for="(v, k) in breakpointKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -599,16 +591,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150" v-if="currentNode.item.breakpoint === 'breakpoint'">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 断点递增量：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.breakpoint_step" size="medium">
-                                            <el-radio-button v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.breakpoint_step" v-for="(v, k) in breakpointStepKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -728,17 +718,15 @@
                                 </div>
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 输出字段：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.output_field" size="medium">
-                                            <el-radio-button label="assign">指定现有字段</el-radio-button>
-                                            <el-radio-button label="custom">自定义</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.output_field" label="assign">指定现有字段</el-radio>
+                                        <el-radio v-model="currentNode.item.output_field" label="custom">自定义</el-radio>
                                     </div>
                                 </div>
 
@@ -1201,16 +1189,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 字段处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
-                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.field_mapping" v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -1439,16 +1425,14 @@
                             <div v-show="currentNode.item && currentNode.item_type === 'output_csv'">
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 列处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
-                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.field_mapping" v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
@@ -1461,7 +1445,7 @@
                                     </div>
                                     <div class="be-col-24 be-md-col">
 
-                                        <div class="be-row be-mt-150 field-item-header">
+                                        <div class="be-row field-item-header">
                                             <div class="be-col">
                                                 <div class="be-pl-100">列名</div>
                                             </div>
@@ -1586,17 +1570,15 @@
                             <div v-show="currentNode.item && currentNode.item_type === 'output_files'">
 
                                 <div class="be-row">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 文件名处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.name" size="medium">
-                                            <el-radio-button label="template">命名模板</el-radio-button>
-                                            <el-radio-button label="code">代码处理</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.name" label="template">命名模板</el-radio>
+                                        <el-radio v-model="currentNode.item.name" label="code">代码处理</el-radio>
                                     </div>
                                 </div>
 
@@ -1667,17 +1649,15 @@
 
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 内容处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.content" size="medium">
-                                            <el-radio-button label="template">内容模板</el-radio-button>
-                                            <el-radio-button label="code">代码处理</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.content" label="template">内容模板</el-radio>
+                                        <el-radio v-model="currentNode.item.content" label="code">代码处理</el-radio>
                                     </div>
                                 </div>
 
@@ -1746,6 +1726,21 @@
                                         </div>
                                     </div>
                                 </div>
+
+
+                                <div class="be-row be-mt-150">
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <span class="be-c-red">*</span> 同名文件操作：
+                                    </div>
+                                    <div class="be-col-24 be-md-col-auto">
+                                        <div class="be-pl-50 be-pt-100"></div>
+                                    </div>
+                                    <div class="be-col-24 be-md-col">
+                                        <el-radio v-model="currentNode.item.file_exist" label="override">覆盖</el-radio>
+                                        <el-radio v-model="currentNode.item.file_exist" label="append">追加</el-radio>
+                                    </div>
+                                </div>
+
                             </div>
                             <!-- output_files -->
 
@@ -1755,17 +1750,15 @@
                             <div v-show="currentNode.item && currentNode.item_type === 'output_folders'">
 
                                 <div class="be-row">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 目录名处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.name" size="medium">
-                                            <el-radio-button label="template">命名模板</el-radio-button>
-                                            <el-radio-button label="code">代码处理</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.name" label="template">命名模板</el-radio>
+                                        <el-radio v-model="currentNode.item.name" label="code">代码处理</el-radio>
                                     </div>
                                 </div>
 
@@ -2239,16 +2232,14 @@
                                 </div>
 
                                 <div class="be-row be-mt-150">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
+                                    <div class="be-col-24 be-md-col-auto">
                                         <span class="be-c-red">*</span> 字段处理方式：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
                                     </div>
                                     <div class="be-col-24 be-md-col">
-                                        <el-radio-group v-model="currentNode.item.field_mapping" size="medium">
-                                            <el-radio-button v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio-button>
-                                        </el-radio-group>
+                                        <el-radio v-model="currentNode.item.field_mapping" v-for="(v, k) in fieldMappingKeyValues" :label="k">{{v}}</el-radio>
                                     </div>
                                 </div>
 
