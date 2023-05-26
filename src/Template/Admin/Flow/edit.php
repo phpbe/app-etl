@@ -2713,6 +2713,7 @@
                             item.content = 'template';
                             item.content_template = '';
                             item.content_code = '';
+                            item.file_exist = 'override';
                             item.output = false;
                             break;
                         case 'output_folders':
