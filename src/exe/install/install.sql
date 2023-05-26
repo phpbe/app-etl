@@ -248,6 +248,7 @@ CREATE TABLE `etl_flow_node_output_files` (
 `content` varchar(30) NOT NULL DEFAULT 'template' COMMENT '文件内容生成方式（template：模板/code：代码处理）',
 `content_template` varchar(300) NOT NULL DEFAULT '' COMMENT '文件内容模板',
 `content_code` varchar(1000) NOT NULL DEFAULT '' COMMENT '文件内容代码处理',
+`file_exist` varchar(30) NOT NULL DEFAULT 'override' COMMENT '同名文件操作(override - 覆盖 / append - 追加)',
 `output` mediumtext NOT NULL COMMENT '输出（php序列化）',
 `create_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
 `update_time` TIMESTAMP on update CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间'
