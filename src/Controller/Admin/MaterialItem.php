@@ -60,7 +60,10 @@ class MaterialItem extends Auth
 
         $materialIdNameKeyValues = $service->getIdNameKeyValues();
 
-        $materialId = Be::getRequest()->get('material_id', '');
+        $materialId = Be::getRequest()->post('material_id', '');
+        if ($materialId === '') {
+            $materialId = Be::getRequest()->get('material_id', '');
+        }
 
         if (!isset($materialIdNameKeyValues[$materialId])) {
             $response->redirect(beAdminUrl('Etl.MaterialItem.select'));

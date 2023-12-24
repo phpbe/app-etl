@@ -195,10 +195,12 @@ class MaterialItem
         if ($uniqueField !== null) {
             if ($isNew) {
                 $uniqueExist = Be::getTable('etl_material_item')
+                        ->where('material_id', $materialId)
                         ->where('unique_key', $formData[$uniqueField->name])
                         ->getValue('COUNT(*)') > 0;
             } else {
                 $uniqueExist = Be::getTable('etl_material_item')
+                        ->where('material_id', $materialId)
                         ->where('unique_key', $formData[$uniqueField->name])
                         ->where('id', '!=', $materialItemId)
                         ->getValue('COUNT(*)') > 0;
