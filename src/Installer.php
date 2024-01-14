@@ -12,6 +12,7 @@ class Installer extends \Be\App\Installer
      */
 	public function install()
 	{
+        $installed = false;
         $db = \Be\Be::getDb();
         $tableNames = $db->getTableNames();
         if (in_array('etl_ds', $tableNames)) {
