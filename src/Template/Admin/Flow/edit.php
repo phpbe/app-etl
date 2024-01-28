@@ -2693,7 +2693,7 @@
                             item.field_mapping = 'mapping';
                             item.field_mapping_details = [];
                             item.field_mapping_code = '';
-                            item.op = 'auto';
+                            item.op = 'update';
                             item.op_field = 'id';
                             item.mysql_replace = 1;
                             item.clean = 0;
@@ -2740,7 +2740,7 @@
                             item.field_mapping = 'mapping';
                             item.field_mapping_details = [];
                             item.field_mapping_code = '';
-                            item.op = 'auto';
+                            item.op = 'update';
                             item.op_field = 'id';
                             item.clean = 0;
                             item.output = false;
