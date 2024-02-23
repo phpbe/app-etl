@@ -25,6 +25,8 @@ class MaterialApi
 
         try {
             $materialId = $request->get('material_id');
+            $format = $request->get('format', 'form');
+
             $material = Be::getService('App.Etl.Material')->getMaterial($materialId);
 
             $postData = [];
@@ -35,17 +37,33 @@ class MaterialApi
                     case 'textarea':
                     case 'date':
                     case 'datetime':
-                        $postData[$field->name] = $request->post($field->name, '');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '');
+                        }
                         break;
                     case 'html':
-                        $postData[$field->name] = $request->post($field->name, '', 'html');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'html');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'html');
+                        }
                         break;
                     case 'int':
                     case 'bool':
-                        $postData[$field->name] = $request->post($field->name, '', 'int');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'int');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'int');
+                        }
                         break;
                     case 'float':
-                        $postData[$field->name] = $request->post($field->name, '', 'float');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'float');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'float');
+                        }
                         break;
                 }
             }
@@ -78,6 +96,8 @@ class MaterialApi
 
         try {
             $materialId = $request->get('material_id');
+            $format = $request->get('format', 'form');
+
             $material = Be::getService('App.Etl.Material')->getMaterial($materialId);
 
             $postData = [];
@@ -88,17 +108,33 @@ class MaterialApi
                     case 'textarea':
                     case 'date':
                     case 'datetime':
-                        $postData[$field->name] = $request->post($field->name, '');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '');
+                        }
                         break;
                     case 'html':
-                        $postData[$field->name] = $request->post($field->name, '', 'html');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'html');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'html');
+                        }
                         break;
                     case 'int':
                     case 'bool':
-                        $postData[$field->name] = $request->post($field->name, '', 'int');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'int');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'int');
+                        }
                         break;
                     case 'float':
-                        $postData[$field->name] = $request->post($field->name, '', 'float');
+                        if ($format === 'form') {
+                            $postData[$field->name] = $request->post($field->name, '', 'float');
+                        } elseif ($format === 'json') {
+                            $postData[$field->name] = $request->json($field->name, '', 'float');
+                        }
                         break;
                 }
             }

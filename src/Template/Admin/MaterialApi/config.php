@@ -39,18 +39,32 @@
             <el-tabs v-model="activePane">
                 <el-tab-pane label="新增" name="create">
 
-                    <div class="be-c-font-4">向素中中增加内容</div>
+                    <div class="be-c-font-4">向素材中增加内容</div>
 
                     <div class="be-row be-lh-250 be-mt-100">
-                        <div class="be-col-auto">接口网址：</div>
+                        <div class="be-col-auto">接口网址（Form表单）：</div>
                         <div class="be-col-auto be-px-100">
                             <el-tag>
-                                <?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id]); ?>
+                                <?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'form']); ?>
                             </el-tag>
                         </div>
 
                         <div class="be-col-auto">
-                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('create')">复制</el-link>
+                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('create-1')">复制</el-link>
+                        </div>
+                    </div>
+
+
+                    <div class="be-row be-lh-250 be-mt-100">
+                        <div class="be-col-auto">接口网址（Json数据）：</div>
+                        <div class="be-col-auto be-px-100">
+                            <el-tag>
+                                <?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'json']); ?>
+                            </el-tag>
+                        </div>
+
+                        <div class="be-col-auto">
+                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('create-2')">复制</el-link>
                         </div>
                     </div>
 
@@ -116,15 +130,29 @@
                     <div class="be-c-font-4">唯一键存在时，更新内容，不存在时，新增内容</div>
 
                     <div class="be-row be-lh-250 be-mt-100">
-                        <div class="be-col-auto">接口网址：</div>
+                        <div class="be-col-auto">接口网址（Form表单）：</div>
                         <div class="be-col-auto be-px-100">
                             <el-tag>
-                                <?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id]); ?>
+                                <?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'form']); ?>
                             </el-tag>
                         </div>
 
                         <div class="be-col-auto">
-                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('edit')">复制</el-link>
+                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('edit-1')">复制</el-link>
+                        </div>
+                    </div>
+
+
+                    <div class="be-row be-lh-250 be-mt-100">
+                        <div class="be-col-auto">接口网址（Json数据）：</div>
+                        <div class="be-col-auto be-px-100">
+                            <el-tag>
+                                <?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'json']); ?>
+                            </el-tag>
+                        </div>
+
+                        <div class="be-col-auto">
+                            <el-link type="primary" icon="el-icon-document-copy" :underline="false" @click="copyUrl('edit-2')">复制</el-link>
                         </div>
                     </div>
 
@@ -502,11 +530,17 @@
                     let url = "";
                     <?php if ($this->material) { ?>
                     switch (type) {
-                        case "create":
-                            url = "<?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id]); ?>";
+                        case "create-1":
+                            url = "<?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'form']); ?>";
                             break;
-                        case "edit":
-                            url = "<?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id]); ?>";
+                        case "create-2":
+                            url = "<?php echo beUrl('Etl.MaterialApi.create', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'json']); ?>";
+                            break;
+                        case "edit-1":
+                            url = "<?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'form']); ?>";
+                            break;
+                        case "edit-2":
+                            url = "<?php echo beUrl('Etl.MaterialApi.edit', ['token' => $this->config->token, 'material_id' => $this->material->id, 'format' => 'json']); ?>";
                             break;
                         case "fetch":
                             url = "<?php echo beUrl('Etl.MaterialApi.fetch', ['token' => $this->config->token, 'material_id' => $this->material->id]); ?>";
