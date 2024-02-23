@@ -68,7 +68,7 @@
                         </div>
                     </div>
 
-                    <div class="be-lh-250 be-mt-100">POST请求：</div>
+                    <div class="be-lh-250 be-mt-100">请求数据（Form表单或Json数据）：</div>
                     <div class="be-mt-50">
                         <el-table
                                 :data="requestDataCreate"
@@ -156,7 +156,7 @@
                         </div>
                     </div>
 
-                    <div class="be-lh-250 be-mt-100">POST请求：</div>
+                    <div class="be-lh-250 be-mt-100">请求数据（Form表单或Json数据）：</div>
                     <div class="be-mt-50">
                         <el-table
                                 :data="requestDataEdit"
