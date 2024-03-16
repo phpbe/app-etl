@@ -275,6 +275,14 @@ class Api extends Output
         $output->response = $response;
         $output->success = $isSuccess;
 
+        if ($flowNode->item->interval > 0) {
+            if (Be::getRuntime()->isSwooleMode()) {
+                \Swoole\Coroutine::sleep($flowNode->item->interval * 1000);
+            } else {
+                sleep($flowNode->item->interval * 1000);
+            }
+        }
+
         return $output;
     }
 
