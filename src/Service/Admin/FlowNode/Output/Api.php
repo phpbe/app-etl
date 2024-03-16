@@ -277,9 +277,9 @@ class Api extends Output
 
         if ($flowNode->item->interval > 0) {
             if (Be::getRuntime()->isSwooleMode()) {
-                \Swoole\Coroutine::sleep($flowNode->item->interval * 1000);
+                \Swoole\Coroutine::usleep($flowNode->item->interval * 1000);
             } else {
-                sleep($flowNode->item->interval * 1000);
+                usleep($flowNode->item->interval * 1000);
             }
         }
 
