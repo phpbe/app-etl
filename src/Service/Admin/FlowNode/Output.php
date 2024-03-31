@@ -32,7 +32,9 @@ abstract class Output extends FlowNode
      * @param object $input 输入
      * @param object $flowLog 流据流日志
      * @param object $flowNodeLog 流据流节点日志
-     * @return object 输出
+     * @return object $output 输出
+     *   $output->_success = 1|0 是否成功
+     *   $output->_message = '消息'
      * @throws \Throwable
      */
     abstract public function process(object $flowNode, object $input, object $flowLog, object $flowNodeLog): object;
