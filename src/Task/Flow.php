@@ -148,8 +148,8 @@ class Flow extends Task
                             $flowNodeItemLog->flow_node_log_id = $flowNodeLog->id;
                             $flowNodeItemLog->input = serialize($lastOutput);
                             $flowNodeItemLog->output = serialize($output);
-                            $flowNodeItemLog->success = 1;
-                            $flowNodeItemLog->message = '';
+                            $flowNodeItemLog->success = $output->_success ?? 1;
+                            $flowNodeItemLog->message = $output->_message ?? '';
                             $flowNodeItemLog->create_time = date('Y-m-d H:i:s');
                             $db->insert('etl_flow_node_item_log', $flowNodeItemLog);
 

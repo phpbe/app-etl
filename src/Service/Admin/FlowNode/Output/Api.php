@@ -272,8 +272,8 @@ class Api extends Output
         $output = new \stdClass();
         $output->headers = $this->headers;
         $output->postData = $postData;
-        $output->response = $response;
-        $output->success = $isSuccess;
+        $output->_success = $isSuccess;
+        $output->_message = $response;
 
         if ($flowNode->item->interval > 0) {
             if (Be::getRuntime()->isSwooleMode()) {
