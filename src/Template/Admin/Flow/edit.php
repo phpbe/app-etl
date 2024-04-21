@@ -1140,7 +1140,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1333,7 +1333,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1559,7 +1559,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999  be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1644,7 +1644,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1724,7 +1724,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1824,7 +1824,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -1933,7 +1933,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -2170,7 +2170,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
@@ -2372,7 +2372,7 @@
                                     <div class="be-col">
                                         <div class="input-json" v-if="currentNodeInput !== false">
                                             参数 $input 为上个节点输出的数据：
-                                            <pre class="be-mt-100 be-c-999">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
+                                            <pre class="be-mt-100 be-c-999 be-t-break">{{JSON.stringify(this.currentNodeInput, null, 4) }}</pre>
                                         </div>
                                         <div v-else>
                                             参数 $input 为上个节点输出的数据，请先验证上个结点，获取其结构。
