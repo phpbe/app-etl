@@ -853,7 +853,6 @@
                                         <div class="be-mt-100">
                                             插入特殊字符：<br>
                                             <span class="be-d-inline-block be-mt-50">
-                                                <el-button @click="processCleanCleanValuesInsertTag('空白')"  type="primary" size="mini">{空白}</el-button> &nbsp;
                                                 <el-button @click="processCleanCleanValuesInsertTag('换行符')"  type="primary" size="mini">{换行符}</el-button> &nbsp;
                                             </span>
                                         </div>
@@ -1052,6 +1051,7 @@
                                         <div class="be-mt-100">
                                             插入特殊字符：<br>
                                             <span class="be-d-inline-block be-mt-50">
+                                                <el-button @click="processCleanCleanValuesInsertTag('空白')"  type="primary" size="mini">{空白}</el-button> &nbsp;
                                                 <el-button @click="processFilterFilterValuesInsertTag('换行符')"  type="primary" size="mini">{换行符}</el-button> &nbsp;
                                             </span>
                                         </div>
