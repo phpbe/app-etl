@@ -81,7 +81,7 @@
 
         .CodeMirror-wrap pre.CodeMirror-line,
         .CodeMirror-wrap pre.CodeMirror-line-like {
-            word-break: break-all;
+            word-break: break-all !important;
         }
 
     </style>
