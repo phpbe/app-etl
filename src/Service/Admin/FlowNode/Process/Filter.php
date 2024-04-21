@@ -81,6 +81,7 @@ class Filter extends Process
             //$filterValue = trim($filterValue);
             if ($filterValue === '') continue;
 
+            $filterValue = str_replace('{空白}', '', $filterValue);
             $filterValue = str_replace('{换行符}', "\n", $filterValue);
 
             switch ($formDataNode['item']['filter_op']) {
@@ -262,6 +263,7 @@ class Filter extends Process
                 //$filterValue = trim($filterValue);
                 if ($filterValue === '') continue;
 
+                $filterValue = str_replace('{空白}', '', $filterValue);
                 $filterValue = str_replace('{换行符}', "\n", $filterValue);
 
                 $newFilterValues[] = $filterValue;
@@ -290,6 +292,7 @@ class Filter extends Process
                 //$filterValue = trim($filterValue);
                 if ($filterValue === '') continue;
 
+                $filterValue = str_replace('{空白}', '', $filterValue);
                 $filterValue = str_replace('{换行符}', "\n", $filterValue);
 
                 $newFilterValues[] = $filterValue;
