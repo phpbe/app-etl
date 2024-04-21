@@ -63,14 +63,10 @@ class Material extends Output
                 $field = $mapping['field'];
 
                 $found = false;
-                if (in_array($field, ['id', 'material_id', 'unique_key', 'create_time', 'update_time'])) {
-                    $found = true;
-                } else {
-                    foreach ($material->fields as $materialField) {
-                        if ($materialField->name === $field) {
-                            $found = true;
-                            break;
-                        }
+                foreach ($material->fields as $materialField) {
+                    if ($materialField->name === $field) {
+                        $found = true;
+                        break;
                     }
                 }
 
@@ -126,15 +122,8 @@ class Material extends Output
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 输出数据为空！');
         }
 
-
         if (!isset($formDataNode['item']['op']) || !is_string($formDataNode['item']['op']) || !in_array($formDataNode['item']['op'], ['auto', 'insert', 'update', 'delete'])) {
             throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 数据操作类型（op）参数无效！');
-        }
-
-        if (in_array($formDataNode['item']['op'], ['auto', 'update', 'delete'])) {
-            if (!isset($formDataNode['item']['op_field']) || !is_string($formDataNode['item']['op_field']) || $formDataNode['item']['op_field'] === '') {
-                throw new ServiceException('节点 ' . ($formDataNode['index'] + 1) . ' 更新/删除操作的唯一键字段（op_field）参数无效！');
-            }
         }
 
         $formDataNode['item']['clean'] = 0;
@@ -171,7 +160,6 @@ class Material extends Output
         $tupleFlowNodeItem->field_mapping_details = serialize($formDataNode['item']['field_mapping_details']);
         $tupleFlowNodeItem->field_mapping_code = $formDataNode['item']['field_mapping_code'];
         $tupleFlowNodeItem->op = $formDataNode['item']['op'];
-        $tupleFlowNodeItem->op_field = $formDataNode['item']['op_field'];
         $tupleFlowNodeItem->clean = $formDataNode['item']['clean'];
         $tupleFlowNodeItem->output = serialize($formDataNode['item']['output']);
 
@@ -243,15 +231,7 @@ class Material extends Output
         if ($flowNode->item->field_mapping === 'mapping') {
             $output = new \stdClass();
             foreach ($this->fieldMappingDetails as $mapping) {
-
                 $field = $mapping['field'];
-
-                if ($mapping['enable'] === 0) {
-                    if (in_array($field, ['id', 'material_id', 'unique_key', 'create_time', 'update_time'])) {
-                        continue;
-                    }
-                }
-
                 if ($mapping['type'] === 'input_field') {
                     $inputField = $mapping['input_field'];
                     $output->$field = $input->$inputField;
@@ -273,12 +253,7 @@ class Material extends Output
             }
         }
 
-
         $m = new \stdClass();
-
-        if (isset($output->id)) $m->id = $output->id;
-        if (isset($output->material_id)) $m->material_id = $output->material_id;
-        if (isset($output->unique_key)) $m->unique_key = $output->unique_key;
 
         $uniqueKey = '';
         $data = [];
@@ -296,51 +271,57 @@ class Material extends Output
         }
         $m->data = serialize($data);
 
-        if (isset($output->create_time)) $m->create_time = $output->create_time;
-        if (isset($output->update_time)) $m->update_time = $output->update_time;
+        if ($uniqueKey === '') {
+            if ($flowNode->item->op === 'auto' || $flowNode->item->op === 'update' || $flowNode->item->op === 'delete') {
+                throw new ServiceException('节点 ' . ($flowNode->index + 1) . ' 目标素材未配置唯一键，"数据操作类型" 仅可使用 插入');
+            }
+        }
 
-        if ($flowNode->item->op === 'auto') {
+        if ($flowNode->item->op === 'auto' || $flowNode->item->op === 'update') {
 
-            $sql = 'SELECT COUNT(*) FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ';
-            $opField = $flowNode->item->op_field;
-            $sql .= $db->quoteKey($opField) . ' = ' . $db->quoteValue($output->$opField);
+            $sql = 'SELECT id, create_time, update_time FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ';
+            $sql .= $db->quoteKey('material_id') . ' = ' . $db->quoteValue($flowNode->item->material_id);
+            $sql .= ' AND ' . $db->quoteKey('unique_key') . ' = ' . $db->quoteValue($uniqueKey);
 
-            $count = (int)$db->getValue($sql);
-            if ($count > 0) {
-                $db->update('etl_material_item', $m, $opField);
+            $existM = $db->getObject($sql);
+            if ($existM > 0) {
+
+                $m->id = $existM->id;
+                $m->material_id = $flowNode->item->material_id;
+                $m->unique_key = $uniqueKey;
+                $m->create_time = $existM->create_time;
+                $m->update_time = $existM->update_time;
+
+                $db->update('etl_material_item', $m, 'id');
             } else {
 
-                $m->material_id = $flowNode->item->material_id;
+                if ($flowNode->item->op === 'auto') {
+                    $m->id = $db->uuid();
+                    $m->material_id = $flowNode->item->material_id;
+                    $m->unique_key = $uniqueKey;
+                    $m->create_time = date('Y-m-d H:i:s');
+                    $m->update_time = date('Y-m-d H:i:s');
 
-                if (!isset($m->id)) $m->id = $db->uuid();
-                if (!isset($m->material_id)) $m->material_id = $flowNode->item->material_id;
-                if (!isset($m->unique_key)) $m->unique_key = $uniqueKey;
-                if (!isset($m->create_time)) $m->create_time = date('Y-m-d H:i:s');
-                if (!isset($m->update_time)) $m->update_time = date('Y-m-d H:i:s');
-
-                $db->insert('etl_material_item', $m);
+                    $db->insert('etl_material_item', $m);
+                }
             }
 
         } elseif ($flowNode->item->op === 'insert') {
 
-            if (!isset($m->id)) $m->id = $db->uuid();
-            if (!isset($m->material_id)) $m->material_id = $flowNode->item->material_id;
-            if (!isset($m->unique_key)) $m->unique_key = $uniqueKey;
-            if (!isset($m->create_time)) $m->create_time = date('Y-m-d H:i:s');
-            if (!isset($m->update_time)) $m->update_time = date('Y-m-d H:i:s');
+            $m->id = $db->uuid();
+            $m->material_id = $flowNode->item->material_id;
+            $m->unique_key = $uniqueKey;
+            $m->create_time = date('Y-m-d H:i:s');
+            $m->update_time = date('Y-m-d H:i:s');
 
             $db->insert('etl_material_item', $m);
-
-        } elseif ($flowNode->item->op === 'update') {
-
-            $opField = $flowNode->item->op_field;
-            $db->update('etl_material_item', $m, $opField);
 
         } elseif ($flowNode->item->op === 'delete') {
 
             $sql = 'DELETE FROM ' . $db->quoteKey('etl_material_item') . ' WHERE ';
-            $opField = $flowNode->item->op_field;
-            $sql .= $db->quoteKey($opField) . ' = ' . $db->quoteValue($output->$opField);
+            $sql .= $db->quoteKey('material_id') . ' = ' . $db->quoteValue($flowNode->item->material_id);
+            $sql .= ' AND ' . $db->quoteKey('unique_key') . ' = ' . $db->quoteValue($uniqueKey);
+
             $db->query($sql);
 
         }

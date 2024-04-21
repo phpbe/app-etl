@@ -326,7 +326,7 @@ class Material extends Auth
         try {
             $postData = $request->json();
 
-            $material = Be::getService('App.Etl.Material')->getMaterial($postData['materialId']);
+            $material = Be::getService('App.Etl.Admin.Material')->getMaterial($postData['materialId']);
 
             $fields = [];;
             $fields[] = 'id';
@@ -351,5 +351,37 @@ class Material extends Auth
             $response->json();
         }
     }
+
+
+    /**
+     * @BePermission("*")
+     */
+    public function getDataFields()
+    {
+        $request = Be::getRequest();
+        $response = Be::getResponse();
+
+        try {
+            $postData = $request->json();
+
+            $material = Be::getService('App.Etl.Admin.Material')->getMaterial($postData['materialId']);
+
+            $fields = [];;
+            foreach ($material->fields as $field) {
+                $fields[] = $field->name;
+            }
+
+            $response->set('success', true);
+            $response->set('data', [
+                'fields' => $fields,
+            ]);
+            $response->json();
+        } catch (\Exception $e) {
+            $response->set('success', false);
+            $response->set('message', $e->getMessage());
+            $response->json();
+        }
+    }
+
 
 }

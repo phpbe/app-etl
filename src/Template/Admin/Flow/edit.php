@@ -79,6 +79,11 @@
             white-space: pre-wrap;
         }
 
+        .CodeMirror-wrap pre.CodeMirror-line,
+        .CodeMirror-wrap pre.CodeMirror-line-like {
+            word-break: break-all;
+        }
+
     </style>
 </be-head>
 
@@ -2393,30 +2398,9 @@
                                     </div>
                                 </div>
 
-
-                                <div class="be-row be-mt-150" v-if="currentNode.item.op === 'auto' || currentNode.item.op === 'update' || currentNode.item.op === 'delete'">
-                                    <div class="be-col-24 be-md-col-auto be-lh-250">
-                                        <span class="be-c-red">*</span> 更新/删除操作的唯一键字段：
-                                    </div>
-                                    <div class="be-col-24 be-md-col-auto">
-                                        <div class="be-pl-50 be-pt-100"></div>
-                                    </div>
-                                    <div class="be-col-24 be-md-col">
-                                        <el-select
-                                                v-model="currentNode.item.op_field"
-                                                placeholder="请选择字段"
-                                                size="medium"
-                                                filterable>
-                                            <el-option label="id" value="id"></el-option>
-                                            <el-option label="unique_key" value="unique_key"></el-option>
-                                        </el-select>
-                                    </div>
-                                </div>
-
-
                                 <div class="be-row be-mt-150" v-if="currentNode.item.op === 'insert'">
                                     <div class="be-col-24 be-md-col-auto">
-                                        <span class="be-c-red">*</span> 运行前清空数据表（如：全量同步时）：
+                                        <span class="be-c-red">*</span> 运行前清空数据（如：全量同步时）：
                                     </div>
                                     <div class="be-col-24 be-md-col-auto">
                                         <div class="be-pl-50 be-pt-100"></div>
@@ -2428,8 +2412,6 @@
 
                             </div>
                             <!-- output_material -->
-
-
 
 
                             <div class="be-mt-200 be-bt-eee be-pt-100" v-show="currentNode.item">
@@ -3274,7 +3256,7 @@
                 outputMaterialChange: function () {
                     if (this.materialFields[this.currentNode.item.material_id] === undefined) {
                         var _this = this;
-                        _this.$http.post("<?php echo beAdminUrl('Etl.Material.getFields'); ?>", {
+                        _this.$http.post("<?php echo beAdminUrl('Etl.Material.getDataFields'); ?>", {
                             materialId: _this.currentNode.item.material_id
                         }).then(function (response) {
                             if (response.status === 200) {
