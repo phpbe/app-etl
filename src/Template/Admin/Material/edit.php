@@ -147,7 +147,7 @@
                                             <el-input
                                                     type="text"
                                                     placeholder="请输入字段英文名称"
-                                                    v-model = "field.name"
+                                                    v-model.trim = "field.name"
                                                     size="medium"
                                                     maxlength="180"
                                                     show-word-limit>
